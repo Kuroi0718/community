@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -31,16 +32,25 @@ public class Member {
 	@Column(name = "password", columnDefinition = "nvarchar(20)")
 	private String password;
 	
+	@Column(name = "level", columnDefinition = "nvarchar(20)")
+	private String level;
+	
+	@Column(name = "email", columnDefinition = "nvarchar(50)")
+	private String email;
+	
+	@Lob 
+	@Column(name = "photo")
+	private byte[] photo;
 	
 	@JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss EEEE", timezone = "GMT+8")
 	@DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "creationDate")
-	private Date creationDate;
+	@Column(name = "creationdate")
+	private Date creationdate;
 	@PrePersist
 	public void onCreate() {
-		if(creationDate == null) {
-			creationDate = new Date();
+		if(creationdate == null) {
+			creationdate = new Date();
 		}
 	}
 	public Member() {
@@ -63,11 +73,29 @@ public class Member {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public Date getCreationDate() {
-		return creationDate;
+	public Date getCreationdate() {
+		return creationdate;
 	}
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
+	public void setCreationdate(Date creationdate) {
+		this.creationdate = creationdate;
+	}
+	public String getLevel() {
+		return level;
+	}
+	public void setLevel(String level) {
+		this.level = level;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public byte[] getPhoto() {
+		return photo;
+	}
+	public void setPhoto(byte[] photo) {
+		this.photo = photo;
 	}
 
 }

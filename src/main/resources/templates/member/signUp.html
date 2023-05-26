@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:replace="~{layout/navbar}"></div>
+	<div class="container">
+		<form th:action="@{/member/signup}" enctype="multipart/form-data"
+			method="post">
+			<div>
+				姓名： <input type="text" name="username" value="Bob" />
+			</div>
+			<div>
+				權限：<input type="hidden" name="level" value="member" />
+			</div>
+			<div>
+				密碼：<input type="text" name="password" value="aaa" />
+			</div>
+			<div>
+				信箱：<input type="text" name="email" value="a@a" />
+			</div>
+			<div>
+				頭像：<input type="file" name="photo" />
+			</div>
+
+			<button>送出</button>
+		</form>
+	</div>
+	<h3 th:text="${ok}"></h3>
+
+	<h3 th:text="${errorMsg}"></h3>
+
+</body>
+</html>
