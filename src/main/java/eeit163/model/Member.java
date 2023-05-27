@@ -26,7 +26,7 @@ public class Member {
 	@Column(name = "id")
 	private Integer id;
 
-	@Column(name = "username", columnDefinition = "nvarchar(50)")
+	@Column(name = "username", columnDefinition = "nvarchar(50)",unique = true)
 	private String username;
 
 	@Column(name = "password", columnDefinition = "nvarchar(20)")

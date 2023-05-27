@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import eeit163.model.Member;
@@ -61,6 +62,12 @@ try {
 			hs.setAttribute("loggedInMember", mService.findByUsername(username));
 			return "index";
 		}
+	}
+	
+	@ResponseBody
+	@PostMapping("/member/ajax/checkUsername")
+	public String checkUsername(@RequestParam("username") String username) {
+		return mService.checkUsername(username);
 	}
 	
 	

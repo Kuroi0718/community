@@ -10,7 +10,8 @@
 		<form th:action="@{/member/signup}" enctype="multipart/form-data"
 			method="post">
 			<div>
-				姓名： <input type="text" name="username" value="Bob" />
+				姓名： <input type="text" name="username" id="username" onkeyup="check()" />
+				<div id="checkUsername"></div>
 			</div>
 			<div>
 				權限：<input type="hidden" name="level" value="member" />
@@ -33,4 +34,19 @@
 	<h3 th:text="${errorMsg}"></h3>
 
 </body>
+
+	<script type="text/javascript">
+	
+		function check(){
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200)
+				document.getElementById("checkUsername").innerHTML = xhttp.responseText;
+		}
+		xhttp.open("POST","http://localhost:8080/community/member/ajax/checkUsername",true);
+		xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhttp.send("username="+username.value);
+		}
+	</script>
+
 </html>

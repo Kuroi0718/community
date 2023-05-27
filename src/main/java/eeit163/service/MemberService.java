@@ -38,4 +38,19 @@ public class MemberService {
 		}
         return "密碼錯誤";
 	}
+	
+	
+	public String checkUsername(String username) {
+		List<Member> memberList = mDao.findByUsername(username);
+		
+		if(memberList.isEmpty()) {
+			return "可使用";
+		}
+		else{
+			return "用戶已存在";
+		}
+	}
+	
+	
+	
 }
