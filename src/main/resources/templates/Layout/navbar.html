@@ -18,10 +18,16 @@
       <div class="navbar-nav">
         <a class="nav-link active" aria-current="page" th:href="@{/}">Home</a>
         <a class="nav-link" th:href="@{/member/signUpPage}">註冊</a>
-
+        <a class="nav-link" th:href="@{/member/loginPage}">登入</a>
+        <a class="nav-link" th:href="@{/}">會員</a>
+        <a class="nav-link" th:href="@{/}">商城</a>
+        <a class="nav-link" th:href="@{/}">論壇</a>
+        <a class="nav-link" th:href="@{/}">音樂</a>
+        <a class="nav-link" th:href="@{/}">廣告</a>
       </div>
     </div>
   </div>
+  <th:block th:switch="${session.loggedInMember != null }"><div th:case=${true}>[[${session.loggedInMember.username}]]</div></th:block>
 </nav>
 
 

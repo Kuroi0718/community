@@ -1,6 +1,5 @@
 package eeit163.controller;
 import java.io.IOException;
-import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import eeit163.model.Member;
 import eeit163.service.MemberService;
+import jakarta.servlet.http.HttpSession;
 
 
 @Controller
@@ -19,7 +19,7 @@ public class MemberController {
 	private MemberService mService;
 	
 	@PostMapping("/member/signup")
-	public String addMsgPost(@RequestParam("username") String username,
+	public String signup(@RequestParam("username") String username,
 			@RequestParam("password") String password,
 			@RequestParam("level") String level,
 //			@RequestParam("creationdate") Date creationdate,
@@ -44,4 +44,24 @@ try {
 		return "member/signUp";
 	}
 	}
+	
+	@PostMapping("/member/login")
+	public String login(@RequestParam("username") String username,
+			@RequestParam("password") String password,
+			Model model,HttpSession hs) {
+		String str=mService.checkLogin(username, password);
+		if (str.equals("查無此用戶")) {
+			model.addAttribute("msg", str);
+			return "member/login";
+		}else if(str.equals("密碼錯誤")) {
+			model.addAttribute("msg", str);
+			return "member/login";
+		}else {
+			model.addAttribute("msg", str);
+			hs.setAttribute("loggedInMember", mService.findByUsername(username));
+			return "index";
+		}
+	}
+	
+	
 }

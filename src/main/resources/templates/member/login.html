@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:replace="~{layout/navbar}"></div>
+	<div class="container">
+		<form th:action="@{/member/login}" enctype="multipart/form-data"
+			method="post">
+			<div>
+				姓名： <input type="text" name="username" value="Bob" />
+			</div>
+			<div>
+				密碼：<input type="text" name="password" value="aaa" />
+			</div>
+
+
+			<button>送出</button>
+		</form>
+	</div>
+	<h3 th:text="${msg}"></h3>
+</body>
+</html>
