@@ -19,5 +19,10 @@ public class PageController {
 	public String login() {
 		return "member/login";
 	}
+	
+	@GetMapping("/member/profilePage")
+	public String profile() {
+		return "member/profile";
+	}
 
 }

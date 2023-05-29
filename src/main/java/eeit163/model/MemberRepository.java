@@ -26,8 +26,14 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 	public List<Member> findByLevel(@Param(value = "n") String level);
 
 	@Modifying
-	@Query(value = "update Member set username = :n where id = :id") 
-	public Integer updateUsernameById(@Param("id") Integer id, @Param("n") String newUsername);
+	@Query(value = "update Member set username = :username ,password = :password ,level = :level ,email = :email ,photo = :photo where id = :id") 
+	public Integer updateById(@Param("id") Integer id, 
+			@Param("username") String username,
+			@Param("password") String password,
+			@Param("level") String level,
+			@Param("email") String email,
+			@Param("photo") byte[] photo
+			);
 
 	public List<Member> findByCreationdateOrderByIdDesc(Date creationdate);
 

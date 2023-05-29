@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:replace="~{layout/navbar}"></div>
+	<div>
+		<div style="display: flex; justify-content: space-between">
+
+
+
+
+
+			<div class="card" style="width: 18rem;"></div>
+
+
+
+
+			<div class="card" style="width: 18rem;"></div>
+
+
+
+			<div class="card" style="width: 18rem;">
+				<form th:action="@{/member/update}" enctype="multipart/form-data"
+					method="post">
+					<img class="card-img-top" id="photo"
+						th:src="@{'data:image/jpeg;base64,'+${session.loggedInMember.generateBase64Image()}}" />
+					<div class="card-body">
+						<div id="show">
+							<h5 class="card-title" id="username">[[${session.loggedInMember.username}]]</h5>
+							<p class="card-text" id="password">[[${session.loggedInMember.password}]]</p>
+							<p class="card-text" id="level">[[${session.loggedInMember.level}]]</p>
+							<p class="card-text" id="email">[[${session.loggedInMember.email}]]</p>
+						</div>
+						<div id="update" style="display: none">
+							<h5 class="card-title">
+								姓名： <input type="text" name="username" id="updatename"
+									th:value="${session.loggedInMember.username}" onkeyup="check()" />
+							</h5>
+							<div id="checkUsername"></div>
+							<p class="card-text">
+								<input type="hidden" name="id"
+									th:value="${session.loggedInMember.id}" />
+							</p>
+							<p class="card-text">
+								<input type="hidden" name="level"
+									th:value="${session.loggedInMember.level}" />
+							</p>
+							<p class="card-text">
+								密碼：<input type="text" name="password"
+									th:value="${session.loggedInMember.password}" />
+							</p>
+							<p class="card-text">
+								信箱：<input type="text" name="email"
+									th:value="${session.loggedInMember.email}" />
+							</p>
+							<p class="card-text">
+								頭像：<input type="file" name="photo" />
+							</p>
+
+							<button>送出</button>
+						</div>
+					</div>
+
+
+				</form>
+				<button onclick="showupdate()" class="btn btn-primary">edit</button>
+				<h3 th:text="${ok}"></h3>
+
+				<h3 th:text="${errorMsg}"></h3>
+			</div>
+
+
+
+
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	
+	function showupdate(){
+	if(document.getElementById("show").style.display==="none"){document.getElementById("show").style.display="block"}else{document.getElementById("show").style.display="none"}
+	if(document.getElementById("update").style.display==="none"){document.getElementById("update").style.display="block"}else{document.getElementById("update").style.display="none"}
+	}
+	
+		function check(){
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200)
+				document.getElementById("checkUsername").innerHTML = xhttp.responseText;
+		}
+		xhttp.open("POST","http://localhost:8080/community/member/ajax/checkUsername",true);
+		xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhttp.send("username="+updatename.value);
+		}
+	</script>
+
+</html>

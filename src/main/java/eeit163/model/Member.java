@@ -1,5 +1,6 @@
 package eeit163.model;
 
+import java.util.Base64;
 import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -96,6 +97,11 @@ public class Member {
 	}
 	public void setPhoto(byte[] photo) {
 		this.photo = photo;
+	}
+	
+	public String generateBase64Image()
+	{
+	    return Base64.getEncoder().encodeToString(this.photo);
 	}
 
 }

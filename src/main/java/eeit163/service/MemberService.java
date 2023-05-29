@@ -14,13 +14,27 @@ public class MemberService {
 	@Autowired
 	private MemberRepository mDao;
 
-	public void insertMessage(Member member) {
+	public void insertMember(Member member) {
 		mDao.save(member);
 	}
 	
 	@Transactional
+	public void updateById(Member member) {
+		mDao.updateById(member.getId(), member.getUsername(), member.getPassword(), member.getLevel(), member.getEmail(),member.getPhoto());
+	}
+	
+	
+	@Transactional
 	public void deleteById(Integer id) {
 		mDao.deleteById(id);
+	}
+	
+	public byte[] findPhotoById(Integer id) {
+		return mDao.findById(id).get().getPhoto();
+	}
+	
+	public Member findById(Integer id) {
+		return mDao.findById(id).get();
 	}
 	
 	public Member findByUsername(String username) {
