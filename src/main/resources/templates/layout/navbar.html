@@ -27,7 +27,7 @@
       </div>
     </div>
   </div>
-  <th:block th:switch="${session.loggedInMember != null }"><div th:case=${true}><a class="nav-link" th:href="@{/member/profilePage}">[[${session.loggedInMember.username}]]</a></div></th:block>
+  <th:block th:switch="${session.loggedInMember != null }"><div th:case=${true}><a class="nav-link" th:href="@{/member/profilePage}" id="member">[[${session.loggedInMember.username}]]</a></div></th:block>
 </nav>
 
 

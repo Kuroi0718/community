@@ -23,7 +23,7 @@
 
 
 			<div class="card" style="width: 18rem;">
-				<form th:action="@{/member/update}" enctype="multipart/form-data"
+				<form th:action="@{/member/update}" enctype="multipart/form-data" id="form1"
 					method="post">
 					<img class="card-img-top" id="photo"
 						th:src="@{'data:image/jpeg;base64,'+${session.loggedInMember.generateBase64Image()}}" />
@@ -41,7 +41,7 @@
 							</h5>
 							<div id="checkUsername"></div>
 							<p class="card-text">
-								<input type="hidden" name="id"
+								<input type="hidden" name="id" id="idnumber"
 									th:value="${session.loggedInMember.id}" />
 							</p>
 							<p class="card-text">
@@ -60,16 +60,16 @@
 								頭像：<input type="file" name="photo" />
 							</p>
 
-							<button>送出</button>
+							
 						</div>
 					</div>
 
 
 				</form>
+				<button onclick="sendForm()">送出</button>
+				<div id="msg"></div>
 				<button onclick="showupdate()" class="btn btn-primary">edit</button>
-				<h3 th:text="${ok}"></h3>
 
-				<h3 th:text="${errorMsg}"></h3>
 			</div>
 
 
@@ -85,6 +85,30 @@
 	if(document.getElementById("show").style.display==="none"){document.getElementById("show").style.display="block"}else{document.getElementById("show").style.display="none"}
 	if(document.getElementById("update").style.display==="none"){document.getElementById("update").style.display="block"}else{document.getElementById("update").style.display="none"}
 	}
+	
+		function sendForm() {
+			var form = document.getElementById("form1");
+			var formdata = new FormData(form);
+			var xhr = new XMLHttpRequest();
+			xhr.onload = function() {
+				document.getElementById("msg").innerHTML = xhr.responseText;
+				refreshSession();
+			}
+
+			xhr.open("POST", "http://localhost:8080/community/member/update", true);
+			xhr.send(formdata);
+		}
+		
+		function refreshSession(){
+		var xhr1 = new XMLHttpRequest();
+		xhr1.onload = function() {
+		document.getElementById("member").innerHTML = xhr1.responseText;
+		}
+		xhr1.open("POST", "http://localhost:8080/community/member/refreshLogin", true);
+		xhr1.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhr1.send("id="+idnumber.value);
+		}
+	
 	
 		function check(){
 		var xhttp = new XMLHttpRequest();

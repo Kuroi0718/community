@@ -1,6 +1,7 @@
 package eeit163.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class MemberService {
 		return mDao.findById(id).get().getPhoto();
 	}
 	
-	public Member findById(Integer id) {
+	public Member findById(Integer id) throws NoSuchElementException{
 		return mDao.findById(id).get();
 	}
 	
