@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg bg-light">
+<nav class="navbar navbar-expand-lg bg-light"  style="height:100px">
   <div class="container-fluid">
     <a class="navbar-brand" th:href="@{/}">Demo</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <div class="navbar-nav">
         <a class="nav-link active" aria-current="page" th:href="@{/}">Home</a>
         <a class="nav-link" th:href="@{/member/signUpPage}">註冊</a>
-        <a class="nav-link" th:href="@{/member/loginPage}">登入</a>
+        
         <a class="nav-link" th:href="@{/}">會員</a>
         <a class="nav-link" th:href="@{/}">商城</a>
         <a class="nav-link" th:href="@{/}">論壇</a>
@@ -26,11 +26,40 @@
         <a class="nav-link" th:href="@{/}">廣告</a>
       </div>
     </div>
+    
   </div>
-  <th:block th:switch="${session.loggedInMember != null }"><div th:case=${true}><a class="nav-link" th:href="@{/member/profilePage}" id="member">[[${session.loggedInMember.username}]]</a></div></th:block>
+  <div style="margin:8px">
+  <th:block th:switch="${session.loggedInMember != null }">
+  
+  <div style="width:150px ;display:flex;margin:8px" th:case=${false}>
+  <img style="width:50px;margin:18px" th:src="@{/image/noimg.png}" />
+  <div style="width:50px;margin:8px;"><a style="height:50px;line-height:50px" class="nav-link" th:href="@{/member/loginPage}">登入</a></div>
+  </div>
+  
+  <div style="display:flex" th:case=${true}>
+ 
+ <div  style="width:50px;margin:8px">
+ <a class="nav-link" th:href="@{/member/profilePage}" id="member">
+   <th:block th:switch="${session.loggedInMember.photo.length != 0 }">
+ <img th:case=${true} id="photo" style="width:50px" th:src="@{'data:image/*;base64,'+${session.loggedInMember.generateBase64Image()}}" />
+  <img th:case=${false}  style="width:50px" th:src="@{/image/noimg.png}" />
+   </th:block>
+ </a>
+   
+  </div>
+
+  <div  style="width:50px">   <a class="nav-link" th:href="@{/member/profilePage}" id="member">[[${session.loggedInMember.username}]]</a><a class="nav-link" th:href="@{/member/logout}">登出</a> </div>
+   
+  </div>
+  
+  </th:block>
+  
+  </div>
+  
 </nav>
 
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 </html>

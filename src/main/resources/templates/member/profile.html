@@ -59,17 +59,12 @@
 							<p class="card-text">
 								頭像：<input type="file" name="photo" />
 							</p>
-
-							
 						</div>
 					</div>
-
-
 				</form>
-				<button onclick="sendForm()">送出</button>
+				<div id="send" style="display: none"><button onclick="sendForm()">送出</button></div>
 				<div id="msg"></div>
-				<button onclick="showupdate()" class="btn btn-primary">edit</button>
-
+				<div><button onclick="showupdate()" id="edit" class="btn btn-primary">編輯</button></div>
 			</div>
 
 
@@ -82,8 +77,8 @@
 <script type="text/javascript">
 	
 	function showupdate(){
-	if(document.getElementById("show").style.display==="none"){document.getElementById("show").style.display="block"}else{document.getElementById("show").style.display="none"}
-	if(document.getElementById("update").style.display==="none"){document.getElementById("update").style.display="block"}else{document.getElementById("update").style.display="none"}
+	if(document.getElementById("show").style.display==="none"){document.getElementById("send").style.display="none";document.getElementById("show").style.display="block";document.getElementById("edit").innerHTML="編輯";}else{document.getElementById("send").style.display="none";document.getElementById("show").style.display="none";document.getElementById("edit").innerHTML="取消編輯";document.getElementById("send").style.display="block";}
+	if(document.getElementById("update").style.display==="none"){document.getElementById("update").style.display="block";document.getElementById("edit").innerHTML="取消編輯";}else{document.getElementById("update").style.display="none";document.getElementById("edit").innerHTML="編輯";}
 	}
 	
 		function sendForm() {
