@@ -10,7 +10,8 @@
 		<form th:action="@{/member/signup}" enctype="multipart/form-data"
 			method="post">
 			<div>
-				姓名： <input type="text" name="username" id="username" onkeyup="checkUsername()" />
+				姓名： <input type="text" name="username" id="username"
+					onkeyup="checkUsername()" />
 				<div id="checkUsername"></div>
 			</div>
 			<div>
@@ -20,23 +21,24 @@
 				密碼：<input type="text" name="password" value="aaa" />
 			</div>
 			<div>
-				信箱：<input type="text" name="email" id="email" onkeyup="checkEmail()"/>
-				<div id="checkEmail"></div>
+				信箱：<input type="text" name="email" id="email" onkeyup="checkEmail()" />
+				<h3 id="mailValid"></h3>
 			</div>
 			<div>
 				頭像：<input type="file" name="photo" />
 			</div>
 
-			<button>送出</button>
+			<button id="send" disabled="disabled">送出</button>
 		</form>
 	</div>
+
 	<h3 th:text="${ok}"></h3>
 
 	<h3 th:text="${errorMsg}"></h3>
 
 </body>
 
-	<script type="text/javascript">
+<script type="text/javascript">
 	
 		function checkUsername(){
 		var xhttp1 = new XMLHttpRequest();
@@ -49,16 +51,33 @@
 		xhttp1.send("username="+username.value);
 		}
 		
+
 		
 		function checkEmail(){
 		var xhttp2 = new XMLHttpRequest();
 		xhttp2.onreadystatechange = function() {
 			if (xhttp2.readyState == 4 && xhttp2.status == 200)
-				document.getElementById("checkEmail").innerHTML = xhttp2.responseText;
+				document.getElementById("mailValid").innerHTML = xhttp2.responseText;
 		}
 		xhttp2.open("POST","http://localhost:8080/community/member/ajax/validEmail",true);
 		xhttp2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		xhttp2.send("email="+email.value);
+		}
+		
+		
+		function sendEmail(){
+		var xhttp3 = new XMLHttpRequest();
+		xhttp3.onreadystatechange = function() {
+			if (xhttp3.readyState < 4){
+			    document.getElementById("mailValid").innerHTML="請稍後";
+			    }
+			if (xhttp3.readyState == 4 && xhttp3.status == 200){
+				document.getElementById("mailValid").innerHTML = xhttp3.responseText;
+				}
+		}
+		xhttp3.open("POST","http://localhost:8080/community/mail/valid",true);
+		xhttp3.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhttp3.send("email="+email.value);
 		}
 	</script>
 

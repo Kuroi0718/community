@@ -141,7 +141,7 @@ public class MemberController {
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
         java.util.regex.Matcher m = p.matcher(email);
         System.out.println(m.matches());
-        return m.matches()?"信箱格式正確":"信箱格式錯誤";
+        return m.matches()?"信箱格式正確 <button type=\"button\" onclick=\"sendEmail()\">驗證</button>":"信箱格式錯誤";
  }
 
 }
