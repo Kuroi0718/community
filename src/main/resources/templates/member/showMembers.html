@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:replace="~{layout/navbar}"></div>
+	
+	
+	<table>
+		<thead>
+			<tr>
+			    <td>ID</td>
+				<td>大頭貼</td>
+				<td>帳號</td>
+				<td>權限</td>
+			</tr>
+		</thead>
+		
+		<tbody>
+			<th:block th:each=" aMember : ${page} ">
+			
+				<tr>
+				    <td th:text="${aMember} ? ${aMember.id}"> </td>
+					<td>
+    		           <th:block th:switch="${aMember.photo.length != 0 }">
+                           <img th:case=${true} id="photo" style="width:50px" th:src="@{'data:image/*;base64,'+${aMember.generateBase64Image()}}" />
+                           <img th:case=${false}  style="width:50px" th:src="@{/image/noimg.png}" />
+                       </th:block>
+                   </td>
+					<td th:text="${aMember} ? ${aMember.username}"> </td>
+					<td>
+					    
+					         <th:block  th:switch="${aMember.level == 'admin' }">
+					         <select th:case=${true} th:value="${aMember.level}">
+                             <option >admin</option>
+ 						     </select>
+ 						     <select th:case=${false} th:value="${aMember.level}">
+ 						     <option >member</option>
+                             <option>disable</option>
+ 						     <option>muted</option>
+ 						     </select>
+ 						     </th:block>
+					   
+                    </td>
+					 
+				</tr>
+				</th:block>
+		</tbody>
+	</table>
+	
+
+	
+	
+	
+</body>
+
+<script type="text/javascript">
+	
+	function showupdate(){
+	if(document.getElementById("show").style.display==="none"){document.getElementById("send").style.display="none";document.getElementById("show").style.display="block";document.getElementById("edit").innerHTML="編輯";}else{document.getElementById("send").style.display="none";document.getElementById("show").style.display="none";document.getElementById("edit").innerHTML="取消編輯";document.getElementById("send").style.display="block";}
+	if(document.getElementById("update").style.display==="none"){document.getElementById("update").style.display="block";document.getElementById("edit").innerHTML="取消編輯";}else{document.getElementById("update").style.display="none";document.getElementById("edit").innerHTML="編輯";}
+	}
+	
+		function sendForm() {
+			var form = document.getElementById("form1");
+			var formdata = new FormData(form);
+			var xhr = new XMLHttpRequest();
+			xhr.onload = function() {
+				document.getElementById("msg").innerHTML = xhr.responseText;
+				refreshSession();
+			}
+
+			xhr.open("POST", "http://localhost:8080/community/member/update", true);
+			xhr.send(formdata);
+		}
+		
+		function refreshSession(){
+		var xhr1 = new XMLHttpRequest();
+		xhr1.onload = function() {
+		document.getElementById("member").innerHTML = xhr1.responseText;
+		}
+		xhr1.open("POST", "http://localhost:8080/community/member/refreshLogin", true);
+		xhr1.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhr1.send("id="+idnumber.value);
+		}
+	
+	
+		function check(){
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200)
+				document.getElementById("checkUsername").innerHTML = xhttp.responseText;
+		}
+		xhttp.open("POST","http://localhost:8080/community/member/ajax/checkUsername",true);
+		xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhttp.send("username="+updatename.value);
+		}
+	</script>
+
+</html>

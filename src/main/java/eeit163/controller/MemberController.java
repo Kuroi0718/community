@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -143,5 +144,24 @@ public class MemberController {
         System.out.println(m.matches());
         return m.matches()?"信箱格式正確 <button type=\"button\" onclick=\"sendEmail()\">驗證</button>":"信箱格式錯誤";
  }
+	
+	
+	@GetMapping("/member/page")
+	public String findByPage(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber, Model model) {
+		Page<Member> page = mService.findByPage(pageNumber);
+		model.addAttribute("page", page.getContent());
+		System.out.println(page.getSize());
+		return "member/showMembers";
+	}
+	
+	@ResponseBody
+	@PostMapping("/member/ajax/page")
+	public Page<Member> addMsgApi(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber){
+		
+		Page<Member> page = mService.findByPage(pageNumber);
+		
+		return page;
+	}
+	
 
 }

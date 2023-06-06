@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +43,12 @@ public class MemberService {
 	
 	public Member findByUsername(String username) {
 		return mDao.findByUsername(username).get(0);
+	}
+	
+	public Page<Member> findByPage(Integer pageNumber){
+		PageRequest pgb = PageRequest.of(pageNumber-1, 10, Sort.Direction.ASC, "id");
+		Page<Member> page = mDao.findAll(pgb);
+		return page;
 	}
 
 	public String checkLogin(String username,String password) {

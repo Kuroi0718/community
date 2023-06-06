@@ -18,7 +18,7 @@
       <div class="navbar-nav">
         <a class="nav-link active" aria-current="page" th:href="@{/}">Home</a>
         <a class="nav-link" th:href="@{/member/signUpPage}">註冊</a>
-        
+        <th:block th:switch="${session.loggedInMember != null && session.loggedInMember.level == 'admin' }"><a class="nav-link" th:href="@{/member/page}" th:case=${true}>所有成員</a></th:block>
         <a class="nav-link" th:href="@{/}">會員</a>
         <a class="nav-link" th:href="@{/}">商城</a>
         <a class="nav-link" th:href="@{/}">論壇</a>
