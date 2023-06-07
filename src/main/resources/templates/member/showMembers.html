@@ -30,20 +30,39 @@
                        </th:block>
                    </td>
 					<td th:text="${aMember} ? ${aMember.username}"> </td>
-					<td>
 					    
 					         <th:block  th:switch="${aMember.level == 'admin' }">
-					         <select th:case=${true} th:value="${aMember.level}">
+					         <td  th:case=${true}>
+					         <select th:value="${aMember.level}">
                              <option >admin</option>
  						     </select>
- 						     <select th:case=${false} th:value="${aMember.level}">
- 						     <option >member</option>
-                             <option>disable</option>
- 						     <option>muted</option>
+ 						     </td>
+ 						     <td  th:case=${false}>
+ 						     
+ 						     <th:block th:switch="${aMember.level}">
+ 						     <select  th:case="member" th:id="${aMember.id}" onchange="levels(this.id)">
+ 						      <option value="member" selected="selected">member</option>
+ 						     <option value="disable">disable</option>
+ 						     <option value="muted">muted</option>
  						     </select>
+
+ 						 	 <select  th:case="disable" th:id="${aMember.id}" onchange="levels(this.id)">
+ 						      <option value="member">member</option>
+ 						     <option value="disable" selected="selected">disable</option>
+ 						     <option value="muted">muted</option>
+ 						     </select>   
+ 						     
+ 						      <select  th:case="muted" th:id="${aMember.id}" onchange="levels(this.id)">
+ 						      <option value="member">member</option>
+ 						     <option value="disable">disable</option>
+ 						     <option value="muted" selected="selected">muted</option>
+ 						     </select>  
+ 						     
+ 						     </th:block>
+ 						     
+ 						     </td>
  						     </th:block>
 					   
-                    </td>
 					 
 				</tr>
 				</th:block>
@@ -96,6 +115,14 @@
 		xhttp.open("POST","http://localhost:8080/community/member/ajax/checkUsername",true);
 		xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		xhttp.send("username="+updatename.value);
+		}
+		
+		
+		function levels(id){
+		var xhr2 = new XMLHttpRequest();
+		xhr2.open("POST","http://localhost:8080/community/member/ajax/changeLevel",true);
+		xhr2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhr2.send("id="+id+"&level="+document.getElementById(id).value);
 		}
 	</script>
 

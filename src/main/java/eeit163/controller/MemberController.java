@@ -94,12 +94,11 @@ public class MemberController {
 			return "查無此用戶";
 		}
 	}
-	
-	
+
 	@GetMapping("/member/logout")
-	public String logout( HttpSession hs) {
-			hs.invalidate();
-			return "index";
+	public String logout(HttpSession hs) {
+		hs.invalidate();
+		return "index";
 	}
 
 	@PostMapping("/member/login")
@@ -134,18 +133,17 @@ public class MemberController {
 		// 回傳值 , header, status
 		return new ResponseEntity<byte[]>(photo, header, HttpStatus.OK);
 	}
-	
+
 	@ResponseBody
 	@PostMapping("/member/ajax/validEmail")
-    public String isValidEmailAddress(String email) {
-        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
-        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
-        java.util.regex.Matcher m = p.matcher(email);
-        System.out.println(m.matches());
-        return m.matches()?"信箱格式正確 <button type=\"button\" onclick=\"sendEmail()\">驗證</button>":"信箱格式錯誤";
- }
-	
-	
+	public String isValidEmailAddress(String email) {
+		String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+		java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+		java.util.regex.Matcher m = p.matcher(email);
+		System.out.println(m.matches());
+		return m.matches() ? "信箱格式正確 <button type=\"button\" onclick=\"sendEmail()\">驗證</button>" : "信箱格式錯誤";
+	}
+
 	@GetMapping("/member/page")
 	public String findByPage(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber, Model model) {
 		Page<Member> page = mService.findByPage(pageNumber);
@@ -153,15 +151,28 @@ public class MemberController {
 		System.out.println(page.getSize());
 		return "member/showMembers";
 	}
-	
+
 	@ResponseBody
 	@PostMapping("/member/ajax/page")
-	public Page<Member> addMsgApi(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber){
-		
+	public Page<Member> addMsgApi(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber) {
+
 		Page<Member> page = mService.findByPage(pageNumber);
-		
+
 		return page;
 	}
-	
+
+	@ResponseBody
+	@PostMapping("/member/ajax/changeLevel")
+	public String changeLevel(@RequestParam("id") Integer id, @RequestParam("level") String level) {
+		try {
+			Member m = mService.findById(id);
+			m.setLevel(level);
+			mService.updateById(m);
+			return "yes";
+		} catch (Exception e) {
+			return "no";
+		}
+
+	}
 
 }
