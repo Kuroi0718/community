@@ -1,0 +1,14 @@
+[
+	{
+		"username": "admin1",
+		"password": "8uhb",
+		"level": "admin",
+		"email": "eeit163sender@outlook.com"
+	},
+	{
+		"username": "admin2",
+		"password": "8uhb",
+		"level": "admin",
+		"email": "eeit163sender@outlook.com"
+	}
+]
