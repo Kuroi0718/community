@@ -7,6 +7,37 @@
 <body>
 	<div th:replace="~{layout/navbar}"></div>
 	
+			<nav aria-label="Page navigation example">
+			<ul class="pagination">
+				<th:block th:switch="${page.number > 0 }">
+					<li class="page-item" th:case=${true}><a class="page-link"
+						th:href="@{/member/page?(p=${page.number})}">上一頁</a></li>
+					<li class="page-item" th:case=${false}><span class="page-link">上一頁</span></li>
+				</th:block>
+				<th:block
+					th:each=" groupNumber : ${#numbers.sequence(1,page.totalPages/5+1)} ">
+					<th:block
+						th:each=" pageNumber : ${#numbers.sequence(5*groupNumber-4,5*groupNumber)} ">
+						<th:block th:switch="${ pageNumber <= page.totalPages }">
+						<span th:case=${true}>
+						<th:block  th:switch="${ page.number != pageNumber -1 }">
+							<li class="page-item" th:case=${true}><a class="page-link"
+								th:href="@{/member/page?(p=${pageNumber})}">[[${pageNumber}]]</a></li>
+							<li class="page-item" th:case=${false}><span
+								class="page-link">[[${pageNumber}]]</span></li>
+						</th:block>
+						</span>
+						</th:block>
+					</th:block>
+				</th:block>
+				<th:block th:switch="${page.number+1 < page.totalPages }">
+					<li class="page-item" th:case=${true}><a class="page-link"
+						th:href="@{/member/page?(p=${page.number+2})}">下一頁</a></li>
+					<li class="page-item" th:case=${false}><span class="page-link">下一頁</span></li>
+				</th:block>
+			</ul>
+		</nav>
+	
 	
 	<table>
 		<thead>
@@ -19,7 +50,7 @@
 		</thead>
 		
 		<tbody>
-			<th:block th:each=" aMember : ${page} ">
+			<th:block th:each=" aMember : ${page.content} ">
 			
 				<tr>
 				    <td th:text="${aMember} ? ${aMember.id}"> </td>

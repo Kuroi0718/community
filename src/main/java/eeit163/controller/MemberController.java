@@ -147,8 +147,8 @@ public class MemberController {
 	@GetMapping("/member/page")
 	public String findByPage(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber, Model model) {
 		Page<Member> page = mService.findByPage(pageNumber);
-		model.addAttribute("page", page.getContent());
-		System.out.println(page.getSize());
+		model.addAttribute("page", page);
+		System.out.println(page.getTotalPages());
 		return "member/showMembers";
 	}
 
