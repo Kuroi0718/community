@@ -14,8 +14,11 @@
 						th:href="@{/member/page?(p=${page.number})}">上一頁</a></li>
 					<li class="page-item" th:case=${false}><span class="page-link">上一頁</span></li>
 				</th:block>
+					<li class="page-item"><a class="page-link"
+						onclick="gM()">上5頁</a></li>
 				<th:block
 					th:each=" groupNumber : ${#numbers.sequence(1,page.totalPages/5+1)} ">
+					<div th:id="${groupNumber}" class="pagination">
 					<th:block
 						th:each=" pageNumber : ${#numbers.sequence(5*groupNumber-4,5*groupNumber)} ">
 						<th:block th:switch="${ pageNumber <= page.totalPages }">
@@ -29,12 +32,18 @@
 						</span>
 						</th:block>
 					</th:block>
+					</div>
 				</th:block>
+				<li class="page-item"><a class="page-link"
+						onclick="gP()">下5頁</a></li>
 				<th:block th:switch="${page.number+1 < page.totalPages }">
 					<li class="page-item" th:case=${true}><a class="page-link"
 						th:href="@{/member/page?(p=${page.number+2})}">下一頁</a></li>
 					<li class="page-item" th:case=${false}><span class="page-link">下一頁</span></li>
 				</th:block>
+				<li class="page-item"><input style="width:70px" type="number" th:value="${ page.number +1 }" id="pageInput" onkeyup="range()" onchange="range()"></input>
+				<button id="pageButton" onclick="goTo()">前往</button>
+				</li>
 			</ul>
 		</nav>
 	
@@ -99,7 +108,8 @@
 				</th:block>
 		</tbody>
 	</table>
-	
+	<input type="hidden" id="var1" th:value="${page.totalPages/5+1}"></input>
+	<input type="hidden" id="var2" th:value="${page.totalPages}"></input>
 
 	
 	
@@ -154,6 +164,44 @@
 		xhr2.open("POST","http://localhost:8080/community/member/ajax/changeLevel",true);
 		xhr2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		xhr2.send("id="+id+"&level="+document.getElementById(id).value);
+		}
+		
+		
+		var pages= document.getElementById("var1").value;
+		var totalPages= document.getElementById("var2").value;
+		var g=3;
+		
+		console.log(pages);
+		function showGroup(){
+		for(let i=1;i<=pages;i++){
+		document.getElementById(i).style.display='none';
+		}
+		document.getElementById(g).style.display='';
+		}
+		
+		showGroup();
+		function gP(){
+		if(g<pages)
+		g++;
+		showGroup();
+		}
+		function gM(){
+		if(g>1)
+		g--;
+		showGroup();
+		}
+		
+		function goTo(){
+		window.location.href = "http://localhost:8080/community/member/page?p="+pageInput.value;
+		}
+		
+		function range(){
+		if(pageInput.value<1){
+		pageInput.value=1;
+		}
+		if(pageInput.value>totalPages){
+		pageInput.value=totalPages;
+		}
 		}
 	</script>
 
