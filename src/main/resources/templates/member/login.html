@@ -16,7 +16,7 @@
 				<div id="checkUsername"></div>
 			</div>
 			<div>
-				密碼：<input type="text" name="password" value="aaa" />
+				密碼：<input type="text" name="password" id="password" value="8uhb" />
 			</div>
 
 
@@ -24,6 +24,22 @@
 		</form>
 	</div>
 	<h3 th:text="${msg}"></h3>
+	
+		<div class="text-center m-5">
+			快速登入:
+			<button class="btn btn-outline-info fastLogin">admin</button>
+			<button class="btn btn-outline-info fastLogin">admin1</button>
+			<button class="btn btn-outline-info fastLogin">Kitty</button>
+			<button class="btn btn-outline-info fastLogin">Billy</button>
+			<button class="btn btn-outline-info fastLogin">Mandy</button>
+			<button class="btn btn-outline-info fastLogin">Lucy</button>
+			<button class="btn btn-outline-info fastLogin">David</button>
+			<button class="btn btn-outline-info fastLogin">Dora</button>
+			<button class="btn btn-outline-info fastLogin">Carl</button>
+			<button class="btn btn-outline-info fastLogin">Mark</button>
+			<button class="btn btn-outline-info fastLogin">Eve</button>
+		</div>
+	
 </body>
 
 
@@ -39,6 +55,18 @@
 		xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		xhttp.send("username="+username.value);
 		}
+		
+	const fastLogin = document.querySelectorAll(".fastLogin");
+	const accountInput = document.querySelector("#username");
+	const passwordInput = document.querySelector("#password");
+
+	fastLogin.forEach(button=>{
+		button.addEventListener("click",function(){
+			accountInput.value=this.innerHTML;
+			if(accountInput.value.indexOf('admin')!=-1){passwordInput.value='8uhb'}else{
+			passwordInput.value='zxcvbnm';}
+		})
+	})
 	</script>
 
 </html>

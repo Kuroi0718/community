@@ -9,4 +9,59 @@
 <h1>首頁home</h1>
 
 </body>
+  <div id="main" style="width: 1200px;height:800px;"></div>
+<br/><input id="text" type="text" />
+  <button onclick="send()">發送消息</button>
+  <hr/>
+  <button onclick="closeWebSocket()">關閉WebSocket連接</button>
+  <hr/>
+  <div id="message"></div>
+<input id="id" type="hidden" th:value="${session.loggedInMember} ? ${session.loggedInMember.id}"></input>
+
+ <script type="text/javascript">
+ 
+ var id=document.getElementById("id").value;
+ 
+  if(id!=""||id!=null) {
+   websocket = new WebSocket("ws://localhost:8080/community/ws/"+id);
+  } 
+
+  //連接發生錯誤的回調方法
+  websocket.onerror = function() {
+   setMessageInnerHTML("WebSocket連接發生錯誤");
+  };
+
+  websocket.onopen = function() {
+   setMessageInnerHTML("WebSocket連接成功");
+  }
+  
+  var U01data, Uidata, Usdata
+  websocket.onmessage = function(event) {
+   console.log(event);
+   setMessageInnerHTML(event);
+   setechart()
+  }
+
+  websocket.onclose = function() {
+   setMessageInnerHTML("WebSocket連接關閉");
+  }
+
+  window.onbeforeunload = function() {
+   closeWebSocket();
+  }
+
+  function setMessageInnerHTML(innerHTML) {
+   document.getElementById('message').innerHTML += innerHTML + '<br/>';
+  }
+
+  function closeWebSocket() {
+   websocket.close();
+  }
+
+  function send() {
+   var message = document.getElementById('text').value;
+   websocket.send('{"msg":"' + message + '"}');
+  }
+ </script>
+
 </html>
