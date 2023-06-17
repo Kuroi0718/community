@@ -15,7 +15,7 @@
 					<li class="page-item" th:case=${false}><span class="page-link">上一頁</span></li>
 				</th:block>
 					<li class="page-item"><a class="page-link"
-						onclick="gM()">上5頁</a></li>
+						onclick="gM()">&lt;&lt;</a></li>
 				<th:block
 					th:each=" groupNumber : ${#numbers.sequence(1,page.totalPages/5+1)} ">
 					<div th:id="${groupNumber}" class="pagination">
@@ -35,13 +35,13 @@
 					</div>
 				</th:block>
 				<li class="page-item"><a class="page-link"
-						onclick="gP()">下5頁</a></li>
+						onclick="gP()">&gt;&gt;</a></li>
 				<th:block th:switch="${page.number+1 < page.totalPages }">
 					<li class="page-item" th:case=${true}><a class="page-link"
 						th:href="@{/member/page?(p=${page.number+2})}">下一頁</a></li>
 					<li class="page-item" th:case=${false}><span class="page-link">下一頁</span></li>
 				</th:block>
-				<li class="page-item"><input style="width:70px" type="number" th:value="${ page.number +1 }" id="pageInput" onkeyup="range()" onchange="range()"></input>
+				<li class="page-item"><input style="width:70px" type="number" th:value="${ page.number +1 }" id="pageInput"  onchange="range()"></input>
 				<button id="pageButton" onclick="goTo()">前往</button>
 				</li>
 			</ul>
@@ -169,7 +169,7 @@
 		
 		var pages= document.getElementById("var1").value;
 		var totalPages= document.getElementById("var2").value;
-		var g=3;
+		var g=1;
 		
 		console.log(pages);
 		function showGroup(){
@@ -196,12 +196,11 @@
 		}
 		
 		function range(){
-		if(pageInput.value<1){
-		pageInput.value=1;
-		}
-		if(pageInput.value>totalPages){
-		pageInput.value=totalPages;
-		}
+		if(pageInput.value - 1 <0){
+		pageInput.value=1;}
+		
+		if(pageInput.value - totalPages >0){
+		pageInput.value=totalPages;}
 		}
 	</script>
 
