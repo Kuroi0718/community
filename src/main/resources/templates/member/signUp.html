@@ -3,33 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-</head>
-<body>
-	<div th:replace="~{layout/navbar}"></div>
-	<div class="container">
-		<form th:action="@{/member/signup}" enctype="multipart/form-data"
-			method="post">
-			<div>
-				姓名： <input type="text" name="username" id="username"
-					onkeyup="checkUsername()" />
-				<div id="checkUsername"></div>
-			</div>
-			<div>
-				<input type="hidden" name="level" value="member" />
-			</div>
-			<div>
-				密碼：<input type="text" name="password" value="aaa" />
-			</div>
-			<div>
-				信箱：<input type="text" name="email" id="email" onkeyup="checkEmail()" />
-				<h3 id="mailValid"></h3>
-			</div>
-			<div>
-				頭像：<input type="file" name="photo" />
-			</div>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<style>
+#reset,#send,input{
+border-radius:0.375rem;
+font-weight:bold
+}
 
-			<button id="send" >送出</button>
+
+</style>
+</head>
+<body style="background-image:url('../image/signup.png');color:white">
+	<div th:replace="~{layout/navbar}"></div>
+	<div class="container" style="margin-top:50px;font-weight:bold;font-size:20px;display:flex;flex-direction:row;justify-content:center" >
+		<form th:action="@{/member/signup}" enctype="multipart/form-data"
+			method="post" style="display:flex;flex-direction:column;vertical-align:middle;align-items:center;margin-right:30px">
+		<div>
+			<div>
+				<label for="username">姓名：</label>
+				<input type="text" name="username" id="username"
+					onkeyup="checkUsername()" required/>
+				<span id="checkUsername" style="color:#00E3E3;font-size:30px;position:absolute"></span>
+			</div><br>
+			<div>
+				<input type="hidden" name="level"  id="level" value="member" />
+			</div>
+			<div>
+				<label for="password">密碼：</label>
+				<input type="text" name="password" id="password" required/>
+			</div><br>
+			
+			
+			<div>
+				<label for="tel">電話：</label>
+				<input type="tel" name="tel" id="tel" required/>
+			</div><br>
+			<div>
+				<label for="birthday">生日：</label>
+				<input type="date" name="birthday" id="birthday" required/>
+			</div><br>
+			<div>
+			<span>性別：</span>
+				<input type="radio" name="gender" id="male" value="male" required/>
+				<label for="male" style="padding-right:15px">男</label>
+				<input type="radio" name="gender" id="female" value="female" required/>
+				<label for="female" style="padding-right:15px">女</label>
+			</div><br>
+			
+			<div>
+				<label for="email">信箱：</label>
+				<input type="text" name="email" id="email" onkeyup="checkEmail()" required/>
+				<span id="mailValid" style="color:#00E3E3;font-size:30px;position:absolute"></span>
+			</div><br>
+			<div>
+				照片：(非必填)<input type="file" name="photo" id="photo" />
+			</div><br>
+			<button id="reset" type="button" style="width:100px;height:50px;margin:auto;font-size:20px;margin-right:10px">清除</button>
+			<button id="send"  style="width:100px;height:50px;margin:auto;font-size:20px">送出</button>
+		</div>
 		</form>
+		<div style="width:300px;height:300px;border:solid black 1px;overflow:hidden;border-radius:0.375rem;">
+			<img class="container-fluid" id="viewPhoto" th:src="@{/image/noimg.png}" style="height:300px;padding:0"/>
+		</div><br>
 	</div>
 
 	<h3 th:text="${ok}"></h3>
@@ -79,6 +115,25 @@
 		xhttp3.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		xhttp3.send("email="+email.value);
 		}
+		
+document.getElementById("reset").addEventListener("click",function (){
+viewPhoto.src='/community/image/noimg.png';
+username.value="";
+password.value="";
+tel.value="";
+photo.value="";
+email.value="";
+male.checked = false;
+female.checked = false;
+document.getElementById("checkUsername").innerHTML="";
+document.getElementById("mailValid").innerHTML="";
+})
+
+let a=document.getElementById("photo");
+a.addEventListener("change", function(e) {
+	let photo = this.files[0];
+	viewPhoto.src=URL.createObjectURL(photo);
+})
 	</script>
 
 </html>

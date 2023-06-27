@@ -1,10 +1,12 @@
 package eeit163.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.alibaba.fastjson2.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
@@ -36,6 +38,28 @@ public class Member {
 	@Column(name = "level", columnDefinition = "nvarchar(20)")
 	private String level;
 	
+	@Column(name = "tel")
+	private String tel;
+	
+	@Column(name = "gender", columnDefinition = "nvarchar(10)")
+	private String gender;
+	
+	@Column(name = "friend", columnDefinition = "nvarchar(max)")       //好友名單
+	private String friend="";
+	
+	@Column(name = "invitation", columnDefinition = "nvarchar(max)")   //受邀
+	private String invitation="";
+	
+	@Column(name = "invite", columnDefinition = "nvarchar(max)")       //邀請中
+	private String invite="";
+	
+	 @JSONField(format = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "birthday")
+	private Date birthday;
+	
 	@Column(name = "email", columnDefinition = "nvarchar(50)")
 	private String email;
 	
@@ -43,8 +67,8 @@ public class Member {
 	@Column(name = "photo")
 	private byte[] photo;
 	
-	@JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss EEEE", timezone = "GMT+8")
-	@DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss EEEE", timezone = "GMT+8")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "creationdate")
 	private Date creationdate;
@@ -55,6 +79,24 @@ public class Member {
 		}
 	}
 	public Member() {
+	}
+	public String getTel() {
+		return tel;
+	}
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public Date getBirthday() {
+		return birthday;
+	}
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
 	}
 	public Integer getId() {
 		return id;
@@ -99,9 +141,37 @@ public class Member {
 		this.photo = photo;
 	}
 	
+	public String getFriend() {
+		return friend;
+	}
+	public void setFriend(String friend) {
+		this.friend = friend;
+	}
+	
+	public String getInvite() {
+		return invite;
+	}
+	public void setInvite(String invite) {
+		this.invite = invite;
+	}
+	public String getInvitation() {
+		return invitation;
+	}
+	public void setInvitation(String invitation) {
+		this.invitation = invitation;
+	}
 	public String generateBase64Image()
 	{
 	    return Base64.getEncoder().encodeToString(this.photo);
 	}
-
+	
+	public String simpleBirthday() {
+		SimpleDateFormat df = new SimpleDateFormat ("yyyy-MM-dd");
+		return df.format(birthday);
+	}
+	public String simpleCreationdate() {
+		SimpleDateFormat df = new SimpleDateFormat ("yyyy-MM-dd");
+		return df.format(creationdate);
+	}
+	
 }
