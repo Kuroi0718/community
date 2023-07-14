@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>賣場評價</title>
+<style>
+.showRatingPageDetail,.showRatingPageDetail td,.showRatingPageDetail th{
+border:3px solid grey;
+}
+</style>
+</head>
+<body style="overflow:hidden">
+	<div id="ratingPageDetail" style="overflow-y:scroll;position:absolute;width:500px;height:350px;
+margin-top:0vh;margin-left:20vw;z-index:5;border:grey solid 5px;background-color:#F0F0F0;display:none;border-radius:10px">
+</div>
+<!-------------------------------賣場評價Start ---------------------------------------------->
+<div style="width: 800px; margin: auto">
+		<th:block th:switch="${myShopCommentList != null}">
+			<div th:case="${true}">
+			<th:block th:each="c : ${myShopCommentList}">
+			
+			<div style="display:flex;flex-direction:row" >
+				<div class="card" style="width: 32rem;height:10rem;margin-bottom:20px;border-top-right-radius:0;border-bottom-right-radius:0;overflow:hidden;border:1px solid grey;">
+					<div style="display:flex;flex-direction:row">
+						<div style="width: 10rem; height: 10rem; overflow: hidden; border:none">
+							<img th:src="@{'/mall/showCommentPhoto?serialId=' + ${c.serialId}}" style="width: 10rem; height: 10rem;">
+						</div>
+						<div style="display:flex;flex-direction:column">
+							<div class="card-body">
+								<span class="card-title">我的評價</span>
+								<th:block th:if="${c.score == 5}">
+								<img src="../image/rating1.png" width="25px" >
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								</th:block>
+								<th:block th:if="${c.score == 4}">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								</th:block>
+								<th:block th:if="${c.score == 3}">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								</th:block>
+								<th:block th:if="${c.score == 2}">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								</th:block>
+								<th:block th:if="${c.score == 1}">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								</th:block>
+								<p class="card-text">評語：[[${c.content}]]</p>
+								<p class="card-text" >
+									<small class="text-muted">日期：[[${c.getCommentDateString()}]]</small>
+								</p>
+							</div>
+							
+							
+						</div>
+					</div>
+				</div>
+				<div class="card" style="width: 24rem;height:10rem;margin-bottom:20px;border-top-right-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;
+					border-bottom-left-radius:0;overflow:hidden;border:1px solid grey;border-left:none;border-right:none">
+							<th:block th:if="${shopCommentList != null}">
+							<th:block th:each="sc : ${shopCommentList}">
+							<th:block th:if="${sc.serialId == c.serialId}">
+						
+						<div style="display:flex;flex-direction:column">
+							<div class="card-body">
+								<span class="card-title">買家評價</span>
+								<th:block th:if="${sc.score == 5}">
+								<img src="../image/rating1.png" width="25px" >
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								</th:block>
+								<th:block th:if="${sc.score == 4}">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								</th:block>
+								<th:block th:if="${sc.score == 3}">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								</th:block>
+								<th:block th:if="${sc.score == 2}">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								</th:block>
+								<th:block th:if="${sc.score == 1}">
+								<img src="../image/rating1.png" width="25px" style="margin-left:1.1px">
+								</th:block>
+								<p class="card-text">評語：[[${sc.content}]]</p>
+								<p class="card-text">
+									<small class="text-muted">日期：[[${sc.getCommentDateString()}]]</small>
+								</p>
+							</div>
+							
+							
+						</div>
+							
+							
+							
+							
+							
+							</th:block>
+							</th:block>
+							</th:block>
+				</div>
+				<button type="button" class="button3"  style="height:10rem;" th:onclick="showOrderInRatingPage([[${c.serialId}]])">訂單詳情</button>
+				</div>
+				</th:block>
+			</div>
+		</th:block>
+	</div>
+
+<!-------------------------------賣場評價End ---------------------------------------------->
+<th:block th:if="${myShopCommentList.size() == 0}">
+<div style="font-size:50px;width:1100px;text-align:center">尚無評價紀錄<br>
+<img src="../image/noRecords.png" style="width:300px">
+</div>
+</th:block>	
+<script>
+function showOrderInRatingPage(serialId){
+let ratingPageDetail = document.getElementById('ratingPageDetail');
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+ratingPageDetail.style.display='block';
+ratingPageDetail.innerHTML = xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/showRatingPageDetail",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("serialId="+serialId);
+}
+
+function closeList(){
+let ratingPageDetail = document.getElementById('ratingPageDetail');
+ratingPageDetail.style.display='none';
+}
+</script>
+</body>
+</html>

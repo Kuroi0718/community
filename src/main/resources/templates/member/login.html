@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>會員登入</title>
+<style>
+.bbb{
+border-radius:0.375rem;
+color:white;
+background-color:transparent;
+border:#66B3FF 2px solid
+}
+button{
+border-radius:0.375rem;
+color:white;
+background-color:#66B3FF;
+border:#66B3FF 2px solid
+}
+.bbb:hover,button:hover{
+transform:scale(1.35);
+color:white;
+background-color:#66B3FF;
+}
+</style>
+</head>
+<body style="background-image:url('../image/tech.png');background-size:cover;background-repeat:no-repeat">
+	<div th:replace="~{layout/navbar}"></div>
+	<div style="font-weight:bold;font-size:30px;color:silver">
+	<div class="container" >
+		<form th:action="@{/member/login}" enctype="multipart/form-data"
+			method="post" style="display:flex;flex-direction:column;width:800px;height:400px;
+			align-items:center;margin:auto;padding-top:200px">
+			<div style="padding-bottom:10px">
+				<label for="username">姓名：</label>
+				<input type="text" name="username" id="username" style="border-radius:0.375rem"/>
+				 <span id="checkUsername" style="position:absolute;margin-left:10px"></span>
+			</div>
+			<div style="padding-bottom:30px">
+				<label for="password">密碼：</label>
+				<input type="password" name="password" id="password" value="8uhb" style="border-radius:0.375rem"/>
+				<span th:text="${msg}" style="position:absolute;margin-left:10px"></span>
+			</div>
+			<button style="width:150px;border-radius:0.375rem">送出</button>
+		</form>
+	</div>
+	
+	
+		<div class="text-center m-5">
+			快速登入:
+			<button class="bbb" onclick="quick('admin')">admin</button>
+			<button class="bbb" onclick="quick('admin1')">admin1</button>
+			<button class="bbb" onclick="quick('Kitty')">Kitty</button>
+			<button class="bbb" onclick="quick('Billy')">Billy</button>
+			<button class="bbb" onclick="quick('Mandy')">Mandy</button>
+			<button class="bbb" onclick="quick('Lucy')">Lucy</button>
+			<button class="bbb" onclick="quick('David')">David</button>
+			<button class="bbb" onclick="quick('Dora')">Dora</button>
+			<button class="bbb" onclick="quick('Carl')">Carl</button>
+			<button class="bbb" onclick="quick('Bob')">Bob</button>
+			<button class="bbb" onclick="quick('Eve')">Eve</button>
+		</div>
+	</div>
+</body>
+
+
+	<script type="text/javascript">
+	function quick(name){
+	let username = document.getElementById('username');
+	let password = document.getElementById('password');
+	username.value = name;
+	if(name=='admin'||name=='admin1'||name=='admin2'||name=='admin3'||name=='admin4'){
+	password.value = '8uhb';
+	}else{
+	password.value = 'zxcvbnm';
+	}
+	}
+	const fastLogin = document.querySelectorAll(".fastLogin");
+	const accountInput = document.querySelector("#username");
+	const passwordInput = document.querySelector("#password");
+
+	fastLogin.forEach(button=>{
+		button.addEventListener("click",function(){
+			accountInput.value=this.innerHTML;
+			if(accountInput.value.indexOf('admin')!=-1){passwordInput.value='8uhb'}else{
+			passwordInput.value='zxcvbnm';}
+		})
+	})
+	</script>
+
+</html>

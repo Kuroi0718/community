@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>廣告審核總表</title>
+<style>
+img {
+	max-width: 400px;
+	max-height: 400px;
+}
+
+.checkbox-label {
+	display: flex;
+	align-items: center;
+}
+
+.checkbox-label input[type="checkbox"] {
+	width: 20px;
+	height: 20px;
+}
+
+.checkbox-label span {
+	margin-left: 5px;
+}
+
+.ad-link {
+	display: inline-block;
+	padding: 5px 10px;
+	background-color: #007bff;
+	color: #fff;
+	text-decoration: none;
+	border-radius: 4px;
+	margin-left: 190px; /* 調整左邊間距 */
+}
+
+.ad-link:hover {
+	background-color: #0056b3;
+}
+
+.ad-submit {
+	padding: 10px 20px;
+	background-color: #28a745;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.ad-submit:hover {
+	background-color: #218838;
+}
+
+.card-body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+}
+
+.card-img-top {
+	margin: 0 auto;
+}
+</style>
+<script>
+
+window.addEventListener('DOMContentLoaded', (event) => {
+    const images = document.querySelectorAll('img');
+    images.forEach(image => {
+        const aspectRatio = image.naturalWidth / image.naturalHeight;
+        
+        if (aspectRatio > 1) {
+            image.style.maxWidth = '400px';
+            image.style.maxHeight = `${200 / aspectRatio}px`;
+        } else {
+            image.style.maxWidth =  `${200 / aspectRatio}px`;
+            image.style.maxHeight = '400px';
+        }
+    });
+});
+
+
+
+</script>
+</head>
+<body>
+	<div class="container">
+		<h1>審核廣告</h1>
+		<form th:action="@{/ad/updateAdStatus}" method="post" target="_blank">
+			<div class="row row-cols-1 row-cols-md-3 g-4">
+				<th:block th:each="onePhoto, iterStat : ${adList}">
+					<div class="col">
+						<div class="card h-100">
+							<img th:src="@{'/ad/image?id=' + ${onePhoto.id}}"
+								class="card-img-top" alt="...">
+							<div class="card-body">
+								<p class="card-text" th:text="${onePhoto.adContent}"></p>
+
+								<label class="checkbox-label"> <input type="checkbox"
+									name="selectedImages" th:value="${onePhoto.id}"> <span>上架</span>
+								</label> <br> <label class="checkbox-label"> <input
+									type="checkbox" name="deSelectedImages"
+									th:value="${onePhoto.id}"> <span>下架</span>
+								</label> <br>
+								<th:block th:switch="${onePhoto.status}">
+									<span th:case=0>待審核</span>
+									<span th:case=1>已上架</span>
+									<span th:case=2>已上架</span>
+								</th:block>
+
+							</div>
+							<div class="card-footer">
+								<a th:href="@{'/ad/delete?id=' + ${onePhoto.id}}">刪除</a>
+							</div>
+						</div>
+					</div>
+				</th:block>
+			</div>
+
+			<input type="submit" value="廣告輪播" class="ad-submit" />
+		</form>
+
+	</div>
+</body>
+</html>

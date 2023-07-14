@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>個人賣場</title>
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<style>
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active,
+	a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover
+	{
+	border: silver;
+	background-color: grey
+}
+.myTabs{
+height: 80px;font-size:30px;border-radius:10px;background-color:#EAE0D5;
+background-image:url('../image/blackBTN.png');background-repeat:no-repeat;background-position:center;
+border:none;font-weight:bold;color:white;
+}
+.myTabs:hover{transform:scale(1.05)}
+.myTabs:active{transform:scale(1)}
+</style>
+</head>
+<body style="overflow: hidden;background-color:#EAE0D5">
+	<div th:replace="~{mall/nav}"></div>
+
+	<div id="myShop"
+		style="filter: none; position: absolute; z-index: -2; width: 100vw;">
+		<div style="height: 88vh; width: 100vw; overflow-y: scroll;scroll-behavior:smooth;">
+<!---------------------------------->	
+<div style="display:flex;flex-direction:row;" id="top">
+<figure>
+<div style="display:flex;flex-direction:column;width:300px;margin:20px">
+<div style="width:300px;height:100px;background:url('../image/score.png')  no-repeat center ;background-size:contain;text-align:center;line-height:110px;font-size:25px;font-weight:bold;color:#2f3192">[[${rating}]]</div>
+<div style="width: 13rem; height: 13rem; overflow: hidden; margin: auto; border: 1px solid silver; border-radius: 13rem;background-color:white">
+ <img th:src="@{'data:image/jpeg;base64,'+${session.loggedInMember.generateBase64Image()}}"
+ style="width: 13rem; height: 13rem;"></div>
+<button id="publishButton" class="myTabs" style="background-image:url('../image/blueBTN.png');">賣東西</button>
+<button id="orderButton" class="myTabs" >訂單管理</button>
+<button id="publishedButton" class="myTabs">上架中</button>
+<button id="delistedButton" class="myTabs">已下架</button>
+<button id="qAndAButton" class="myTabs">問與答</button>
+<button id="ratingButton" class="myTabs">賣場評價</button>
+<button id="analysisButton" class="myTabs">客群分析</button>
+</div>
+</figure>
+<div id="orderBlock" style="display:none;">
+<div th:replace="~{mall/order}" ></div>
+</div>
+
+<div id="publishBlock" style="display:block;margin:auto">
+<div th:replace="~{mall/publish}" ></div>
+</div>
+<div id="publishedBlock" style="display:none;margin:auto;overflow:hidden">
+<div th:replace="~{mall/publishedProducts}" ></div>
+</div>
+<div id="delistedBlock" style="display:none;margin:auto;overflow:hidden">
+<div th:replace="~{mall/delistedProducts}" ></div>
+</div>
+<div id="qAndABlock" style="display:none;margin:auto">
+<div th:replace="~{mall/qAndA}" ></div>
+</div>
+<div id="ratingBlock" style="display:none;margin:auto">
+<div th:replace="~{mall/rating}" ></div>
+</div>
+<div id="analysisBlock" style="display:none;margin:auto">
+<div th:replace="~{mall/analysis}" ></div>
+</div>
+</div>
+<!--------------------------------->
+<!-----right--buttons--------------------------->			
+	<a href="#top"><button style="width:50px;height:50px;border-radius:0.375rem;background-color:#BDB4BF;position:fixed;right:35px;bottom:30px;background-image:url('../image/up.png');background-repeat:no-repeat;background-position:center;border:grey 1px solid"></button></a>
+	
+<!-----right--buttons--------------------------->
+</div>
+</div>
+
+<script>
+
+let publishButton = document.getElementById('publishButton');
+let publishedButton = document.getElementById('publishedButton');
+let delistedButton = document.getElementById('delistedButton');
+let qAndAButton = document.getElementById('qAndAButton');
+let orderButton = document.getElementById('orderButton');
+let analysisButton = document.getElementById('analysisButton');
+let ratingButton = document.getElementById('ratingButton');
+
+let publishBlock = document.getElementById('publishBlock');
+let publishedBlock = document.getElementById('publishedBlock');
+let delistedBlock = document.getElementById('delistedBlock');
+let qAndABlock = document.getElementById('qAndABlock');
+let orderBlock = document.getElementById('orderBlock');
+let analysisBlock = document.getElementById('analysisBlock');
+let ratingBlock = document.getElementById('ratingBlock');
+publishButton.addEventListener("click",function(){
+publishButton.style.backgroundImage="url('../image/blueBTN.png')";
+publishedButton.style.backgroundImage="url('../image/blackBTN.png')";
+delistedButton.style.backgroundImage="url('../image/blackBTN.png')";
+qAndAButton.style.backgroundImage="url('../image/blackBTN.png')";
+orderButton.style.backgroundImage="url('../image/blackBTN.png')";
+analysisButton.style.backgroundImage="url('../image/blackBTN.png')";
+ratingButton.style.backgroundImage="url('../image/blackBTN.png')";
+publishBlock.style.display='block';
+qAndABlock.style.display='none';
+orderBlock.style.display='none';
+analysisBlock.style.display='none';
+publishedBlock.style.display='none';
+delistedBlock.style.display='none';
+ratingBlock.style.display='none';
+})
+qAndAButton.addEventListener("click",function(){
+publishButton.style.backgroundImage="url('../image/blackBTN.png')";
+qAndAButton.style.backgroundImage="url('../image/blueBTN.png')";
+orderButton.style.backgroundImage="url('../image/blackBTN.png')";
+analysisButton.style.backgroundImage="url('../image/blackBTN.png')";
+publishedButton.style.backgroundImage="url('../image/blackBTN.png')";
+delistedButton.style.backgroundImage="url('../image/blackBTN.png')";
+ratingButton.style.backgroundImage="url('../image/blackBTN.png')";
+publishBlock.style.display='none';
+qAndABlock.style.display='block';
+orderBlock.style.display='none';
+analysisBlock.style.display='none';
+publishedBlock.style.display='none';
+delistedBlock.style.display='none';
+ratingBlock.style.display='none';
+})
+orderButton.addEventListener("click",function(){
+publishButton.style.backgroundImage="url('../image/blackBTN.png')";
+qAndAButton.style.backgroundImage="url('../image/blackBTN.png')";
+orderButton.style.backgroundImage="url('../image/blueBTN.png')";
+analysisButton.style.backgroundImage="url('../image/blackBTN.png')";
+publishedButton.style.backgroundImage="url('../image/blackBTN.png')";
+delistedButton.style.backgroundImage="url('../image/blackBTN.png')";
+ratingButton.style.backgroundImage="url('../image/blackBTN.png')";
+publishBlock.style.display='none';
+qAndABlock.style.display='none';
+orderBlock.style.display='block';
+analysisBlock.style.display='none';
+publishedBlock.style.display='none';
+delistedBlock.style.display='none';
+ratingBlock.style.display='none';
+})
+analysisButton.addEventListener("click",function(){
+publishButton.style.backgroundImage="url('../image/blackBTN.png')";
+qAndAButton.style.backgroundImage="url('../image/blackBTN.png')";
+orderButton.style.backgroundImage="url('../image/blackBTN.png')";
+analysisButton.style.backgroundImage="url('../image/blueBTN.png')";
+publishedButton.style.backgroundImage="url('../image/blackBTN.png')";
+delistedButton.style.backgroundImage="url('../image/blackBTN.png')";
+ratingButton.style.backgroundImage="url('../image/blackBTN.png')";
+publishBlock.style.display='none';
+qAndABlock.style.display='none';
+orderBlock.style.display='none';
+analysisBlock.style.display='block';
+publishedBlock.style.display='none';
+delistedBlock.style.display='none';
+ratingBlock.style.display='none';
+})
+publishedButton.addEventListener("click",function(){
+publishButton.style.backgroundImage="url('../image/blackBTN.png')";
+qAndAButton.style.backgroundImage="url('../image/blackBTN.png')";
+orderButton.style.backgroundImage="url('../image/blackBTN.png')";
+analysisButton.style.backgroundImage="url('../image/blackBTN.png')";
+publishedButton.style.backgroundImage="url('../image/blueBTN.png')";
+delistedButton.style.backgroundImage="url('../image/blackBTN.png')";
+ratingButton.style.backgroundImage="url('../image/blackBTN.png')";
+publishBlock.style.display='none';
+qAndABlock.style.display='none';
+orderBlock.style.display='none';
+analysisBlock.style.display='none';
+publishedBlock.style.display='block';
+delistedBlock.style.display='none';
+ratingBlock.style.display='none';
+})
+delistedButton.addEventListener("click",function(){
+publishButton.style.backgroundImage="url('../image/blackBTN.png')";
+qAndAButton.style.backgroundImage="url('../image/blackBTN.png')";
+orderButton.style.backgroundImage="url('../image/blackBTN.png')";
+analysisButton.style.backgroundImage="url('../image/blackBTN.png')";
+delistedButton.style.backgroundImage="url('../image/blueBTN.png')";
+publishedButton.style.backgroundImage="url('../image/blackBTN.png')";
+ratingButton.style.backgroundImage="url('../image/blackBTN.png')";
+publishBlock.style.display='none';
+qAndABlock.style.display='none';
+orderBlock.style.display='none';
+analysisBlock.style.display='none';
+publishedBlock.style.display='none';
+delistedBlock.style.display='block';
+ratingBlock.style.display='none';
+})
+
+ratingButton.addEventListener("click",function(){
+publishButton.style.backgroundImage="url('../image/blackBTN.png')";
+qAndAButton.style.backgroundImage="url('../image/blackBTN.png')";
+orderButton.style.backgroundImage="url('../image/blackBTN.png')";
+analysisButton.style.backgroundImage="url('../image/blackBTN.png')";
+delistedButton.style.backgroundImage="url('../image/blackBTN.png')";
+publishedButton.style.backgroundImage="url('../image/blackBTN.png')";
+ratingButton.style.backgroundImage="url('../image/blueBTN.png')";
+publishBlock.style.display='none';
+qAndABlock.style.display='none';
+orderBlock.style.display='none';
+analysisBlock.style.display='none';
+publishedBlock.style.display='none';
+delistedBlock.style.display='none';
+ratingBlock.style.display='block';
+})
+</script>
+<script>
+let all = document.getElementById('myShop');
+ all.addEventListener("mouseover",function(){
+        all.style.filter = "none";
+ })
+ div1.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+ div2.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+</script>
+</body>
+</html>

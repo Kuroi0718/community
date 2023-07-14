@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<title>論壇管理</title>
+</head>
+<body>
+	<h1 style="text-align: center;">已封鎖清單</h1>
+	<div>
+		<div style="display: inline-block; padding: 10px; background-color: #ccc; cursor: pointer;"
+			onclick="showBlockedArticles()" id="blockedArticlesTab">已封鎖文章清單</div>
+		<div style="display: inline-block; padding: 10px; background-color: #ccc; cursor: pointer;"
+			onclick="showBlockedReplies()" id="blockedRepliesTab">已封鎖回覆清單</div>
+	</div>
+
+	<table id="blockedArticlesTable" style="display: table; border-collapse: collapse; width: 100%; border: 1px solid #000;">
+		<caption style="text-align: center; padding: 8px; background-color: #f2f2f2;">已封鎖文章清單</caption>
+		<thead>
+			<tr>
+				<th style="text-align: left; padding: 8px; border: 1px solid #000000; background-color: #f2f2f2;">ID</th>
+				<th style="text-align: left; padding: 8px; border: 1px solid #000000; background-color: #f2f2f2;">標題</th>
+				<th style="text-align: left; padding: 8px; border: 1px solid #000000; background-color: #f2f2f2;">作者</th>
+				<th style="text-align: left; padding: 8px; border: 1px solid #000000; background-color: #f2f2f2;">日期</th>
+			</tr>
+		</thead>
+		<tbody>
+			<th:block th:each="aArticle : ${blockedArticleList}">
+				<tr>
+					<td style="text-align: left; padding: 8px; border: 1px solid #000000;">[[${aArticle.id}]]</td>
+					<td style="text-align: left; padding: 8px; border: 1px solid #000000;"><a th:href="@{'/article/showArticle?id='+${aArticle.id}}">[[${aArticle.title}]]</a></td>
+					<td style="text-align: left; padding: 8px; border: 1px solid #000000;">[[${aArticle.authorName}]]</td>
+					<td style="text-align: left; padding: 8px; border: 1px solid #000000;">[[${aArticle.getPostDateString()}]]</td>
+				</tr>
+			</th:block>
+		</tbody>
+	</table>
+
+	<table id="blockedRepliesTable" style="display: none; border-collapse: collapse; width: 100%; border: 1px solid #000;">
+		<caption style="text-align: center; padding: 8px; background-color: #f2f2f2;">已封鎖回覆清單</caption>
+		<thead>
+			<tr>
+				<th style="text-align: left; padding: 8px; border: 1px solid #000000; background-color: #f2f2f2;">ID</th>
+				<th style="text-align: left; padding: 8px; border: 1px solid #000000; background-color: #f2f2f2;">內容</th>
+				<th style="text-align: left; padding: 8px; border: 1px solid #000000; background-color: #f2f2f2;">作者ID</th>
+				<th style="text-align: left; padding: 8px; border: 1px solid #000000; background-color: #f2f2f2;">日期</th>
+			</tr>
+		</thead>
+		<tbody>
+			<th:block th:each="aReply : ${blockedReplyList}">
+				<tr>
+					<td style="text-align: left; padding: 8px; border: 1px solid #000000;">[[${aReply.id}]]</td>
+					<td style="text-align: left; padding: 8px; border: 1px solid #000000;"><a th:href="@{'/article/showArticle?id='+${aReply.articleId}}">[[${aReply.content}]]</a></td>
+					<td style="text-align: left; padding: 8px; border: 1px solid #000000;">[[${aReply.authorId}]]</td>
+					<td style="text-align: left; padding: 8px; border: 1px solid #000000;">[[${aReply.getReplyDateString()}]]</td>
+				</tr>
+			</th:block>
+		</tbody>
+	</table>
+
+	<script>
+        function showBlockedArticles() {
+            document.getElementById("blockedArticlesTable").style.display = "table";
+            document.getElementById("blockedRepliesTable").style.display = "none";
+            document.getElementById("blockedArticlesTab").style.backgroundColor = "#f2f2f2";
+            document.getElementById("blockedRepliesTab").style.backgroundColor = "#ccc";
+        }
+        
+        function showBlockedReplies() {
+            document.getElementById("blockedArticlesTable").style.display = "none";
+            document.getElementById("blockedRepliesTable").style.display = "table";
+            document.getElementById("blockedArticlesTab").style.backgroundColor = "#ccc";
+            document.getElementById("blockedRepliesTab").style.backgroundColor = "#f2f2f2";
+        }
+    </script>
+</body>
+
+</html>

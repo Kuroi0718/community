@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>購物車</title>
+<style>
+.button1{
+height:8rem;width:3rem;border:1px solid grey;border-right:none;border-left:none;background-color:silver;font-size:20px
+}
+.button2{
+height:8rem;width:3rem;border:1px solid grey;border-right:none;background-color:silver;font-size:20px
+}
+.button3{
+height:8rem;width:3rem;border:1px solid grey;border-top-right-radius:0.375rem;border-bottom-right-radius:0.375rem;background-color:silver;font-size:20px
+}
+
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+.animated.infinite {
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+.animated.hinge {
+  -webkit-animation-duration: 2s;
+  animation-duration: 2s;
+}
+/*the animation definition*/
+@-webkit-keyframes fadeOut {
+  0% {
+    opacity: 1
+  }
+  100% {
+    opacity: 0
+  }
+}
+@keyframes fadeOut {
+  0% {
+    opacity: 1
+  }
+  100% {
+    opacity: 0
+  }
+}
+.fadeOut {
+  -webkit-animation-name: fadeOut;
+  animation-name: fadeOut
+}
+
+</style>
+</head>
+<body style="overflow:hidden">
+
+
+
+
+<th:block th:switch="${ownerIdList != null}">
+			<div th:case="${true}">
+			<th:block th:each="Id : ${ownerIdList}">
+			
+<!-------------------------------購物車 ---------------------------------------------->
+<form id="checkoutForm" th:action="@{/mall/checkoutPage}" enctype="multipart/form-data" method="post">
+	<div style="width: 800px; margin: auto;margin-top:50px">
+		<th:block th:switch="${myCartList != null && cartProductQuantityList != null}">
+			<div th:case="${true}">
+			<th:block th:each="p : ${myCartList}">
+			<th:block th:each="Q : ${cartProductQuantityList}">
+			<div  th:if="${Id == p.ownerId &&Q.productId==p.myCartProductId }">
+<!-- -------------------------------------------------------------------------------------------- -->			
+		<div th:if="${p.type == '直購'}" >	
+		<div th:id="${'div_'+Id}">
+			<div style="display:flex;flex-direction:row" th:id="${p.cartId}" class="animated">
+				<div class="card"  style="width: 540px;height:8rem;margin-bottom:20px;border-top-right-radius:0;border-bottom-right-radius:0;overflow:hidden;border:1px solid grey;">
+					<div style="display:flex;flex-direction:row">
+					<input th:if="${Q.quantity > 0}" class="checkbox" type="checkbox" name="checkout" th:value="${p.cartId}" style="height:8rem;width:3rem;-moz-appearence:none"/>
+					<div th:if="${Q.quantity <= 0}" style="height:8rem;width:3rem;-moz-appearence:none"></div>
+						<div style="width: 8rem; height: 8rem; overflow: hidden;border:none ">
+							<img th:src="@{'/mall/showPhoto?productId=' + ${p.myCartProductId}}"
+								style="width: 8rem; height: 8rem;">
+						</div>
+						<div style="display:flex;flex-direction:column">
+						<div th:if="${Q.quantity <= 0}" style="color:red;font-weight:bold;margin:auto;font-size:30px;margin-left:20px">商品已售完</div>
+						<div th:if="${Q.quantity > 0}">
+							<div  class="card-body">
+								<h5 class="card-title">商品名稱:[[${p.productName}]]</h5>
+								<p class="card-text">價格:NT$[[${p.price}]]元</p>
+								<span>數量:<input type="number" th:id="${'num_'+p.cartId}" th:value="${p.amount}" style="width:3vw" th:onchange="changeAmount([[${p.cartId}]])" oninput="if(this.value<=0)value=1"></input></span>
+									
+								<span th:if="${Q.quantity < p.amount}" th:id="${'checkStock_'+p.cartId}" style="color:red;font-weight:bold">商品數量不足，請重新輸入</span>
+								
+								<span th:if="${Q.quantity >= p.amount}" th:id="${'checkStock_'+p.cartId}" style="color:red;font-weight:bold"></span>
+								
+							</div>
+						</div>	
+							
+						</div>
+					</div>
+				</div>
+				<button th:onclick="deleteCartProduct([[${p.cartId}]])" type="button" class="button3">刪<br>除</button>
+				</div>
+				</div>
+				</div>
+<!-- -------------------------------------------------------------------------------------------- -->
+		<div th:if="${p.type == '特賣'}">	
+		<div th:id="${'div_'+Id}" >
+			<div style="display:flex;flex-direction:row" th:id="${p.cartId}" class="animated">
+				<div class="card"  style="width: 540px;height:8rem;margin-bottom:20px;border-top-right-radius:0;border-bottom-right-radius:0;overflow:hidden;border:1px solid grey;">
+					<div style="display:flex;flex-direction:row">
+					
+		<input th:if="${Q.quantity > 0 && Q.expirationDate>now}" class="checkbox" type="checkbox" name="checkout" th:value="${p.cartId}" style="height:8rem;width:3rem;-moz-appearence:none"/>
+		<div th:if="${Q.quantity <= 0 || Q.expirationDate<=now}" style="height:8rem;width:3rem;-moz-appearence:none"></div>
+						<div style="width: 8rem; height: 8rem; overflow: hidden;border:none ">
+							<img th:src="@{'/mall/showPhoto?productId=' + ${p.myCartProductId}}"
+								style="width: 8rem; height: 8rem;">
+						</div>
+						<div style="display:flex;flex-direction:column">
+						<div th:if="${Q.expirationDate<=now}" style="color:red;font-weight:bold;margin:auto;font-size:30px;margin-left:20px">特賣已結束</div>
+						<div th:if="${Q.quantity <= 0}" style="color:red;font-weight:bold;margin:auto;font-size:30px;margin-left:20px">商品已售完</div>
+						<div th:if="${Q.quantity > 0 && Q.expirationDate>now}">
+							<div  class="card-body">
+								<h5 class="card-title">商品名稱:[[${p.productName}]]</h5>
+								<p class="card-text">價格:NT$[[${p.price}]]元</p>
+								<span>數量:<input type="number" th:id="${'num_'+p.cartId}" th:value="${p.amount}" style="width:3vw" th:onchange="changeAmount([[${p.cartId}]])" oninput="if(this.value<=0)value=1"></input></span>
+									
+								<span th:if="${Q.quantity < p.amount}" th:id="${'checkStock_'+p.cartId}" style="color:red;font-weight:bold">商品數量不足，請重新輸入</span>
+								
+								<span th:if="${Q.quantity >= p.amount}" th:id="${'checkStock_'+p.cartId}" style="color:red;font-weight:bold"></span>
+								
+							</div>
+						</div>	
+							
+						</div>
+					</div>
+				</div>
+				<button th:onclick="deleteCartProduct([[${p.cartId}]])" type="button" class="button3">刪<br>除</button>
+				</div>
+				</div>
+				</div>
+<!-- -------------------------------------------------------------------------------------------- -->
+		<div th:if="${p.type == '團購'}" >
+		<div th:id="${'div_'+Id}">
+			<div style="display:flex;flex-direction:row" th:id="${p.cartId}" class="animated">
+				<div class="card"  style="width: 540px;height:8rem;margin-bottom:20px;border-top-right-radius:0;border-bottom-right-radius:0;overflow:hidden;border:1px solid grey;">
+					<div style="display:flex;flex-direction:row">
+					
+		<input th:if="${Q.quantity > 0 && Q.expirationDate>now}" class="checkbox" type="checkbox" name="checkout" th:value="${p.cartId}" style="height:8rem;width:3rem;-moz-appearence:none"/>
+		<div th:if="${Q.quantity <= 0 || Q.expirationDate<=now}" style="height:8rem;width:3rem;-moz-appearence:none"></div>
+						<div style="width: 8rem; height: 8rem; overflow: hidden;border:none ">
+							<img th:src="@{'/mall/showPhoto?productId=' + ${p.myCartProductId}}"
+								style="width: 8rem; height: 8rem;">
+						</div>
+						<div style="display:flex;flex-direction:column">
+						<div th:if="${Q.expirationDate<=now}" style="color:red;font-weight:bold;margin:auto;font-size:30px;margin-left:20px">團購已結束</div>
+						<div th:if="${Q.quantity <= 0}" style="color:red;font-weight:bold;margin:auto;font-size:30px;margin-left:20px">商品已售完</div>
+						<div th:if="${Q.quantity > 0 && Q.expirationDate>now}">
+							<div  class="card-body">
+								<h5 class="card-title">商品名稱:[[${p.productName}]]</h5>
+								<p class="card-text">價格:NT$[[${p.price}]]元</p>
+								<span>數量:<input type="number" th:id="${'num_'+p.cartId}" th:value="${p.amount}" style="width:3vw" th:onchange="changeAmount([[${p.cartId}]])" oninput="if(this.value<=0)value=1"></input></span>
+									
+								<span th:if="${Q.quantity < p.amount}" th:id="${'checkStock_'+p.cartId}" style="color:red;font-weight:bold">商品數量不足，請重新輸入</span>
+								
+								<span th:if="${Q.quantity >= p.amount}" th:id="${'checkStock_'+p.cartId}" style="color:red;font-weight:bold"></span>
+								
+							</div>
+						</div>	
+							
+						</div>
+					</div>
+				</div>
+				<button th:onclick="deleteCartProduct([[${p.cartId}]])" type="button" class="button3">刪<br>除</button>
+				</div>
+				</div>
+				</div>	
+<!-- -------------------------------------------------------------------------------------------- -->			
+		<div th:if="${p.type == '競標'}" >
+		<div th:id="${'div_'+Id}">
+			<div style="display:flex;flex-direction:row" th:id="${p.cartId}" class="animated">
+				<div class="card"  style="width: 540px;height:8rem;margin-bottom:20px;border-top-right-radius:0;border-bottom-right-radius:0;overflow:hidden;border:1px solid grey;">
+					<div style="display:flex;flex-direction:row">
+		<input class="checkbox" type="checkbox" name="checkout" th:value="${p.cartId}" style="height:8rem;width:3rem;-moz-appearence:none"/>
+						<div style="width: 8rem; height: 8rem; overflow: hidden;border:none ">
+							<img th:src="@{'/mall/showPhoto?productId=' + ${p.myCartProductId}}"
+								style="width: 8rem; height: 8rem;">
+						</div>
+						<div style="display:flex;flex-direction:column">
+							<div class="card-body">
+								<h5 class="card-title">商品名稱:[[${p.productName}]]</h5>
+								<p class="card-text">價格:NT$[[${p.price}]]元</p>
+								<span>數量:<input type="number" th:id="${'num_'+p.cartId}" th:value="${p.amount}" style="width:3vw" readonly></input></span>
+							
+							</div>
+						</div>
+					</div>
+				</div>
+				<button th:onclick="deleteCartProduct([[${p.cartId}]])" type="button" class="button3">棄<br>標</button>
+				</div>
+				</div>
+				</div>
+				
+				
+				
+				
+				
+				</div>
+				</th:block>
+				</th:block>
+			</div>
+		</th:block>
+		
+		<div th:id="${'goPay_'+Id}">
+				<button  style="width:150px;height:49.5px;line-height:49.5px;color:white;font-weight:bold;font-size:20px;
+background-image:url('../image/blackBTN.png');background-size:cover;background-color:transparent;border:none;margin-bottom:20px">結帳</button><hr>
+		</div>
+		
+	</div>
+</form>				
+<!-------------------------------購物車End ---------------------------------------------->
+
+				</th:block>
+			</div>
+		</th:block>
+
+<th:block th:if="${myCartList.size() == 0}">
+<div style="font-size:50px;width:1100px;text-align:center">購物車是空的<br>
+<img src="../image/emptyCart.png" style="width:300px">
+</div>
+</th:block>	
+<!-- 
+<script>
+let result="";
+loadindMyCart();
+
+
+function loadindMyCart(){
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+result = JSON.parse(xhttp.responseText);
+for(let i=0;i<result.length;i++){
+if(document.getElementById('div_'+result[i])==null){
+document.getElementById('goPay_'+result[i]).style.display='none';
+}
+}
+}
+xhttp.open("POST","http://localhost:8080/community/mall/NumberOfMyCartButtons",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send();
+}
+
+</script>
+ -->
+
+<script>
+function changeAmount(cartId){
+let inputNum = document.getElementById('num_'+cartId);
+let checkStock = document.getElementById('checkStock_'+cartId);
+let checkoutButton = document.getElementById('checkoutButton');
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+checkStock.innerHTML = xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/updateCartNum",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("cartId="+cartId+"&amount="+inputNum.value);
+}
+</script>
+<script>
+function deleteCartProduct(cartId){
+let cartProduct = document.getElementById(cartId);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+cartProduct.style.animationName='fadeOut';
+setTimeout(function() {
+cartProduct.style.display='none';
+}, 1000);
+
+}
+xhttp.open("POST","http://localhost:8080/community/mall/deleteCartProduct",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("cartId="+cartId);
+}
+</script>
+</body>
+</html>

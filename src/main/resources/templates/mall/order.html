@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>賣場訂單</title>
+<style>
+.th1,.th14{width:95px}
+.th2{width:163px}
+.th3{width:53px}
+.th4{word-wrap: break-word;width:70px}
+.th6{word-wrap: break-word;width:100px}
+.th5{width:80px}
+.th7,.th8,.th9,.th10,.th12,.th14{width:70px}
+.th11{word-wrap: break-word;width:100px}
+.th13{width:53px}
+
+.toPayListTable,.toShipListTable,.shippedListTable,.receivedListTable,.completedListTable,.cancelledListTable,.checkOrderDetail{
+border:3px solid grey;
+}
+.toPayListTable td,.toPayListTable th,.toShipListTable td,.toShipListTable th,
+.shippedListTable td,.shippedListTable th,.receivedListTable td,.receivedListTable th,
+.completedListTable td,.completedListTable th,.checkOrderDetail td,.checkOrderDetail th,
+.cancelledListTable td,.cancelledListTable th{
+border:3px solid grey;
+}
+datalist {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  writing-mode: vertical-lr;
+  width: 600px;
+}
+
+option {
+  padding: 0;
+  font-size:30px;font-weight:bold
+}
+
+input[type="range"] {
+  appearance: none;
+  height: 40px;
+  width: 600px;
+  background: none; 
+  outline: none;
+  border-radius: 0; 
+  overflow: hidden;
+  cursor: pointer;
+  border-radius:40px;
+  border:#BEBEBE solid 2px;
+}
+::-webkit-slider-runnable-track {
+    background-color: white;
+    
+  }
+ ::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 40px;
+    height: 40px;
+    background-image: url('../image/slider.png');
+    background-color:transparent;
+    border: none;
+}
+::-webkit-slider-thumb:hover{
+   transform:scale(1.05);
+}
+::-webkit-slider-thumb {
+    box-shadow: -100vw 0 0 100vw #32E3BA;
+    
+  }
+ ::-webkit-slider-thumb {
+    box-shadow: -100vw 0 0 100vw #32E3BA;
+    
+  }
+</style>
+</head>
+<body style="overflow:hidden">
+
+<!-------------------------------訂單查詢---------------------------------------------->
+<div style="width:800px;margin:auto;margin-top:50px">
+<label for="orderStatus" style="font-size:30px;font-weight:bold">賣場訂單進度：</label><br />
+<input type="range" id="orderStatus" name="orderStatus" list="progress" step="25" max="125"
+	value="0" onchange="checkOrder()" />
+
+<datalist id="progress">
+  <option value="0" label="訂單成立" ></option>
+  <option value="25" label="待出貨"></option>
+  <option value="50" label="已出貨"></option>
+  <option value="75" label="已送達"></option>
+  <option value="100" label="訂單完成"></option>
+  <option value="125" label="已取消" style="color:grey"></option>
+</datalist>
+
+</div>
+<div id="checkOrderDetail" style="overflow-y:scroll;position:absolute;width:500px;height:350px;
+margin-top:-10vh;margin-left:20vw;z-index:5;border:grey solid 5px;background-color:#F0F0F0;display:none;border-radius:10px">
+</div>
+<div id="checkCancelledOrderDetail" style="overflow-y:scroll;position:absolute;width:500px;height:350px;
+margin-top:-10vh;margin-left:20vw;z-index:5;border:grey solid 5px;background-color:#F0F0F0;display:none;border-radius:10px">
+</div>
+<div id="commentBlock" style="position:absolute;width:800px;height:380px;border-radius:2rem;background:linear-gradient(to bottom, white 0%, #66B3FF 100%);
+margin-top:-10vh;margin-left:0vw;z-index:5;border:grey solid 2px;background-color:white;display:none;">
+<form th:id="ratingForm" th:action="@{/mall/rating}" enctype="multipart/form-data" method="post">
+<div style="width:500px;margin:auto;margin-top:50px">
+<div style="margin-left:115px;display:flex;flex-direction:row">
+<img id ="oneStar" src="../image/oneStar.png" width="255px" style="display:none;">
+<img id ="twoStars" src="../image/twoStars.png" width="255px" style="display:none;">
+<img id ="threeStars" src="../image/threeStars.png" width="255px" style="display:none;">
+<img id ="fourStars" src="../image/fourStars.png" width="255px" style="display:none;">
+<img id ="fiveStars" src="../image/fiveStars.png" width="255px" style="display:none;">
+<img id ="star1" src="../image/rating0.png" width="50px" >
+<img id ="star2" src="../image/rating0.png" width="50px" style="margin-left:1.1px">
+<img id ="star3" src="../image/rating0.png" width="50px" style="margin-left:1.1px">
+<img id ="star4" src="../image/rating0.png" width="50px" style="margin-left:1.1px">
+<img id ="star5" src="../image/rating0.png" width="50px" style="margin-left:1.1px">
+</div>
+<br>
+<input type="hidden" id="serialIdInput" name="serialIdInput"></input>
+<input type="hidden" id="score" name="score"></input>
+<input type="hidden" id="ratingTargetId" name="ratingTargetId"></input>
+<label for="content" style="line-height:20px;font-weight:bold;font-size:20px">評語:</label><br>
+<textarea id="content" rows="3" name="content" style="width: 500px; height: 100px; resize: none;border-radius:0.375rem;"></textarea>
+<br><br>
+<button type="button" onclick="sendRatingForm()" style="width:150px;height:49.5px;line-height:49.5px;color:white;font-weight:bold;font-size:20px;
+	background-image:url('../image/blackBTN.png');background-size:cover;background-color:transparent;border:none;margin-left:175px">送出評價</button>
+</div>
+</form>
+</div>
+<!-------------------------------訂單查詢End ---------------------------------------------->
+<!------------------------------ 訂單成立toPayList-------------------------------------->
+	<div style="width:1100px;display:block;margin-bottom:50px;margin-top:50px;" id="toPayList">
+<th:block th:switch="${toPayList != null}">
+			<div th:case="${true}">
+			
+			
+			<table class="toPayListTable">
+			<thead>
+			<tr>
+			<th class="th1">成立日期</th>
+			<th class="th2">流水號</th>
+			<th class="th4">收件人</th>
+			<th class="th5">聯絡電話</th>
+			<th class="th6">收件地址</th>
+			<th class="th7">訂單狀態</th>
+			<th class="th8">付款狀態</th>
+			<th class="th9">付款方式</th>
+			<th class="th10">訂單內容</th>
+			<th class="th11">訂單金額</th>
+			<th class="th12">買家評價</th>
+			<th class="th13">管理</th>
+			<th class="th14">申請取消</th>
+			</tr>
+			</thead>
+			<tbody>
+			<th:block th:each="order : ${toPayList}">
+			<tr>
+			<td>[[${order.getOrderDateString()}]]</td><td>[[${order.serialId}]]</td>
+			<td>[[${order.recipientName}]]</td><td>[[${order.recipientTel}]]</td><td>[[${order.recipientAddress}]]</td><td>[[${order.orderStatus}]]</td><td>[[${order.payStatus}]]</td>
+			<td>[[${order.paymentMethod}]]</td><td><button th:onclick="showOrder([[${order.serialId}]])" style="width:70px">查看</button></td><td>NT$[[${order.totalPrice}]]</td>
+			<td>[[${order.buyerRating}]]</td>
+			<td th:id="${'cancelled_'+order.serialId}"><button  th:onclick="cancelTheOrder([[${order.serialId}]])">取消訂單</button></td>
+			<td th:id="${'agreed_'+order.serialId}">
+			<th:block th:if="${order.cancellationApply =='已申請'}">
+			<button style="width:70px" th:onclick="agree([[${order.serialId}]])">同意</button>
+			</th:block>
+			</td>
+			</tr>
+			</th:block>
+			</tbody>
+			</table>
+			
+				
+			</div>
+		</th:block>
+</div>
+<!----------------------------------訂單成立toPayListEnd --------------------------------------->
+<!------------------------------ 待出貨toShipList-------------------------------------->
+	<div style="width:1100px;display:none;margin-bottom:50px;margin-top:50px;" id="toShipList">
+<th:block th:switch="${toShipList != null}">
+			<div th:case="${true}">
+			
+			
+			<table class="toShipListTable">
+			<thead>
+			<tr>
+			<th class="th1">成立日期</th>
+			<th class="th2">流水號</th>
+			<th class="th4">收件人</th>
+			<th class="th5">聯絡電話</th>
+			<th class="th6">收件地址</th>
+			<th class="th7">訂單狀態</th>
+			<th class="th8">付款狀態</th>
+			<th class="th9">付款方式</th>
+			<th class="th10">訂單內容</th>
+			<th class="th11">訂單金額</th>
+			<th class="th12">買家評價</th>
+			<th class="th13">管理</th>
+			<th class="th14">申請取消</th>
+			</tr>
+			</thead>
+			<th:block th:each="order : ${toShipList}">
+			<tbody>
+			<tr>
+			<td>[[${order.getOrderDateString()}]]</td><td>[[${order.serialId}]]</td>
+			<td>[[${order.recipientName}]]</td><td>[[${order.recipientTel}]]</td><td>[[${order.recipientAddress}]]</td><td>[[${order.orderStatus}]]</td><td>[[${order.payStatus}]]</td>
+			<td>[[${order.paymentMethod}]]</td><td><button th:onclick="showOrder([[${order.serialId}]])" style="width:70px">查看</button></td><td>NT$[[${order.totalPrice}]]</td>
+			<td>[[${order.buyerRating}]]</td>
+			<td th:id="${'toShipList_'+order.orderId}" ><div th:id="${'cancelled_'+order.serialId}"><button  th:id="${'toShipListButton_'+order.orderId}" th:onclick="ship([[${order.orderId}]])"  style="width:53px">出貨</button><br><button  th:onclick="cancelTheOrder([[${order.serialId}]])">取消訂單</button></div></td>
+			<td th:id="${'agreed_'+order.serialId}">
+			<th:block th:if="${order.cancellationApply =='已申請'}">
+			<button style="width:70px" th:onclick="agree([[${order.serialId}]])">同意</button>
+			</th:block>
+			</td>
+			</tr>
+			</th:block>
+			</tbody>
+			</table>
+			
+				
+			</div>
+		</th:block>
+</div>
+<!----------------------------------待出貨toShipListEnd --------------------------------------->
+<!------------------------------ 已出貨shippedList-------------------------------------->
+	<div style="width:1100px;display:none;margin-bottom:50px;margin-top:50px;" id="shippedList">
+<th:block th:switch="${shippedList != null}">
+			<div th:case="${true}">
+			
+			
+			<table class="shippedListTable">
+			<thead>
+			<tr>
+			<th class="th1">成立日期</th>
+			<th class="th2">流水號</th>
+			<th class="th4">收件人</th>
+			<th class="th5">聯絡電話</th>
+			<th class="th6">收件地址</th>
+			<th class="th7">訂單狀態</th>
+			<th class="th8">付款狀態</th>
+			<th class="th9">付款方式</th>
+			<th class="th10">訂單內容</th>
+			<th class="th11">訂單金額</th>
+			<th class="th14">申請取消</th>
+			</tr>
+			</thead>
+			<th:block th:each="order : ${shippedList}">
+			<tbody>
+			<tr>
+			<td>[[${order.getOrderDateString()}]]</td><td>[[${order.serialId}]]</td>
+			<td>[[${order.recipientName}]]</td><td>[[${order.recipientTel}]]</td><td>[[${order.recipientAddress}]]</td><td>[[${order.orderStatus}]]</td><td>[[${order.payStatus}]]</td>
+			<td>[[${order.paymentMethod}]]</td><td><button th:onclick="showOrder([[${order.serialId}]])" style="width:70px">查看</button></td><td>NT$[[${order.totalPrice}]]</td>
+			<td th:id="${'agreed_'+order.serialId}">
+			<th:block th:if="${order.cancellationApply =='已申請'}">
+			<button style="width:70px" th:onclick="agree([[${order.serialId}]])">同意</button>
+			</th:block>
+			</td>
+			</tr>
+			</th:block>
+			</tbody>
+			</table>
+			
+				
+			</div>
+		</th:block>
+</div>
+<!----------------------------------已出貨shippedListEnd --------------------------------------->
+<!------------------------------ 已送達receivedList-------------------------------------->
+	<div style="width:1100px;display:none;margin-bottom:50px;margin-top:50px;" id="receivedList">
+<th:block th:switch="${receivedList != null}">
+			<div th:case="${true}">
+			
+			
+			<table class="receivedListTable">
+			<thead>
+			<tr>
+			<th class="th1">成立日期</th>
+			<th class="th2">流水號</th>
+			<th class="th4">收件人</th>
+			<th class="th5">聯絡電話</th>
+			<th class="th6">收件地址</th>
+			<th class="th7">訂單狀態</th>
+			<th class="th8">付款狀態</th>
+			<th class="th9">付款方式</th>
+			<th class="th10">訂單內容</th>
+			<th class="th11">訂單金額</th>
+			<th class="th14">申請取消</th>
+			</tr>
+			</thead>
+			<th:block th:each="order : ${receivedList}">
+			<tbody>
+			<tr>
+			<td>[[${order.getOrderDateString()}]]</td><td>[[${order.serialId}]]</td>
+			<td>[[${order.recipientName}]]</td><td>[[${order.recipientTel}]]</td><td>[[${order.recipientAddress}]]</td><td>[[${order.orderStatus}]]</td><td>[[${order.payStatus}]]</td>
+			<td>[[${order.paymentMethod}]]</td><td><button th:onclick="showOrder([[${order.serialId}]])" style="width:70px">查看</button></td><td>NT$[[${order.totalPrice}]]</td>
+			<td th:id="${'agreed_'+order.serialId}">
+			<th:block th:if="${order.cancellationApply =='已申請'}">
+			<button style="width:70px" th:onclick="agree([[${order.serialId}]])">同意</button>
+			</th:block>
+			</td>
+			</tr>
+			</th:block>
+			</tbody>
+			</table>
+			
+				
+			</div>
+		</th:block>
+</div>
+<!----------------------------------已送達receivedList --------------------------------------->
+<!------------------------------ 訂單完成completedList-------------------------------------->
+	<div style="width:1100px;display:none;margin-bottom:50px;margin-top:50px;" id="completedList">
+<th:block th:switch="${completedList != null}">
+			<div th:case="${true}">
+			
+			
+			<table class="completedListTable">
+			<thead>
+			<tr>
+			<th class="th1">成立日期</th>
+			<th class="th2">流水號</th>
+			<th class="th4">收件人</th>
+			<th class="th5">聯絡電話</th>
+			<th class="th6">收件地址</th>
+			<th class="th7">訂單狀態</th>
+			<th class="th8">付款狀態</th>
+			<th class="th9">付款方式</th>
+			<th class="th10">訂單內容</th>
+			<th class="th11">訂單金額</th>
+			<th class="th14">評價</th>
+			</tr>
+			</thead>
+			<th:block th:each="order : ${completedList}">
+			<tbody>
+			<tr>
+			<td>[[${order.getOrderDateString()}]]</td><td>[[${order.serialId}]]</td>
+			<td>[[${order.recipientName}]]</td><td>[[${order.recipientTel}]]</td><td>[[${order.recipientAddress}]]</td><td>[[${order.orderStatus}]]</td><td>[[${order.payStatus}]]</td>
+			<td>[[${order.paymentMethod}]]</td><td><button th:onclick="showOrder([[${order.serialId}]])" style="width:70px">查看</button></td><td>NT$[[${order.totalPrice}]]</td>
+			<td>
+			<th:block th:if="${order.senderComment=='尚未評價'}">
+			<button th:id="${'ratingButton_'+order.serialId}" th:onclick="showRatingForm([[${order.buyerId}]],[[${order.serialId}]])">撰寫</button>
+			</th:block>
+			<th:block th:if="${order.senderComment=='已評價'}">
+			已評價
+			</th:block>
+			</td>
+			</tr>
+			</th:block>
+			</tbody>
+			</table>
+			
+				
+			</div>
+		</th:block>
+</div>
+<!----------------------------------訂單完成completedList --------------------------------------->
+<!------------------------------ 已取消cancelledList-------------------------------------->
+	<div style="width:1100px;display:none;margin-bottom:50px;margin-top:50px;" id="cancelledList">
+<th:block th:switch="${cancelledList != null}">
+			<div th:case="${true}">
+			
+			
+			<table class="cancelledListTable">
+			<thead>
+			<tr>
+			<th class="th1">成立日期</th>
+			<th class="th2">流水號</th>
+			<th class="th4">收件人</th>
+			<th class="th5">聯絡電話</th>
+			<th class="th6">收件地址</th>
+			<th class="th7">訂單狀態</th>
+			<th class="th8">付款狀態</th>
+			<th class="th9">付款方式</th>
+			<th class="th10">訂單內容</th>
+			<th class="th11">訂單金額</th>
+			<th class="th12">買家評價</th>
+			<th class="th14">取消日期</th>
+			
+			</tr>
+			</thead>
+			<tbody>
+			<th:block th:each="order : ${cancelledList}">
+			<tr>
+			<td>[[${order.getOrderDateString()}]]</td><td>[[${order.serialId}]]</td>
+			<td>[[${order.recipientName}]]</td><td>[[${order.recipientTel}]]</td><td>[[${order.recipientAddress}]]</td><td>[[${order.orderStatus}]]</td><td>[[${order.payStatus}]]</td>
+			<td>[[${order.paymentMethod}]]</td><td><button th:onclick="showCancelledOrder([[${order.serialId}]])" style="width:70px">查看</button></td><td>NT$[[${order.totalPrice}]]</td>
+			<td>[[${order.buyerRating}]]</td>
+			<td>[[${order.getCancelledDateString()}]]</td>
+			
+			</tr>
+			</th:block>
+			</tbody>
+			</table>
+			
+				
+			</div>
+		</th:block>
+</div>
+<!----------------------------------已取消cancelledListEnd --------------------------------------->
+<script>
+function cancelTheOrder(serialId){
+let cancelled = document.getElementById('cancelled_'+serialId);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+cancelled.innerHTML='已取消';
+}
+xhttp.open("POST","http://localhost:8080/community/mall/agree",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("serialId="+serialId);
+}
+</script>
+
+<script>
+function agree(serialId){
+let agreed = document.getElementById('agreed_'+serialId);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+agreed.innerHTML='已取消';
+}
+xhttp.open("POST","http://localhost:8080/community/mall/agree",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("serialId="+serialId);
+}
+</script>
+
+<script>
+function sendRatingForm(){
+let serialIdInput = document.getElementById('serialIdInput');
+serialId = serialIdInput.value;
+let ratingButton = document.getElementById('ratingButton_'+serialId);
+let score = document.getElementById('score');
+if(oneStar.style.display=='block'){score.value=1;}
+if(twoStars.style.display=='block'){score.value=2;}
+if(threeStars.style.display=='block'){score.value=3;}
+if(fourStars.style.display=='block'){score.value=4;}
+if(fiveStars.style.display=='block'){score.value=5;}
+let form = document.getElementById("ratingForm");
+let commentBlock = document.getElementById('commentBlock');
+let formdata = new FormData(form);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+commentBlock.style.display='none';
+star1.style.display='block';
+star2.style.display='block';
+star3.style.display='block';
+star4.style.display='block';
+star5.style.display='block';
+oneStar.style.display='none';
+twoStars.style.display='none';
+threeStars.style.display='none';
+fourStars.style.display='none';
+fiveStars.style.display='none';
+
+ratingButton.style.display='none';
+
+}
+xhttp.open("POST","http://localhost:8080/community/mall/senderRating",true);
+xhttp.send(formdata);
+}
+</script>
+<script>
+function showRatingForm(buyerId,serialId){
+let serialIdInput = document.getElementById('serialIdInput');
+let ratingTargetId = document.getElementById('ratingTargetId');
+let commentBlock = document.getElementById('commentBlock');
+commentBlock.style.display='block';
+ratingTargetId.value=buyerId;
+serialIdInput.value=serialId;
+}
+</script>
+<script>
+let star1 = document.getElementById('star1');
+let star2 = document.getElementById('star2');
+let star3 = document.getElementById('star3');
+let star4 = document.getElementById('star4');
+let star5 = document.getElementById('star5');
+let oneStar = document.getElementById('oneStar');
+let twoStars = document.getElementById('twoStars');
+let threeStars = document.getElementById('threeStars');
+let fourStars = document.getElementById('fourStars');
+let fiveStars = document.getElementById('fiveStars');
+oneStar.addEventListener('click',function(){
+star1.style.display='block';
+star2.style.display='block';
+star3.style.display='block';
+star4.style.display='block';
+star5.style.display='block';
+oneStar.style.display='none';
+})
+star1.addEventListener('click',function(){
+star1.style.display='none';
+star2.style.display='none';
+star3.style.display='none';
+star4.style.display='none';
+star5.style.display='none';
+oneStar.style.display='block';
+})
+star1.addEventListener('mouseover',function(){
+star1.src = '../image/rating1.png';
+})
+star1.addEventListener('mouseleave',function(){
+star1.src = '../image/rating0.png';
+})
+twoStars.addEventListener('click',function(){
+star1.style.display='block';
+star2.style.display='block';
+star3.style.display='block';
+star4.style.display='block';
+star5.style.display='block';
+twoStars.style.display='none';
+})
+star2.addEventListener('click',function(){
+star1.style.display='none';
+star2.style.display='none';
+star3.style.display='none';
+star4.style.display='none';
+star5.style.display='none';
+twoStars.style.display='block';
+})
+star2.addEventListener('mouseover',function(){
+star1.src = '../image/rating1.png';
+star2.src = '../image/rating1.png';
+})
+star2.addEventListener('mouseleave',function(){
+star1.src = '../image/rating0.png';
+star2.src = '../image/rating0.png';
+})
+threeStars.addEventListener('click',function(){
+star1.style.display='block';
+star2.style.display='block';
+star3.style.display='block';
+star4.style.display='block';
+star5.style.display='block';
+threeStars.style.display='none';
+})
+star3.addEventListener('click',function(){
+star1.style.display='none';
+star2.style.display='none';
+star3.style.display='none';
+star4.style.display='none';
+star5.style.display='none';
+threeStars.style.display='block';
+})
+star3.addEventListener('mouseover',function(){
+star1.src = '../image/rating1.png';
+star2.src = '../image/rating1.png';
+star3.src = '../image/rating1.png';
+})
+star3.addEventListener('mouseleave',function(){
+star1.src = '../image/rating0.png';
+star2.src = '../image/rating0.png';
+star3.src = '../image/rating0.png';
+})
+fourStars.addEventListener('click',function(){
+star1.style.display='block';
+star2.style.display='block';
+star3.style.display='block';
+star4.style.display='block';
+star5.style.display='block';
+fourStars.style.display='none';
+})
+star4.addEventListener('click',function(){
+star1.style.display='none';
+star2.style.display='none';
+star3.style.display='none';
+star4.style.display='none';
+star5.style.display='none';
+fourStars.style.display='block';
+})
+star4.addEventListener('mouseover',function(){
+star1.src = '../image/rating1.png';
+star2.src = '../image/rating1.png';
+star3.src = '../image/rating1.png';
+star4.src = '../image/rating1.png';
+})
+star4.addEventListener('mouseleave',function(){
+star1.src = '../image/rating0.png';
+star2.src = '../image/rating0.png';
+star3.src = '../image/rating0.png';
+star4.src = '../image/rating0.png';
+})
+fiveStars.addEventListener('click',function(){
+star1.style.display='block';
+star2.style.display='block';
+star3.style.display='block';
+star4.style.display='block';
+star5.style.display='block';
+fiveStars.style.display='none';
+})
+star5.addEventListener('click',function(){
+star1.style.display='none';
+star2.style.display='none';
+star3.style.display='none';
+star4.style.display='none';
+star5.style.display='none';
+fiveStars.style.display='block';
+})
+star5.addEventListener('mouseover',function(){
+star1.src = '../image/rating1.png';
+star2.src = '../image/rating1.png';
+star3.src = '../image/rating1.png';
+star4.src = '../image/rating1.png';
+star5.src = '../image/rating1.png';
+})
+star5.addEventListener('mouseleave',function(){
+star1.src = '../image/rating0.png';
+star2.src = '../image/rating0.png';
+star3.src = '../image/rating0.png';
+star4.src = '../image/rating0.png';
+star5.src = '../image/rating0.png';
+})
+</script>
+
+
+<script>
+function checkOrder(){
+let input = document.getElementById('orderStatus');
+let toPayList = document.getElementById('toPayList');
+let toShipList = document.getElementById('toShipList');
+let shippedList = document.getElementById('shippedList');
+let receivedList = document.getElementById('receivedList');
+let completedList = document.getElementById('completedList');
+let cancelledList = document.getElementById('cancelledList');
+if(input.value==0){
+toPayList.style.display='block';
+toShipList.style.display='none';
+shippedList.style.display='none';
+receivedList.style.display='none';
+completedList.style.display='none';
+cancelledList.style.display='none';
+}
+if(input.value==25){
+toPayList.style.display='none';
+toShipList.style.display='block';
+shippedList.style.display='none';
+receivedList.style.display='none';
+completedList.style.display='none';
+cancelledList.style.display='none';
+}
+if(input.value==50){
+toPayList.style.display='none';
+toShipList.style.display='none';
+shippedList.style.display='block';
+receivedList.style.display='none';
+completedList.style.display='none';
+cancelledList.style.display='none';
+}
+if(input.value==75){
+toPayList.style.display='none';
+toShipList.style.display='none';
+shippedList.style.display='none';
+receivedList.style.display='block';
+completedList.style.display='none';
+cancelledList.style.display='none';
+}
+if(input.value==100){
+toPayList.style.display='none';
+toShipList.style.display='none';
+shippedList.style.display='none';
+receivedList.style.display='none';
+completedList.style.display='block';
+cancelledList.style.display='none';
+}
+if(input.value==125){
+toPayList.style.display='none';
+toShipList.style.display='none';
+shippedList.style.display='none';
+receivedList.style.display='none';
+completedList.style.display='none';
+cancelledList.style.display='block';
+}
+}
+</script>
+<script>
+function senderCheck(str){
+let checkButton = document.getElementById(str);
+checkButton.style.backgroundPosition = 'center';
+checkButton.style.backgroundRepeat = 'no-repeat';
+if(checkButton.style.backgroundImage == 'url("../image/check.png")'){
+checkButton.style.backgroundImage = 'url()';
+}else{
+checkButton.style.backgroundImage = 'url("../image/check.png")';
+
+}
+
+}
+
+function closeOrderList(){
+let checkOrderDetail = document.getElementById('checkOrderDetail');
+checkOrderDetail.style.display='none';
+}
+function closeCancelledList(){
+let checkCancelledOrderDetail = document.getElementById('checkCancelledOrderDetail');
+checkCancelledOrderDetail.style.display='none';
+}
+</script>
+<script>
+function showOrder(serialId){
+let checkOrderDetail = document.getElementById('checkOrderDetail');
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+checkOrderDetail.style.display='block';
+checkOrderDetail.innerHTML = xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/showOrder",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("serialId="+serialId);
+}
+</script>
+<script>
+function showCancelledOrder(serialId){
+let checkCancelledOrderDetail = document.getElementById('checkCancelledOrderDetail');
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+checkCancelledOrderDetail.style.display='block';
+checkCancelledOrderDetail.innerHTML = xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/showCancelledOrder",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("serialId="+serialId);
+}
+</script>
+<script>
+function ship(orderId){
+let shipButton = document.getElementById('toShipListButton_'+orderId);
+let ship = document.getElementById('toShipList_'+orderId);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+
+ship.innerHTML='已出貨';
+}
+xhttp.open("POST","http://localhost:8080/community/mall/ship",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("orderId="+orderId);
+}
+</script>
+</body>
+</html>

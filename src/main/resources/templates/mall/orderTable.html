@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>訂單管理</title>
+<style>
+.orderTable,.checkOrderDetail{
+border:3px solid grey;
+}
+.orderTable td,.orderTable th,.checkOrderDetail td,.checkOrderDetail th{
+border:3px solid grey;
+}
+</style>
+</head>
+<body>
+<!--------------------------------管理訂單----------->
+<div style="width: 80vw;border:white 5 solid;margin-bottom:100px;margin-top:50px">
+<div id="checkOrderDetail" style="overflow-y:scroll;position:absolute;width:500px;height:350px;
+margin-top:10vh;margin-left:20vw;z-index:5;background-color:white;display:none;">
+</div>
+		<th:block th:switch="${TheOrderList != null}">
+			<div th:case="${true}">
+			
+			<table class="orderTable">
+			<thead>
+			<tr>
+			<th>訂單編號</th><th>成立日期</th><th>流水號</th><th>購買人Id</th><th>寄件人Id</th>
+			<th>收件人</th><th>收件人電話</th><th style="word-wrap: break-word;width:100px">收件人住址</th><th>訂單狀態</th><th>付款狀態</th>
+			<th>付款方式</th><th>購買商品</th><th>訂單金額</th><th>付款確認</th><th>撥款給賣家</th>
+			</tr>
+			</thead>
+			<tbody>
+			<th:block th:each="order : ${TheOrderList}">
+			<tr>
+			<td>[[${order.orderId}]]</td><td>[[${order.getOrderDateString()}]]</td><td>[[${order.serialId}]]</td><td>[[${order.buyerId}]]</td><td>[[${order.senderId}]]</td>
+			<td>[[${order.recipientName}]]</td><td>[[${order.recipientTel}]]</td><td>[[${order.recipientAddress}]]</td><td th:id="${'orderStatus_'+order.orderId}">[[${order.orderStatus}]]</td>
+			<td th:id="${'payStatus_'+order.orderId}">[[${order.payStatus}]]</td>
+			<td>[[${order.paymentMethod}]]</td><td><button style="width:70px" th:onclick="showOrder([[${order.serialId}]])">查看</button></td><td>NT$[[${order.totalPrice}]]</td>
+			<td >
+			<th:block th:switch="${order.paymentMethod == '銀行轉帳' && order.payStatus == '未付款'}">
+			<button style="width:70px" th:case="${true}" th:id="${'checkPayButton_'+order.orderId}" th:onclick="checkPay([[${order.orderId}]])" >確認</button>
+			</th:block>
+			</td>
+			<td>
+			<th:block th:switch="${order.orderStatus == '已送達'}">
+			<button style="width:70px" th:case="${true}" th:id="${'checkReceivedButton_'+order.orderId}" th:onclick="checkReceived([[${order.orderId}]])">撥款</button>
+			</th:block>
+			</td>
+			</tr>
+				</th:block>
+			</tbody>
+			</table>
+			
+			</div>
+		</th:block>
+	</div>
+<!--------------------------------管理訂單-END------->
+<script>
+function showOrder(serialId){
+let checkOrderDetail = document.getElementById('checkOrderDetail');
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+checkOrderDetail.style.display='block';
+checkOrderDetail.innerHTML = xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/showOrder",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("serialId="+serialId);
+}
+</script>
+<script>
+function senderCheck(str){
+let checkButton = document.getElementById(str);
+checkButton.style.backgroundPosition = 'center';
+checkButton.style.backgroundRepeat = 'no-repeat';
+if(checkButton.style.backgroundImage == 'url("image/check.png")'){
+checkButton.style.backgroundImage = 'url()';
+}else{
+checkButton.style.backgroundImage = 'url("image/check.png")';
+
+}
+
+}
+
+function closeOrderList(){
+let checkOrderDetail = document.getElementById('checkOrderDetail');
+checkOrderDetail.style.display='none';
+}
+</script>
+<script>
+function checkReceived(orderId){
+let checkReceivedButton = document.getElementById('checkReceivedButton_'+orderId);
+let orderStatus = document.getElementById('orderStatus_'+orderId);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+checkReceivedButton.disable=true;
+checkReceivedButton.style.display = 'none';
+orderStatus.innerHTML = '訂單完成';
+}
+xhttp.open("POST","http://localhost:8080/community/mall/AdminCheckReceived",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("orderId="+orderId);
+}
+
+</script>
+<script>
+function checkPay(orderId){
+let checkPayButton = document.getElementById('checkPayButton_'+orderId);
+let payStatus = document.getElementById('payStatus_'+orderId);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+checkPayButton.disable=true;
+checkPayButton.style.display = 'none';
+payStatus.innerHTML = '已付款';
+}
+xhttp.open("POST","http://localhost:8080/community/mall/AdminCheckPay",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("orderId="+orderId);
+}
+
+</script>
+</body>
+</html>

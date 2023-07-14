@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>profile</title>
+<style>
+.MyMemberTable {
+	border-collapse: separate;
+	border-spacing: 0;
+	border: 1px solid #ccc;
+}
+
+.MyMemberTable th, .MyMemberTable td {
+	border-bottom: 1px solid #ccc;
+	padding: 8px;
+	text-align: left;
+}
+
+.MyMemberTable th {
+	background-color: #f2f2f2;
+}
+</style>
+</head>
+<body>
+	<div th:replace="~{layout/navbar}"></div>
+	<div>
+		<table style="width: 100%; table-layout: fixed;">
+			<tr>
+				<td
+					style="width: 33.33%; vertical-align: top; border: 1px solid #ccc;">
+					<div class="card" style="width: 100%;">
+						<table class="MyMemberTable">
+							<thead>
+								<tr>
+									<td>已收藏文章</td>
+									<td>讚數</td>
+									<td>最後修改日期</td>
+								</tr>
+							</thead>
+							<tbody>
+								<th:block th:each="aArticle : ${bookmark}">
+									<tr>
+										<td><a
+											th:href="@{'/article/showArticle?id='+${aArticle.id}}">[[${aArticle.title}]]</a></td>
+										<td th:text="${aArticle} ? ${aArticle.likes}"></td>
+										<td th:text="${aArticle} ? ${aArticle.getPostDateString()}"></td>
+									</tr>
+								</th:block>
+							</tbody>
+						</table>
+					</div>
+				</td>
+				<td
+					style="width: 33.33%; vertical-align: top; border: 1px solid #ccc;">
+					<div class="card" style="width: 100%;">
+						<table class="MyMemberTable">
+							<thead>
+								<tr>
+									<td>我的文章</td>
+									<td>讚數</td>
+									<td>最後修改日期</td>
+								</tr>
+							</thead>
+							<tbody>
+								<th:block th:each="aArticle : ${myArticle}">
+									<tr>
+										<td><a
+											th:href="@{'/article/showArticle?id='+${aArticle.id}}">[[${aArticle.title}]]</a></td>
+										<td th:text="${aArticle} ? ${aArticle.likes}"></td>
+										<td th:text="${aArticle} ? ${aArticle.getPostDateString()}"></td>
+									</tr>
+								</th:block>
+							</tbody>
+						</table>
+					</div>
+				</td>
+				<td
+					style="width: 33.33%; vertical-align: top; border: 1px solid #ccc;">
+					<div class="card" style="width: 100%;">
+						<form th:action="@{/member/update}" enctype="multipart/form-data"
+							id="updateForm" method="post">
+							<img class="card-img-top" id="photo"
+								th:src="@{'data:image/jpeg;base64,'+${session.loggedInMember.generateBase64Image()}}" />
+							<div class="card-body">
+								<div id="show">
+									<h5 class="card-title" id="username">用戶名：[[${session.loggedInMember.username}]]</h5>
+									<p class="card-text" id="gender">性別：[[${session.loggedInMember.gender}]]</p>
+									<p class="card-text" id="birthday">生日：[[${session.loggedInMember.simpleBirthday()}]]</p>
+									<p class="card-text" id="level">權限：[[${session.loggedInMember.level}]]</p>
+									<p class="card-text" id="email">信箱：[[${session.loggedInMember.email}]]</p>
+									<p class="card-text" id="tel">電話：[[${session.loggedInMember.tel}]]</p>
+								</div>
+								<div id="update" style="display: none">
+									<p class="card-text">
+										姓名：<input type="text" name="username" id="updatename"
+											th:value="${session.loggedInMember.username}"
+											onkeyup="check()" />
+									</p>
+									<div id="checkUsername"></div>
+									<p class="card-text">
+										<input type="hidden" name="id" id="idnumber"
+											th:value="${session.loggedInMember.id}" />
+									</p>
+									<p class="card-text">
+										<input type="hidden" name="level"
+											th:value="${session.loggedInMember.level}" />
+									</p>
+									<p class="card-text">
+										密碼：<input type="text" name="password"
+											th:value="${session.loggedInMember.password}" />
+									</p>
+									<p class="card-text">
+										電話：<input type="text" name="tel"
+											th:value="${session.loggedInMember.tel}" />
+									</p>
+									<p class="card-text">
+										生日：<input type="date" name="birthday"
+											th:value="${session.loggedInMember.birthday}" required />
+									</p>
+									<p class="card-text">
+										性別： <input type="radio" name="gender" id="male" value="male"
+											required /> <label for="male" style="padding-right: 15px">男</label>
+										<input type="radio" name="gender" id="female" value="female"
+											required /> <label for="female" style="padding-right: 15px">女</label>
+									</p>
+									<p class="card-text">
+										信箱：<input type="text" name="email"
+											th:value="${session.loggedInMember.email}" />
+									</p>
+									<p class="card-text">
+										頭像：<input type="file" name="photo" />
+									</p>
+								</div>
+							</div>
+							<div id="send" style="display: none">
+								<button>送出</button>
+							</div>
+						</form>
+						<div id="msg"></div>
+						<div>
+							<button onclick="showupdate()" id="edit" class="btn btn-primary">編輯</button>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+
+<script type="text/javascript">
+	
+	function showupdate(){
+	if(document.getElementById("show").style.display==="none"){document.getElementById("send").style.display="none";document.getElementById("show").style.display="block";document.getElementById("edit").innerHTML="編輯";}else{document.getElementById("send").style.display="none";document.getElementById("show").style.display="none";document.getElementById("edit").innerHTML="取消編輯";document.getElementById("send").style.display="block";}
+	if(document.getElementById("update").style.display==="none"){document.getElementById("update").style.display="block";document.getElementById("edit").innerHTML="取消編輯";}else{document.getElementById("update").style.display="none";document.getElementById("edit").innerHTML="編輯";}
+	}
+		
+		function refreshSession(){
+		let xhr1 = new XMLHttpRequest();
+		xhr1.onload = function() {
+		document.getElementById("member").innerHTML = xhr1.responseText;
+		}
+		xhr1.open("POST", "http://localhost:8080/community/member/refreshLogin", true);
+		xhr1.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhr1.send("id="+idnumber.value);
+		}
+	
+	
+		function check(){
+		let xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200)
+				document.getElementById("checkUsername").innerHTML = xhttp.responseText;
+		}
+		xhttp.open("POST","http://localhost:8080/community/member/ajax/checkUsername",true);
+		xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhttp.send("username="+updatename.value);
+		}
+	</script>
+
+</html>

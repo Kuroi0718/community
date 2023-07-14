@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>上架中</title>
+<style>
+.button1{
+height:8rem;width:3rem;border:1px solid grey;border-right:none;border-left:none;background-color:silver;font-size:20px
+}
+.button2{
+height:8rem;width:3rem;border:1px solid grey;border-right:none;background-color:silver;font-size:20px
+}
+.button3{
+height:8rem;width:3rem;border:1px solid grey;border-top-right-radius:0.375rem;border-bottom-right-radius:0.375rem;background-color:silver;font-size:20px
+}
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+.animated.infinite {
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+.animated.hinge {
+  -webkit-animation-duration: 2s;
+  animation-duration: 2s;
+}
+/*the animation definition*/
+@-webkit-keyframes bounceOutRight {
+  20% {
+    opacity: 1;
+    -webkit-transform: translate3d(-20px, 0, 0);
+    transform: translate3d(-20px, 0, 0)
+  }
+  100% {
+    opacity: 0;
+    -webkit-transform: translate3d(2000px, 0, 0);
+    transform: translate3d(2000px, 0, 0)
+  }
+}
+@keyframes bounceOutRight {
+  20% {
+    opacity: 1;
+    -webkit-transform: translate3d(-20px, 0, 0);
+    -ms-transform: translate3d(-20px, 0, 0);
+    transform: translate3d(-20px, 0, 0)
+  }
+  100% {
+    opacity: 0;
+    -webkit-transform: translate3d(2000px, 0, 0);
+    -ms-transform: translate3d(2000px, 0, 0);
+    transform: translate3d(2000px, 0, 0)
+  }
+}
+.bounceOutRight {
+  -webkit-animation-name: bounceOutRight;
+  animation-name: bounceOutRight
+}
+
+</style>
+</head>
+<body style="overflow:hidden">
+
+<!-------------------------------上架中Start ---------------------------------------------->
+	<div  style="width: 800px; margin: auto;margin-top:100px">
+		<th:block th:switch="${myList != null}">
+			<div th:case="${true}">
+			<th:block th:each="p : ${myList}">
+			<div style="display:flex;flex-direction:row" th:id="${p.productId}" class="animated">
+				<div class="card" style="width: 540px;height:8rem;margin-bottom:20px;;border-top-right-radius:0;border-bottom-right-radius:0;overflow:hidden;border:1px solid grey;">
+					<div style="display:flex;flex-direction:row">
+						<div style="width: 8rem; height: 8rem; overflow: hidden; border:none">
+							<img th:src="@{'/mall/showPhoto?productId=' + ${p.productId}}"
+								style="width: 8rem; height: 8rem;">
+						</div>
+						<div style="display:flex;flex-direction:column">
+							<div class="card-body">
+								<p class="card-title">商品名稱: [[${p.productName}]]</p>
+								<p class="card-text">價格: [[${p.price}]]</p>
+								<p class="card-text">數量: [[${p.quantity}]]<small class="text-muted" style="position:relative;left:40px">上架時間: [[${p.getreleaseDateString()}]]</small></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<button type="button" class="button2" th:onclick="delist([[${p.productId}]])" style="height:8rem;">下架</button>
+				<button type="button" class="button3" th:onclick="deleteMyProduct([[${p.productId}]])" style="height:8rem;">刪除</button>
+				</div>
+				</th:block>
+			</div>
+		</th:block>
+	</div>
+	<!-------------------------------上架中End ---------------------------------------------->
+<th:block th:if="${myList.size() == 0}">
+<div style="font-size:50px;width:1100px;text-align:center">無上架中的商品<br>
+<img src="../image/noRecords.png" style="width:300px">
+</div>
+</th:block>	
+<script>
+
+function delist(productId){
+let product = document.getElementById(productId);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+product.style.animationName='bounceOutRight';
+setTimeout(function() {
+  product.style.display='none';
+}, 1000);
+}
+xhttp.open("POST","http://localhost:8080/community/mall/delistMyProduct",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+productId);
+}
+</script>
+<script>
+function deleteMyProduct(productId){
+let product = document.getElementById(productId);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+product.style.animationName='bounceOutRight';
+setTimeout(function() {
+  product.style.display='none';
+}, 1000);
+}
+xhttp.open("POST","http://localhost:8080/community/mall/deleteMyProduct",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+productId);
+}
+</script>
+</body>
+</html>

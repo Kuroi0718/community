@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>結帳</title>
+<style>
+.cardNum{width:60px}
+.cardText{width:120px}
+input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { 
+            -webkit-appearance: none; 
+        }
+
+</style>
+</head>
+<body style="overflow: hidden;background-color:#EAE0D5">
+	<div th:replace="~{mall/nav}"></div>
+	<div id="flash"
+		style="filter: blur(5px); position: absolute; z-index: -2; width: 100vw;">
+		<div style="height: 88vh; width: 100vw; overflow-y: scroll">
+<form id="payForm" th:action="@{/mall/makeAnOrder}" enctype="multipart/form-data" method="post" style="width: 800px; margin: auto;background-color:white;margin-top:50px;margin-bottom:50px;border-radius:0.375rem">
+<!------------------------------表單 ---------------------------------------------->
+<div style="display:flex;flex-direction:column;width:500px;margin:auto;padding:40px;">
+<div style="padding:15px">
+<label >購買人<span style="visibility:hidden">：</span>：</label>
+<span>[[${session.loggedInMember.username}]]</span>
+</div>
+
+<div style="padding:15px">
+<label for="recipientName">取貨人<span style="visibility:hidden">：</span>：</label>
+<input required type="text" name="recipientName" id="recipientName" th:value="${session.loggedInMember.username}"></input>
+</div>
+
+<div style="padding:15px">
+<label for="recipientTel">連絡電話：</label>
+<input required type="text" name="recipientTel" id="recipientTel" th:value="${session.loggedInMember.tel}"></input>
+</div>
+
+<div style="padding:15px">
+<label for="recipientAddress">寄送地址：</label>
+<input required type="text" name="recipientAddress" id="recipientAddress"></input>
+</div>
+
+<div style="padding:15px">
+<label >付款方式：</label>
+<th:block th:if="${type==''}">
+<input required type="radio" name="paymentMethod" id="method1" value="信用卡">信用卡
+<input required type="radio" name="paymentMethod" id="method2" value="銀行轉帳">銀行轉帳
+<input required type="radio" name="paymentMethod" id="method3" value="貨到付款">貨到付款
+</th:block>
+<th:block th:if="${type=='團購'}">
+<input required type="radio" name="paymentMethod" id="method1" value="信用卡">信用卡
+</th:block>
+</div>
+</div>
+
+
+<div id="creditCardBlock" style="display:none;width:500px;margin:auto">
+您已選擇信用卡方式付款：
+<img src="../image/visa.png" style="width:94px;height:59px">
+<img src="../image/mastercard.png" style="width:94px;height:59px">
+<img src="../image/jcb.png" style="width:94px;height:59px">
+<div style="padding-bottom:10px">訂單編號：[[${serialId}]]</div>
+<input type="hidden" name="serialId" th:value="${serialId}"></input>
+<div style="padding-bottom:10px">訂單金額：NT$[[${totalPrice}]]元</div>
+<input type="hidden" name="totalPrice" th:value="${totalPrice}"></input>
+<div style="padding-bottom:10px">持卡人姓名：<input class="cardText" th:value="${session.loggedInMember.username}"></input></div>
+<div style="padding-bottom:10px">身分證字號：<input class="cardText"  value="A123456789"></input></div>
+<div style="padding-bottom:10px">持卡人生日：<input class="cardText" th:value="${session.loggedInMember.getBirthdayString}"></input></div>
+<div style="padding-bottom:10px">信用卡卡號：
+<input class="cardNum" type="number" value="0000"></input>-
+<input class="cardNum" type="number" value="0000"></input>-
+<input class="cardNum" type="number" value="0000"></input>-
+<input class="cardNum" type="number" value="0000"></input>
+</div>
+<div style="padding-bottom:10px">信用卡有效月年：
+<input class="cardNum" type="number" value="08"></input>月
+<input class="cardNum" type="number" value="2023"></input>年
+</div>
+<div style="padding-bottom:10px">信用卡檢核碼：
+<input class="cardNum" type="number" value="123"></input>(卡片背面，共三碼)
+</div>
+</div>
+
+
+<!------------------------------表單End ---------------------------------------------->
+		
+<!------------------------------結帳 ---------------------------------------------->
+	
+	<div  id="hi" style="width: 800px; margin: auto">
+		<th:block th:switch="${checkoutList != null}">
+			<div th:case="${true}">
+		<h4 id="list-item-5">購買明細：</h4>
+			<th:block th:each="p : ${checkoutList}">
+			<div style="display:flex;flex-direction:row">
+				<div class="card" style="width: 800px;height:4rem;margin-bottom:20px">
+					<div style="display:flex;flex-direction:row">
+						<div style="width: 4rem; height: 4rem; overflow: hidden; border: 1px solid silver; border-radius: 0.375rem;">
+							<img th:src="@{'/mall/showPhoto?productId=' + ${p.myCartProductId}}"
+								style="width: 4rem; height: 4rem;">
+						</div>
+						<div>
+							<div class="card-body" style="display:flex;flex-direction:row;justify-content:space-around">
+							<div style="width: 450px;height:40px;overflow:hidden">
+								<span class="card-title" >商品名稱:[[${p.productName}]]</span>
+								<input type="hidden" name=products th:value="${p.myCartProductId}"></input>
+								<input type="hidden" name=senderId th:value="${p.ownerId}"></input>
+							</div>
+							<div style="width:90px;height:40px;overflow:hidden">
+								<span class="card-text" >數量:[[${p.amount}]]</span>
+								<input type="hidden" name=amount th:value="${p.amount}"></input>
+							</div>
+							<div style="width:120px;height:40px;overflow:hidden">
+								<span class="card-text" >價格:[[${p.price}]]</span>
+							</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+				</th:block>
+				<div style="width: 800px;height:50px;text-align:right;padding-right:110px">訂單金額：NT$[[${totalPrice}]]元</div>
+			</div>
+		</th:block>
+		<div style="display:flex;flex-direction:row;width:350px;margin:auto;padding-bottom:40px">
+<a th:href="@{/mall/mePage}"><button type="button" style="width:150px;height:49.5px;line-height:49.5px;color:white;font-weight:bold;font-size:20px;
+background-image:url('../image/blackBTN.png');background-size:cover;background-color:transparent;border:none" >取消</button></a>
+<button type="submit" style="width:150px;height:49.5px;line-height:49.5px;color:white;font-weight:bold;font-size:20px;
+background-image:url('../image/orangeBTN.png');background-size:cover;background-color:transparent;border:none;margin-left:50px">送出訂單</button>
+		</div>
+	</div>
+<!------------------------------結帳End ---------------------------------------------->
+</form>
+				</div>
+			</div>
+<script>
+let method1 = document.getElementById('method1');
+let method2 = document.getElementById('method2');
+let method3 = document.getElementById('method3');
+let creditCardBlock = document.getElementById('creditCardBlock');
+
+method1.addEventListener("click",function(){
+if(creditCardBlock.style.display = 'none'){
+creditCardBlock.style.display = 'block';
+}
+})
+method2.addEventListener("click",function(){
+if(creditCardBlock.style.display = 'block'){
+creditCardBlock.style.display = 'none';
+}
+})
+method3
+.addEventListener("click",function(){
+if(creditCardBlock.style.display = 'block'){
+creditCardBlock.style.display = 'none';
+}
+})
+
+
+</script>
+<script>
+let all = document.getElementById('flash');
+ all.addEventListener("mouseover",function(){
+        all.style.filter = "none";
+ })
+ div1.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+ div2.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+</script>				
+</body>
+</html>

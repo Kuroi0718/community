@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>商城</title>
+<style>
+#search{
+background-color:black;
+color:white;
+font-size:25px;
+}
+.square2,.square{
+border:1px grey solid;
+background-color:#D8D8EB;
+}
+.square2:hover,.square:hover{
+transform:scale(1.05);
+}
+.square2:active,.square:active{
+transform:scale(1);
+}
+.square {
+	width: 40px;
+	height: 40px;
+}
+
+.square {
+	border-radius: 0.375rem;
+}
+</style>
+</head>
+<body style="overflow: hidden;background-color:#EAE0D5"  >
+
+	<div th:replace="~{mall/nav}"></div>
+
+	<div id="shop"
+		style="filter: none; position: absolute; z-index: -2; width: 100vw">
+		<div style="height: 88vh; width: 100vw; overflow-y: scroll;scroll-behavior:smooth;">
+
+
+			<div style="display: flex; flex-direction: column">
+<!---------------------------------- --------------------------------------->
+				<div class="box1" id="top"
+					style="height: 20vh; width: 100%;"><!---測試框--->
+					
+					</div>
+<!----------------------------------------------------------------------->
+					
+
+
+				<div style="display: flex; flex-direction: row">
+<!-------------**************************分享*************************-------------------->
+				<div  id="shareProduct" style="position:absolute;z-index:3;background:linear-gradient(to bottom, white 0%, #66B3FF 100%);width:420px;height:400px;left:40%;display:none;overflow-y:scroll;padding-bottom:50px;padding-top:50px;border-radius:10px;border:2px silver solid">
+					<figure>
+					<input type="checkbox" style="width:50px;height: 80px;position:absolute;margin-left:50px" value="Id">
+					<div id="share" style="width: 200px; height: 80px; margin: auto;margin-top:20px;border: 1px solid silver;background-color:#F2EFE9;">
+					<div style="position:absolute;margin-top:30px;margin-left:30px">name</div>
+					<img src="../image/noimg.png"  style="width:70px;float:right;margin:5px">
+					</div>
+					</figure>
+					<div style="display: flex; flex-direction: row">
+					<button id="closeShareButton" style="width:90px; height: 50px; margin-left:100px;margin-top:20px;" onclick="closeShareProduct()">取消</button>
+					<button style="width:90px; height:50px; margin-left:20px;margin-top:20px;">分享</button>
+					</div>
+					<input id="shareContent" value=""></input>
+				</div>
+<!-------------------------left各種搜尋	------------------------------------------------>
+					<div>
+					<button class="btn btn-primary" type="button" 
+						data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample"
+						aria-controls="offcanvasExample" style="width: 40px;height:260px;bottom:30px;background-color:#BDB4BF;border:grey 1px solid;position:fixed;background-image:url('../image/search.png');background-repeat:no-repeat;background-position:center"></button>
+
+					<div class="offcanvas offcanvas-start" tabindex="-1"
+						id="offcanvasExample" aria-labelledby="offcanvasExampleLabel"
+						style="background-color: rgb(192, 192, 192)">
+						<div class="offcanvas-header">
+							<br>
+							<br>
+							<br>
+							<br>
+							<br>
+							<br>
+							<br>
+							<br>
+							<br>
+							<h5 class="offcanvas-title" id="offcanvasExampleLabel">請輸入篩選條件</h5>
+							<button type="button" class="btn-close"
+								data-bs-dismiss="offcanvas" aria-label="Close"></button>
+						</div>
+						<div class="offcanvas-body">
+
+							<div class="container-fluid">
+								<form class="d-flex" id="searchForm" th:action="@{/mall/searchProduct}" enctype="multipart/form-data" method="post"
+									 style="max-width: 600px; display: flex; flex-direction: column">
+									
+									<div style="display: flex; flex-direction: column;">
+											<figure style="display: flex; flex-direction: colume">
+											<p style="padding-right: 15px">分類:</p>
+											<select id="category" name="category"
+												style="width: 7vw; height: 3vh;margin-right:15px"
+												onchange="showDetail(this.value)" >
+												<option value="" selected></option>
+												<option value="服飾">服飾</option>
+												<option value="鞋包配件">鞋包配件</option>
+												<option value="休閒生活">休閒生活</option>
+												<option value="3C">3C</option>
+												<option value="寵物生活">寵物生活</option>
+												
+												<option value="其他">其他</option>
+											</select>
+											</figure>
+											<figure style="display: flex; flex-direction: colume">
+												<span style="padding-right:15px">細目:</span>
+												<select id="detail" name="detail" style="width: 7vw; height: 3vh">
+												<option value="" selected></option>
+												</select>
+											</figure>
+									</div>
+									<div>
+										<figure style="display: flex; flex-direction: colume">
+											<label style="padding-right: 15px">價錢: </label>
+											<input type="number" id="price1" name="price1"
+												step=1 min=0 max=999999 style="width: 4vw; height: 3vh"></input><span>~</span>
+												<input type="number" id="price2" name="price2"
+												step=1 min=0 max=999999 style="width: 4vw; height: 3vh"></input><span>元</span>
+										</figure>
+									</div>
+									<div>
+										<figure style="display: flex; flex-direction: colume">
+											<span style="padding-right: 15px">狀態:</span>
+											<input type="radio" name="status" id="new" value="0" />
+											<label for="new" style="padding-right: 15px">全新</label>
+											<input type="radio" name="status" id="used" value="1" />
+											<label for="used">二手</label>
+										</figure>
+									</div>
+									<div>
+										<figure
+											style="display: flex; flex-direction: colume; padding-right: 50px">
+											<span style="padding-right: 15px">議價:</span>
+											<input type="radio" name="bargain" id="cannot" value="0" />
+											<label for="cannot" style="padding-right: 15px">不可議價</label>
+											<input type="radio" name="bargain" id="can" value="1" />
+											<label for="can">可議價</label>
+										</figure>
+									</div>
+									<input class="form-control me-2" type="hidden"
+									placeholder="關鍵字搜尋" aria-label="Search" ><br>
+									<button class="btn btn-outline-success" type="submit" id="search">搜尋</button>
+								</form>
+							</div>
+						</div>
+					</div>
+					</div>
+<!----------------------------------CARD --------------------------------------->
+					<th:block th:switch="${productList != null}">
+						<div th:case="${true}"
+							style=" display: inline-flex; flex-direction: row; flex-wrap: wrap;padding:65px">
+							<th:block th:each="p : ${productList}">
+							
+								<div class="card"
+									style="width: 20rem; height: 25rem; margin: 10px; border: 1px solid silver;background-color:#F2EFE9">
+									<div
+										style="width: 13rem; height: 13rem; overflow: hidden; margin: auto; border: 1px solid silver; border-radius: 0.375rem;">
+										<th:block th:switch="${p.quantity > 0}">
+										<img th:case="${true}" th:id="${'img_'+p.productId}" th:src="@{'/mall/showPhoto?productId=' + ${p.productId}}"
+											style="width: 13rem; height: 13rem;">
+										<img th:case="${false}" th:id="${'img_'+p.productId}" th:src="@{'/mall/showPhoto?productId=' + ${p.productId}}"
+											style="width: 13rem; height: 13rem;filter:opacity(0.2)">
+										</th:block>
+									</div><span style="position:absolute;">Id:[[${p.productId}]]</span>
+									<div style="width: 20rem;align-items:center"><!--內容 -->
+										<div style="margin-left:3.5rem">商品名稱:[[${p.productName}]]</div>
+										<div style="margin-left:3.5rem">價格:NT$[[${p.price}]]元</div>
+										<div style="margin-left:3.5rem">剩餘數量:<span th:id="${'Quantity_'+p.productId}">[[${p.quantity}]]</span></div>
+										<div style="margin-left:3.5rem">商品描述:[[${p.info}]]</div>
+										
+										<div
+											style="display: flex; flex-direction: column; max-width: 20rem;">
+											<th:block th:switch="${session.loggedInMember != null}">
+												<div th:case="${true}" style="display: flex; flex-direction: row;">
+													
+													
+													<a
+														th:href="@{'/mall/productPage?productId=' + ${p.productId}}"><button
+															class="square"
+															th:onclick="addToMyRecord([[${p.productId}]])">
+															<img th:src="@{/image/eye.png}">
+														</button></a>
+														
+													<button class="square"
+														th:onclick="addToMyLikes([[${p.productId}]])">
+														<img th:class="${p.productId}" th:src="@{'/mall/showLike?productId=' + ${p.productId}}">
+													</button>
+													<button class="square" th:onclick="findMyFriendList([[${p.productId}]])">
+														<img th:src="@{/image/arrow.png}">
+													</button>
+													<form th:id="${p.productId}" th:action="@{/mall/addToMyCart}" enctype="multipart/form-data" method="post" style="display: flex; flex-direction: row;">
+														<div style="line-height:40px">
+														<label for="amount" >買</label>
+														<input type="number" id="amount" name="amount" step=1
+															min=0 max=999999 value="1" style="width: 2vw; height: 3vh" oninput="if(this.value<=0)value=1"></input>個
+														</div>
+														<input type="hidden" id="myCartProductId"
+															name="myCartProductId" th:value="${p.productId}"></input>
+														<th:block th:switch="${p.quantity > 0}">		
+														<button th:case="${true}" type="button" th:id="${'addToCartButton_'+p.productId}" 
+															th:onclick="addToMyCart([[${p.productId}]])"
+															style="height: 40px; border-radius: 0.375rem;;font-weight:bold" class="square2">加入購物車</button>
+														<button th:case="${false}" type="button" th:id="${'addToCartButton_'+p.productId}" 
+															style="height: 40px; border-radius: 0.375rem;font-weight:bold" disabled class="square2">加入購物車</button>
+														</th:block>
+													</form>
+												</div>
+												
+												
+												<div th:case="${false}" style="display:flex;flex-direction:row">
+													<button disabled class="square">
+														<img th:src="@{/image/eye.png}">
+													</button>
+													<button disabled class="square">
+														<img th:src="@{/image/heart0.png}">
+													</button>
+													<button disabled class="square">
+														<img th:src="@{/image/arrow.png}">
+													</button>
+													<div style="line-height:40px;">
+													<label for="amount" >買</label>
+													<input type="number" id="amount" name="amount" step=1
+															min=0 max=999999 value="1" style="width: 2vw; height: 3vh;"></input>個
+													</div>
+													<button disabled
+														style="height: 40px; border-radius: 0.375rem;font-weight:bold" class="square2">加入購物車</button>
+												</div>
+										</div>
+									</div>
+								</div>
+
+							</th:block>
+						</div>
+					</th:block>
+					<!--<th:block th:switch="${loggedInMember.level=='admin'}">
+								<div th:case="${true}">
+								<a href="#"><button>Delist</button></a>
+								</div>
+							<img class="${p.pid}" id="likeB" onclick="like(this.className)"
+								src=""
+								style="border: none; width: 55px; height: 55px;" />
+								
+
+<!----------------------------------CARD --------------------------------------->
+<!----------------------------------search result--------------------------------------->
+					<th:block th:switch="${searchNoLimitList != null}">
+						<div th:case="${true}"
+							style="display: inline-flex; flex-direction: row; flex-wrap: wrap;padding:65px">
+							<th:block th:each="p : ${searchNoLimitList}">
+							<th:block th:if="${p.timeLimit=='noLimit'}">
+								<div class="card"
+									style="width: 20rem; height: 25rem; margin: 10px; border: 1px solid silver;background-color:#F2EFE9">
+									<div
+										style="width: 13rem; height: 13rem; overflow: hidden; margin: auto; border: 1px solid silver; border-radius: 0.375rem;">
+										<img th:id="${'img_'+p.productId}" th:src="@{'/mall/showPhoto?productId=' + ${p.productId}}"
+											style="width: 13rem; height: 13rem;">
+									</div>
+									<div class="" style="width: 20rem; ">
+										<div style="margin-left:3.5rem">商品名稱:[[${p.productName}]]</div>
+										<div style="margin-left:3.5rem">價格:NT$[[${p.price}]]元</div>
+										<div style="margin-left:3.5rem">剩餘數量:<span th:id="${'Quantity_'+p.productId}">[[${p.quantity}]]</span></div>
+										<div style="margin-left:3.5rem">商品描述:[[${p.info}]]</div>
+										<div
+											style="display: flex; flex-direction: column; max-width: 20rem; ">
+											<th:block th:switch="${session.loggedInMember != null}">
+												<div th:case="${true}"  style="display: flex; flex-direction: row;">
+
+													
+
+													<a
+														th:href="@{'/mall/productPage?productId=' + ${p.productId}}"><button
+															class="square"
+															th:onclick="addToMyRecord([[${p.productId}]])">
+															<img th:src="@{/image/eye.png}">
+														</button></a>
+														
+													<button class="square"
+														th:onclick="addToMyLikes([[${p.productId}]])">
+														<img th:class="${p.productId}" th:src="@{'/mall/showLike?productId=' + ${p.productId}}">
+													</button>
+													<button class="square" th:onclick="findMyFriendList([[${p.productId}]])">
+														<img th:src="@{/image/arrow.png}">
+													</button>
+													<form th:id="${p.productId}" th:action="@{/mall/addToMyCart}" enctype="multipart/form-data" method="post" style="display: flex; flex-direction: row;">
+														<div style="line-height:40px">
+														<label for="amount" >買</label>
+														<input type="number" id="amount" name="amount" step=1
+															min=0 max=999999 value="1" style="width: 2vw; height: 3vh" oninput="if(this.value<=0)value=1"></input>個
+														</div>
+														<input type="hidden" id="myCartProductId"
+															name="myCartProductId" th:value="${p.productId}"></input>
+														<th:block th:switch="${p.quantity > 0}">		
+														<button th:case="${true}" type="button" th:id="${'addToCartButton_'+p.productId}" 
+															th:onclick="addToMyCart([[${p.productId}]])"
+															style="height: 40px; border-radius: 0.375rem;font-weight:bold" class="square2">加入購物車</button>
+														<button th:case="${false}" type="button" th:id="${'addToCartButton_'+p.productId}" 
+															style="height: 40px; border-radius: 0.375rem;font-weight:bold" disabled class="square2">加入購物車</button>
+														</th:block>
+													</form>
+												</div>
+												
+												
+												<div th:case="${false}" style="display:flex;flex-direction:row">
+													
+													<button disabled class="square">
+														<img th:src="@{/image/eye.png}">
+													</button>
+													<button disabled class="square">
+														<img th:src="@{/image/heart0.png}">
+													</button>
+													<button disabled class="square">
+														<img th:src="@{/image/arrow.png}">
+													</button>
+													<div style="line-height:40px;">
+													<label for="amount" >買</label>
+													<input type="number" id="amount" name="amount" step=1
+															min=0 max=999999 value="1" style="width: 2vw; height: 3vh;"></input>個
+													</div>
+													<button disabled
+														style="height: 40px; border-radius: 0.375rem;font-weight:bold" class="square2">加入購物車</button>
+												</div>
+										</div>
+									</div>
+								</div>
+							</th:block>
+							</th:block>
+						</div>
+					</th:block>
+					<!--<th:block th:switch="${loggedInMember.level=='admin'}">
+								<div th:case="${true}">
+								<a href="#"><button>Delist</button></a>
+								</div>
+							<img class="${p.pid}" id="likeB" onclick="like(this.className)"
+								src=""
+								style="border: none; width: 55px; height: 55px;" />
+								
+<!----------------------------------search  result--------------------------------------->
+					<div id="demo"></div>
+				</div>
+			</div>
+			
+	<a th:href="@{/}"><button style="width:50px;height:50px;border-radius:0.375rem;background-color:#BDB4BF;position:fixed;right:35px;bottom:30px;background-image:url('../image/home.png');background-repeat:no-repeat;background-position:center;border:grey 1px solid"></button></a>
+	<a th:href="@{/mall/mePage}"><button id="cartId" style="width:50px;height:50px;border-radius:0.375rem;background-color:#BDB4BF;position:fixed;right:35px;bottom:90px;background-image:url('../image/cart.png');background-repeat:no-repeat;background-position:center;border:grey 1px solid"></button></a>
+	<a href="#top"><button style="width:50px;height:50px;border-radius:0.375rem;background-color:#BDB4BF;position:fixed;right:35px;bottom:150px;background-image:url('../image/up.png');background-repeat:no-repeat;background-position:center;border:grey 1px solid"></button></a>
+	
+	<th:block th:switch="${session.loggedInMember != null}">
+	<div id="cartNum" th:case="${true}" style="display:none;width:25px;height:25px;border-radius:25px;background-color:red;position:fixed;right:25px;bottom:125px;z-index:1;text-align:center;color:#EAE0D5;font-weight:bold">[[${num}]]</div>
+	</th:block>	
+		</div>
+	</div>
+	
+	
+	
+	<div id="addToCartAlert" style="position:absolute;background-color:black;width:300px;height:100px;display:none;bottom:30px;right:0px;font-size:40px;font-weight:bold;color:white;text-align:center;padding-top:25px;border-top-left-radius:10px;border-bottom-left-radius:10px">
+    	已加入購物車
+    </div>
+    
+<script>
+function closeShareProduct(){
+let shareProduct = document.getElementById('shareProduct');
+shareProduct.style.display='none';
+}
+</script>
+<script>
+let shareProduct = document.getElementById('shareProduct');
+function findMyFriendList(pid){
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+shareProduct.innerHTML = xhttp.responseText;
+shareProduct.style.display='block';
+}
+xhttp.open("POST","http://localhost:8080/community/mall/findMyFriendList",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+pid);
+}
+</script>   
+    
+<script>
+function numberTest(){
+let form = document.getElementById('numberTestForm');
+let formdata = new FormData(form);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+location.reload();
+}
+xhttp.open("POST","http://localhost:8080/community/mall/numberTest",true);
+xhttp.send(formdata);
+}
+</script>	
+<script>
+let cartNum = document.getElementById("cartNum");
+if(cartNum.innerHTML!=0){
+cartNum.style.display='block';
+}
+
+function addToMyCart(pid){
+let form = document.getElementById(pid);
+let formdata = new FormData(form);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+document.getElementById("addToCartAlert").style.display='block';
+setTimeout(function() {
+document.getElementById("addToCartAlert").style.display='none';
+}, 1000);
+
+
+
+cartNum.style.display='block';
+cartNum.innerHTML = xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/addToMyCart",true);
+xhttp.send(formdata);
+}
+</script>
+	<script>
+function addToMyRecord(pid){
+console.log(pid);
+let xhttp = new XMLHttpRequest();
+xhttp.open("POST","http://localhost:8080/community/mall/addToMyRecord",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+pid);
+}
+</script>
+<script>
+function addToMyLikes(pid){
+let img = document.getElementsByClassName(pid)[0];
+console.log(pid);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+let str = xhttp.responseText;
+if(str==='0'){
+	img.src='/community/image/heart.png';
+}else{
+	img.src='/community/image/heart0.png';
+}
+}
+xhttp.open("POST","http://localhost:8080/community/mall/addToMyLikes",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+pid);
+}
+</script>
+<script>
+function type(chosen){
+var category = document.getElementById("category");
+var xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+document.getElementById("typeDetail").innerHTML = xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/typeDetail",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("type="+chosen);
+}
+</script>
+
+<script>
+function showDetail(chosen){
+var category = document.getElementById("category");
+var xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+document.getElementById("detail").innerHTML = xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/categoryDetail",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("category="+chosen);
+}
+</script>
+	<script>
+let all = document.getElementById('shop');
+ all.addEventListener("mouseover",function(){
+        all.style.filter = "none";
+ })
+ div1.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+ div2.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+</script>
+
+<script>
+function sendShareList() {
+let shareProductId = document.getElementById('shareProductId');
+let checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+checkboxes.forEach(function(checkbox){
+console.log(checkbox.value);
+shareList(checkbox.value,'<a href="/community/mall/productPage?productId='+shareProductId.value+'">看看這個!!</a>');
+})
+let shareProduct = document.getElementById('shareProduct');
+shareProduct.style.display='none';
+}
+
+function shareList(mid,content) {
+let formdata = new FormData();
+formdata.append('target',mid);
+formdata.append('content',content);
+	let xhrForm = new XMLHttpRequest();
+	xhrForm.onload = function() {
+		let websocketMessage = {
+			id: myId.value,
+			target: mid,
+			type: 1
+		};
+		websocket.send(JSON.stringify(websocketMessage));
+		appendMessage(0, messageInput.value.trim(), xhrForm.responseText, "self");
+		messageInput.value = "";
+		messageInput.focus();
+		part.value = "";
+	}
+	xhrForm.open("POST", "/community/message/shareMessage", true);
+	xhrForm.send(formdata);
+}
+</script>
+</body>
+</html>
+

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>右側固定廣告</title>
+    <style>
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100vh;
+            padding-right: 20px;
+        }
+        
+        img {
+            max-width: 400px;
+            max-height: 800px;
+        }
+    </style>
+    <script>
+   
+
+  </script>
+</head>
+<body>
+    <div class="container">
+    
+       
+        <img th:src="@{'/ad/image?id=' + ${ad.id}}" alt="Ad Image">
+    </div>
+</body>
+</html>

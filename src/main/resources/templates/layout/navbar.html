@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<!-- 導入thymleaf -->
+<head>
+<meta charset="UTF-8">
+<title></title>
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+<style>
+.navbar .toggle-button {
+	padding: 4px 8px;
+	border: none;
+	cursor: pointer;
+	width: 50px;
+}
+
+.nav-link {
+	color: white;
+}
+
+.canvas-container {
+	position: fixed;
+	top: 100px;
+	right: 0;
+	height: 80%;
+	width: 0;
+	padding: 0px;
+	background-color: #f2f2f2;
+	transition: width 0.3s ease;
+	overflow-y: auto;
+}
+
+.canvas-container.active {
+	width: 400px;
+}
+
+.canvas .search-input {
+	padding: 8px;
+	width: 100%;
+	font-size: 16px;
+	border: 1px solid #ccc;
+	margin-bottom: 8px;
+}
+
+.canvas .search-button {
+	padding: 8px 16px;
+	font-size: 16px;
+	background-color: #4286f4;
+	color: white;
+	border: none;
+	cursor: pointer;
+	margin-bottom: 8px;
+}
+
+.canvas .invite-button {
+	padding: 8px 16px;
+	font-size: 16px;
+	background-color: #4286f4;
+	color: white;
+	border: none;
+	cursor: pointer;
+}
+
+.canvas .tab-button {
+	padding: 10px;
+	margin: 5px;
+	background-color: #4286f4;
+	color: white;
+	border: none;
+	cursor: pointer;
+}
+
+.canvas .tab-button.active {
+	background-color: #333;
+}
+
+.tab-content {
+	height: calc(100% - 50px);
+	padding: 16px;
+	overflow-y: auto;
+	display: none;
+}
+
+.tab-content.active {
+	display: block;
+}
+
+.chat-popup {
+	position: fixed;
+	bottom: 30px;
+	right: 400px;
+	width: 400px;
+	height: 500px;
+	background-color: #f2f2f26f;
+	display: none;
+}
+
+.chat-popup.open {
+	display: block;
+}
+
+.chat-messages {
+	height: calc(100% - 40px);
+	padding: 10px;
+	overflow-y: auto;
+	border: 1px solid #7f5f5f;
+	border-radius: 5px;
+}
+
+.content {
+	white-space: pre-wrap;
+	word-break: break-all;
+	max-width: 200px;
+}
+
+.chat-message {
+	margin-bottom: 10px;
+}
+
+.chat-message.self {
+	text-align: right;
+	background-color: #ADD8E6;
+}
+
+.chat-message.other {
+	text-align: left;
+	background-color: #90EE90;
+}
+
+.chat-message.self .content {
+	background-color: #ADD8E6;
+}
+
+.chat-message.other .content {
+	background-color: #90EE90;
+}
+
+.chat-message .content {
+	display: inline-block;
+	padding: 5px 10px;
+	background-color: #1d4a6e;
+	color: #006400;
+	font-weight: bold;
+}
+
+.chat-input {
+	background-color: #508a8d;
+	border: 1px solid #7f5f5f;
+	display: flex;
+	align-items: center;
+	padding: 10px;
+}
+
+.chat-input input[type="text"] {
+	flex-grow: 1;
+	padding: 5px;
+	border: none;
+}
+
+.chat-input button {
+	margin-left: 10px;
+	padding: 5px 10px;
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+	<nav class="navbar navbar-expand-lg bg-dark"
+		style="height: 100px; color: white; font-size: 20px; font-weight: bold">
+		<div class="container-fluid">
+			<a class="navbar-brand" th:href="@{/ad/displayImage}" style="color: white;"> <img
+				style="width: 200px; margin: 18px" th:src="@{/image/nexus1001.png}" />&reg;
+			</a>
+			<button class="navbar-toggler" type="button"
+				data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+				aria-controls="navbarNavAltMarkup" aria-expanded="false"
+				aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+				<div class="navbar-nav">
+					<a class="nav-link" aria-current="page" style="padding-left: 50px"
+						th:href="@{/ad/displayImage}">首頁</a> <a class="nav-link"
+						style="padding-left: 50px" th:href="@{/mall/shopPage}">商城</a> <a
+						class="nav-link" style="padding-left: 50px"
+						th:href="@{/article/page}">論壇</a>
+					<th:block th:switch="${session.loggedInMember != null }">
+						<a class="nav-link" th:case=${true} style="padding-left: 50px"
+							th:href="@{/ad/upload}">廣告</a>
+					</th:block>
+					<th:block
+						th:switch="${session.loggedInMember != null && session.loggedInMember.level == 'admin' }">
+						<a class="nav-link" th:case=${true} style="padding-left: 50px"
+							th:href="@{/dashboardPage}">管理</a>
+					</th:block>
+				</div>
+			</div>
+
+		</div>
+		<div>
+			<th:block th:switch="${session.loggedInMember != null }">
+
+				<div style="width: 250px; display: flex; margin: 8px"
+					th:case=${false}>
+					<img style="width: 50px; margin: auto; border-radius: 0.375rem;"
+						th:src="@{/image/noimg.png}" />
+					<div style="width: 150px; display: flex; flex-direction: row;">
+						<a class="nav-link" style="margin: auto"
+							th:href="@{/member/loginPage}">登入</a> <a class="nav-link"
+							style="margin: auto" th:href="@{/member/signUpPage}">註冊</a>
+					</div>
+				</div>
+
+				<div style="display: flex" th:case=${true}>
+
+					<div style="width: 50px; margin: 8px">
+						<a class="nav-link" th:href="@{/member/profilePage}" id="member">
+							<th:block
+								th:switch="${session.loggedInMember.photo.length != 0 }">
+								<img th:case=${true} id="photo"
+									style="width: 50px; border-radius: 0.375rem;"
+									th:src="@{'data:image/*;base64,'+${session.loggedInMember.generateBase64Image()}}" />
+								<img th:case=${false} style="width: 50px"
+									th:src="@{/image/noimg.png}" />
+							</th:block>
+						</a>
+
+					</div>
+
+					<div style="width: 50px">
+						<a class="nav-link" th:href="@{/member/profilePage}" id="myName">[[${session.loggedInMember.username}]]</a><a
+							class="nav-link" th:href="@{/member/logout}">登出</a>
+					</div>
+
+				</div>
+
+			</th:block>
+
+		</div>
+		<th:block th:switch="${session.loggedInMember != null }">
+			<img th:case="true" id="toggleButton" class="toggle-button"
+				th:src="@{/image/rectangle-list-solidB.png}" onclick="toggleList()"></img>
+		</th:block>
+	</nav>
+	<div class="canvas-container">
+		<div class="canvas">
+
+			<button id="tabButton1" class="tab-button" onclick="showInvited()">邀請</button>
+			<button id="tabButton2" class="tab-button" onclick="showInvitation()">待處理</button>
+			<button id="tabButton3" class="tab-button" onclick="showFriend()">好友</button>
+			<span id="onlineNumber">0</span>
+			<div class="tab-content active" id="tabContent1">
+				<h1>邀請</h1>
+				<p>
+					<input type="text" id="searchInput" class="search-input"
+						placeholder="輸入成員名稱">
+					<button id="searchButton" class="search-button"
+						onclick="searchMember()">搜索</button>
+				<div id="searchResults"></div>
+				<div id="invitedList"></div>
+			</div>
+			<div class="tab-content" id="tabContent2">
+				<h1>待處理</h1>
+				<div id="invitationList"></div>
+			</div>
+			<div class="tab-content" id="tabContent3">
+				<h1>好友</h1>
+				<div id="friendList"></div>
+
+			</div>
+
+		</div>
+	</div>
+	<input type="hidden" id="searchMember" name="searchMember"></input>
+	<input type="hidden" id="targetPhoto"></input>
+	<input type="hidden" id="targetName"></input>
+	<input type="hidden" id="targetId"></input>
+	<input type="hidden" id="reading" value="0"></input>
+	<input id="id" type="hidden"
+		th:value="${session.loggedInMember} ? ${session.loggedInMember.id}"></input>
+	<input id="myId" type="hidden"
+		th:value="${session.loggedInMember} ? ${session.loggedInMember.id}"></input>
+
+
+
+	<div class="chat-popup" id="chatPopup">
+		<div class="chat-messages" id="chatMessages"></div>
+
+
+		<div class="chat-input">
+
+
+
+
+			<form id="form1" th:action="@{/message/addMessage}"
+				enctype="multipart/form-data" method="post">
+
+				<label for="part" style="cursor: pointer;"> <img
+					style="width: 30px; margin: 10px" th:src="@{/image/camera.png}" />
+				</label> <input type="file" name="part" id="part" style="display: none;"
+					onchange="sendImg()" /> <input type="text" name="content"
+					id="messageInput" placeholder="輸入訊息..."
+					style="margin-right: 10px; width: 250px;" /> <input type="hidden"
+					name="target" id="target" />
+			</form>
+			<button id="sendButton" style="margin-left: auto;">送出</button>
+
+
+		</div>
+	</div>
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/js/friend.js}"></script>
+
+</body>
+</html>

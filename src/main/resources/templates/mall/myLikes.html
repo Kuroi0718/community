@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>按讚商品</title>
+</head>
+<body style="overflow:hidden">
+
+<!-------------------------------喜愛商品Start ---------------------------------------------->
+		<div style="width: 800px; margin: auto">
+		
+		<th:block th:switch="${likeList != null}">
+			<div th:case="${true}">
+			<th:block th:each="p : ${likeList}">
+			<div style="display:flex;flex-direction:row" th:id="${p.productId}">
+				<div class="card" style="width: 540px;height:8rem;margin-bottom:20px;border-top-right-radius:0;border-bottom-right-radius:0;overflow:hidden;border:1px solid grey;">
+					<div style="display:flex;flex-direction:row">
+						<div style="width: 8rem; height: 8rem; overflow: hidden; border:none">
+							<img th:src="@{'/mall/showPhoto?productId=' + ${p.productId}}"
+								style="width: 8rem; height: 8rem;">
+						</div>
+						<div style="display:flex;flex-direction:column">
+							<div class="card-body">
+								<h5 class="card-title">商品名稱：[[${p.productName}]]</h5>
+								<p class="card-text">價格：NT$[[${p.price}]]元</p>
+								<p class="card-text">商品描述：[[${p.info}]]</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<a th:href="@{'/mall/productPage?productId=' + ${p.productId}}"><button type="button" class="button3"  style="height:8rem;border-radius:0;background-color:#D8D8EB">查看</button></a>
+				<button type="button" class="button3"  style="height:8rem;background-color:#D8D8EB" th:onclick="addToMyLikes([[${p.productId}]])"><img th:class="${p.productId}" th:src="@{'/mall/showLike?productId=' + ${p.productId}}"></button>
+				</div>
+				</th:block>
+			</div>
+		</th:block>
+	</div>
+<!-------------------------------喜愛商品End ---------------------------------------------->
+<th:block th:if="${likeList.size() == 0}">
+<div style="font-size:50px;width:1100px;text-align:center">尚無按讚紀錄<br>
+<img src="../image/noRecords.png" style="width:300px">
+</div>
+</th:block>	
+<script>
+function addToMyLikes(pid){
+let img = document.getElementsByClassName(pid)[0];
+console.log(pid);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+let str = xhttp.responseText;
+if(str==='0'){
+	img.src='/community/image/heart.png';
+}else{
+	img.src='/community/image/heart0.png';
+}
+}
+xhttp.open("POST","http://localhost:8080/community/mall/addToMyLikes",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+pid);
+}
+</script>
+</body>
+</html>

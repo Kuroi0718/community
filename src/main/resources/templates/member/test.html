@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>即時對話欄位</title>
+  <style>
+    .chat-popup {
+      position: fixed;
+      bottom: 30px;
+      right: 400px;
+      width: 400px;
+      height: 500px;
+      background-color: #f2f2f26f;
+
+      display: none;
+    }
+
+    .chat-popup.open {
+      display: block;
+    }
+
+    .chat-messages {
+      height: calc(100% - 40px);
+      padding: 10px;
+      overflow-y: auto;
+      border: 1px solid #7f5f5f;
+    }
+
+    .chat-message {
+      margin-bottom: 10px;
+    }
+
+    .chat-message.self {
+      text-align: left;
+    }
+
+    .chat-message.other {
+      text-align: right;
+    }
+
+    .chat-message .content {
+      display: inline-block;
+      padding: 5px 10px;
+      background-color: #1d4a6e;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .chat-input {
+      background-color: #508a8d;
+      border: 1px solid #7f5f5f;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+    }
+
+    .chat-input input[type="text"] {
+      flex-grow: 1;
+      padding: 5px;
+      border: none;
+    }
+
+    .chat-input button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button id="openChatButton">開啟對話</button>
+
+  <div class="chat-popup" id="chatPopup">
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input">
+      <input type="text" id="messageInput" placeholder="輸入訊息...">
+      <button id="sendButton">送出</button>
+    </div>
+  </div>
+
+  <script>
+    var openChatButton = document.getElementById("openChatButton");
+    var chatPopup = document.getElementById("chatPopup");
+    var chatMessages = document.getElementById("chatMessages");
+    var messageInput = document.getElementById("messageInput");
+    var sendButton = document.getElementById("sendButton");
+
+    openChatButton.addEventListener("click", function() {
+      chatPopup.classList.toggle("open");
+    });
+
+    sendButton.addEventListener("click", function() {
+      var message = messageInput.value.trim();
+      if (message !== "") {
+        appendMessage(message, "self");
+        messageInput.value = "";
+        messageInput.focus();
+      }
+    });
+
+    function appendMessage(content, sender) {
+      var messageContainer = document.createElement("div");
+      messageContainer.className = "chat-message " + sender;
+      var messageContent = document.createElement("div");
+      messageContent.className = "content";
+      messageContent.textContent = content;
+      messageContainer.appendChild(messageContent);
+      chatMessages.appendChild(messageContainer);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>管理商品</title>
+<style>
+.productTable,.some{
+border:3px solid grey;
+}
+.productTable td,.productTable th,.some td,.some th{
+border:3px solid grey;
+}
+</style>
+</head>
+<body>
+<!--------------------------------管理商品----------->
+<div style="width: 80vw;border:white 5 solid;margin:100px;margin-top:50px">
+<div id="some" style="overflow-y:scroll;position:absolute;width:500px;height:350px;
+margin-top:10vh;margin-left:20vw;z-index:5;background-color:white;display:none;">
+</div>
+		<th:block th:switch="${productList != null}">
+			<div th:case="${true}">
+			
+			<table class="productTable">
+			<thead>
+			<tr>
+			<th>管理</th>
+			<th>商品編號</th>
+			<th>商品名稱</th>
+			<th>價格</th>
+			<th>擁有者</th>
+			<th>販售方式</th>
+			<th>商品類型</th>
+			<th>類型細項</th>
+			<th>庫存</th>
+			<th>售出數量</th>
+			
+			</tr>
+			</thead>
+			<tbody>
+			<th:block th:each="p : ${productList}">
+			<tr>
+			<td th:id="${'banResult_'+p.productId}"><button th:onclick="banAndDelist([[${p.productId}]])">下架禁賣</button></td>
+			<td>[[${p.productId}]]</td>
+			<td>[[${p.productName}]]</td>
+			<td>NT$[[${p.price}]]</td>
+			<td>[[${p.ownerId}]]</td>
+			<td>
+			<th:block th:if="${p.timeLimit == 'noLimit'}">
+			直購
+			</th:block>
+			<th:block th:if="${p.timeLimit == '259200'}">
+			特賣
+			</th:block>
+			<th:block th:if="${p.timeLimit == '604800'}">
+			競標
+			</th:block>
+			<th:block th:if="${p.timeLimit == '1209600'}">
+			團購
+			</th:block>
+			
+			</td>
+			
+			<td>[[${p.category}]]</td>
+			<td>[[${p.detail}]]</td>
+			<td>[[${p.quantity}]]</td>
+			<td>[[${p.sold}]]</td>
+			</tr>
+			</th:block>
+			</tbody>
+			</table>
+			
+			</div>
+		</th:block>
+	</div>
+<!--------------------------------管理商品-END------->
+<script>
+function banAndDelist(pid){
+let banResult = document.getElementById('banResult_'+pid);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+banResult.innerHTML = '已禁賣';
+}
+xhttp.open("POST","http://localhost:8080/community/mall/banAndDelist",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+pid);
+}
+</script>
+</body>
+</html>

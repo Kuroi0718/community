@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<style>
+#reset, #send, input {
+	border-radius: 0.375rem;
+	font-weight: bold
+}
+</style>
+</head>
+<body style="background-image: url('../image/signup.png'); color: white">
+	<div th:replace="~{layout/navbar}"></div>
+	<div class="container"
+		style="margin-top: 50px; font-weight: bold; font-size: 20px; display: flex; flex-direction: row; justify-content: center">
+		<form th:action="@{/member/signup}" enctype="multipart/form-data"
+			method="post"
+			style="display: flex; flex-direction: column; vertical-align: middle; align-items: center; margin-right: 30px">
+			<div>
+				<div>
+					<label for="username">姓名：</label> <input type="text"
+						name="username" id="username" onkeyup="checkUsername()" required />
+					<span id="checkUsername"
+						style="color: #00E3E3; font-size: 30px; position: absolute"></span>
+				</div>
+				<br>
+				<div>
+					<input type="hidden" name="level" id="level" value="member" />
+				</div>
+				<div>
+					<label for="password">密碼：</label> <input type="password"
+						name="password" id="password" required />
+				</div>
+				<br>
+
+
+				<div>
+					<label for="tel">電話：</label> <input type="tel" name="tel" id="tel"
+						required />
+				</div>
+				<br>
+				<div>
+					<label for="birthday">生日：</label> <input type="date"
+						name="birthday" id="birthday" required />
+				</div>
+				<br>
+				<div>
+					<span>性別：</span> <input type="radio" name="gender" id="male"
+						value="male" required /> <label for="male"
+						style="padding-right: 15px">男</label> <input type="radio"
+						name="gender" id="female" value="female" required /> <label
+						for="female" style="padding-right: 15px">女</label>
+				</div>
+				<br>
+
+				<div>
+					<label for="email">信箱：</label> <input type="text" name="email"
+						id="email" onkeyup="checkEmail()" required /> <span id="mailValid"
+						style="color: #00E3E3; font-size: 30px; position: absolute"></span>
+
+					<div style="display: flex; flex-direction: row; display: none"
+						id="checkSixNumbers">
+						<input type="text" style="width: 25px" name="first" id="first" maxlength="1" oninput="moveToNextInput(event)"/>
+						<input type="text" style="width: 25px" name="second" id="second" maxlength="1" oninput="moveToNextInput(event)"/>
+						<input type="text" style="width: 25px" name="third" id="third" maxlength="1" oninput="moveToNextInput(event)"/>
+						<input type="text" style="width: 25px" name="forth" id="forth" maxlength="1" oninput="moveToNextInput(event)"/>
+						<input type="text" style="width: 25px" name="fifth" id="fifth" maxlength="1" oninput="moveToNextInput(event)"/>
+						<input type="text" style="width: 25px" name="sixth" id="sixth" maxlength="1" oninput="moveToNextInput(event)"/>
+						<button type="button" id="checkSixNumbersButton" onclick="checkSixNumbers()">驗證</button>
+					</div>
+
+				</div>
+				<br>
+				<div>
+					照片： <label
+						style="background-color: #46A3FF; height: 50px; width: 150px; border-radius: 0.375rem;">
+						<input type="file" name="photo" id="photo" style="display: none" />
+						<img src="../image/camera.png"
+						style="padding-left: 20px; padding-right: 3px;" /> <span
+						style="line-height: 50px; color: black">上傳照片</span>
+					</label>
+				</div>
+				<br>
+				<button id="reset" type="button"
+					style="width: 100px; height: 50px; margin: auto; font-size: 20px; margin-right: 10px">清除</button>
+				<button disabled="disabled" id="send"
+					style="width: 100px; height: 50px; margin: auto; font-size: 20px;">送出</button>
+			</div>
+		</form>
+		<div
+			style="width: 300px; height: 300px; border: solid black 1px; overflow: hidden; border-radius: 0.375rem;margin-left:200px">
+			<img class="container-fluid" id="viewPhoto"
+				th:src="@{/image/noimg.png}" style="height: 300px; padding: 0" />
+		</div>
+		<br>
+	</div>
+
+	<h3 th:text="${ok}"></h3>
+
+	<h3 th:text="${errorMsg}"></h3>
+
+</body>
+
+<script type="text/javascript">
+	
+		function checkUsername(){
+		let xhttp1 = new XMLHttpRequest();
+		xhttp1.onreadystatechange = function() {
+			if (xhttp1.readyState == 4 && xhttp1.status == 200)
+				document.getElementById("checkUsername").innerHTML = xhttp1.responseText;
+		}
+		xhttp1.open("POST","http://localhost:8080/community/member/ajax/checkUsername",true);
+		xhttp1.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhttp1.send("username="+username.value);
+		}
+  function moveToNextInput(event) {
+  let currentInput = event.target;
+  let maxLength = parseInt(currentInput.getAttribute("maxlength"));
+
+  if (currentInput.value.length >= maxLength) {
+    var nextInput = currentInput.nextElementSibling;
+    if (nextInput !== null) {
+      nextInput.focus();
+    }
+  }
+}
+
+		
+		function checkEmail(){
+		let xhttp2 = new XMLHttpRequest();
+		xhttp2.onreadystatechange = function() {
+			if (xhttp2.readyState == 4 && xhttp2.status == 200)
+				document.getElementById("mailValid").innerHTML = xhttp2.responseText;
+		}
+		xhttp2.open("POST","/community/member/ajax/validEmail",true);
+		xhttp2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhttp2.send("email="+email.value);
+		}
+		
+		
+		function sendEmail(){
+		let xhttp3 = new XMLHttpRequest();
+		xhttp3.onreadystatechange = function() {
+			if (xhttp3.readyState < 4){
+			    document.getElementById("mailValid").innerHTML="請稍後";
+			    }
+			if (xhttp3.readyState == 4 && xhttp3.status == 200){
+				document.getElementById("mailValid").innerHTML = xhttp3.responseText;
+				document.getElementById("checkSixNumbers").style.display='block';
+				window.setTimeout(() => {window.location.href='/community';}, 120000);
+				}
+		}
+		xhttp3.open("POST","/community/mail/valid",true);
+		xhttp3.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhttp3.send("email="+email.value);
+		}
+		
+		function checkSixNumbers(){
+		let xhrN = new XMLHttpRequest();
+		let form = new FormData();
+		form.append("email",document.getElementById("email").value);
+		form.append("first",document.getElementById("first").value);
+		form.append("second",document.getElementById("second").value);
+		form.append("third",document.getElementById("third").value);
+		form.append("forth",document.getElementById("forth").value);
+		form.append("fifth",document.getElementById("fifth").value);
+		form.append("sixth",document.getElementById("sixth").value);
+		xhrN.onreadystatechange = function() {
+			if (xhrN.readyState == 4 && xhrN.status == 200){
+			document.getElementById("mailValid").innerHTML=xhrN.responseText;
+			if(xhrN.responseText=='正確'){document.getElementById("send").disabled=false;}
+			if(xhrN.responseText=='錯誤'){window.setTimeout(() => {window.location.href='/community/ad/displayImage';}, 2000);}
+		}}
+		xhrN.open("POST","/community/mail/checkNumbers",true);
+		xhrN.send(form);
+		}
+		
+document.getElementById("reset").addEventListener("click",function (){
+viewPhoto.src='/community/image/noimg.png';
+username.value="";
+password.value="";
+tel.value="";
+photo.value="";
+email.value="";
+male.checked = false;
+female.checked = false;
+document.getElementById("checkUsername").innerHTML="";
+document.getElementById("mailValid").innerHTML="";
+})
+
+document.getElementById("photo").addEventListener("change", function(e) {
+	let photo = this.files[0];
+	viewPhoto.src=URL.createObjectURL(photo);
+})
+</script>
+</html>

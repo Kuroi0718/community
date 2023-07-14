@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+</style>
+</head>
+<body style="background-color: #EAE0D5">
+	<div th:replace="~{layout/navbar}"></div>
+	<div id="forum"
+		style="filter: none; position: absolute; z-index: -2; width: 100vw">
+		<div
+			style="height: 88vh; width: 100vw; overflow-y: scroll; scroll-behavior: smooth;">
+
+
+			<div style="display: flex; flex-direction: column">
+				<!---------------------------------- --------------------------------------->
+				<div
+					style="flex: wrap; width: 1000px; margin: auto; border: 5px solid rgb(0, 0, 0); padding: 20px">
+					<h2 id="articleTitle" style="display: block">[[${article.title}]]</h2>
+					<input id="articleTitleEdit0" style="display: none" type="text"
+						th:value="${article.title}"
+						th:oninput="syncInputs(this.value, 'articleTitleEdit')" /> <img
+						th:src="@{'data:image/jpeg;base64,'+${author.generateBase64Image()}}"
+						style="width: 100px; border-radius: 0.375rem">
+					<p>作者：[[${author.username}]]</p>
+					<th:block
+						th:switch="${session.loggedInMember != null && session.loggedInMember.id!=article.authorId}">
+						<div style="display: flex; flex-direction: row">
+							<button th:case=${true}
+								th:id="'articleGear_' + ${article.authorId}"
+								style="width: 40px; height: 40px; background: url('../image/gear.png') center no-repeat; background-size: cover;"></button>
+
+							<div th:id="'options_articleGear_' + ${article.authorId}"
+								style="display: none;"></div>
+						</div>
+					</th:block>
+					<th:block th:switch="${article.status}">
+						<p th:case=0 id="articleContent"
+							style="display: block; white-space: pre-line;">
+							[[${article.content}]]</p>
+						<p th:case=1 id="articleContent"
+							style="display: block; white-space: pre-line;">已由原作者屏蔽</p>
+						<p th:case=2 id="articleContent"
+							style="display: block; white-space: pre-line;">內容已封鎖</p>
+					</th:block>
+					<form th:action="@{/article/update}" enctype="multipart/form-data"
+						id="formEdit" method="post">
+						<textarea id="articleContentEdit" th:name="articleContentEdit"
+							style="resize: none; display: none; height: 150px; width: 800px;">[[${article.content}]]</textarea>
+						<input id="articleTitleEdit" th:name="articleTitleEdit"
+							type="hidden" th:value="${article.title}" /> <input
+							id="articleId" th:name="articleId" type="hidden"
+							th:value="${article.id}" /> <input id="articleLikes"
+							th:name="articleLikes" type="hidden" th:value="${article.likes}" />
+					</form>
+					<br>
+					<th:block
+						th:switch="${session.loggedInMember} ? ${session.loggedInMember.id == author.id && session.loggedInMember.level!='banned'}">
+						<div th:case=${true} style="display: flex; gap: 150px;">
+							<button id="toggleEdit" onclick="showEdit()">修改</button>
+							<button id="articleEditConfirm" style="display: none;"
+								onclick="sendArticleEdit()">確認修改</button>
+							<button th:onclick="deleteArticle([[${article.id}]])">刪除</button>
+						</div>
+					</th:block>
+					<div style="display: flex; float: right; gap: 20px;">
+						<th:block
+							th:switch="${session.loggedInMember} ? ${(session.loggedInMember.id == author.id && article.status!=2)||(session.loggedInMember.level == 'admin' && article.status!=1)}">
+							<button th:case=${true} id="articleLock"
+								th:onclick="toggleArticleLock(this.id)"
+								style="width: 25px; height: 25px; background: url('/community/image/lock-open-solid.png') center no-repeat; background-size: cover;"></button>
+						</th:block>
+						<th:block th:switch="${session.loggedInMember!=null}">
+							<button th:case=${true} id="articleBookmark"
+								th:onclick="toggleBookmarkLikes(this.id)"
+								style="width: 25px; height: 25px; background: url('/community/image/heart0.png') center no-repeat; background-size: cover;"></button>
+						</th:block>
+						<th:block th:switch="${session.loggedInMember!=null}">
+							<button th:case=${true} id="articleThumb"
+								th:onclick="toggleArticleLikes()"
+								style="width: 25px; height: 25px; background: url('/community/image/thumbs-up-regular.png') center no-repeat; background-size: cover;"></button>
+							<img th:case=${false} style="width: 25px; height: 25px;"
+								src="/community/image/thumbs-up-regular.png">
+						</th:block>
+						<span th:id="articleLike" th:text="${article.likes}"></span> <span
+							id="articlePostTime">[[${article.getPostDateString}]]</span>
+					</div>
+				</div>
+				<!---------------------------------- --------------------------------------->
+				<th:block th:each="aReply : ${replyList}">
+					<div
+						style="width: 1000px; margin: auto; border: 5px solid rgb(0, 0, 0); padding: 20px">
+						<div>
+
+							<div style="gap: 20px;">
+								<img style="width: 50px;" th:id="'authorPhoto_' + ${aReply.id}"
+									src="" th:alt="${aReply.id}"> <span
+									th:id="'authorName_' + ${aReply.id}">name</span>
+								<th:block
+									th:switch="${session.loggedInMember != null && session.loggedInMember.id!=aReply.authorId}">
+									<div style="display: flex; flex-direction: row">
+										<button th:case=${true}
+											th:id="'replyGear_' + ${aReply.authorId}"
+											style="width: 40px; height: 40px; background: url('../image/gear.png') center no-repeat; background-size: cover;"></button>
+
+										<div th:id="'options_replyGear_' + ${aReply.authorId}"
+											style="display: none;"></div>
+									</div>
+								</th:block>
+								<br> <input type="hidden"
+									th:id="'replyStatus_' + ${aReply.id}"
+									th:value="${aReply.status}">
+								<th:block th:switch="${aReply.status}">
+									<span th:id="'replyContent_' + ${aReply.id}" th:case=0
+										style="white-space: pre-line;">[[${aReply.content}]]</span>
+									<span th:id="'replyContent_' + ${aReply.id}" th:case=1
+										style="white-space: pre-line;">已由原作者屏蔽</span>
+									<span th:id="'replyContent_' + ${aReply.id}" th:case=2
+										style="white-space: pre-line;">內容已封鎖</span>
+								</th:block>
+								<form th:action="@{/reply/update}" enctype="multipart/form-data"
+									th:id="'formEdit_' + ${aReply.id}" method="post">
+									<input th:name="replyId" type="hidden" th:value="${aReply.id}"></input>
+									<input th:id="'replyContentEdit_' + ${aReply.id}"
+										th:name="replyContentEdit"
+										style="resize: none; display: none;"
+										th:value="${aReply.content}"></input>
+								</form>
+								<br>
+								<th:block
+									th:switch="${session.loggedInMember} ? ${session.loggedInMember.id == aReply.authorId && session.loggedInMember.level!='banned'}">
+									<div th:case=${true} style="display: flex; gap: 150px;">
+										<button th:id="'toggleReplyEdit_' + ${aReply.id}"
+											onclick="showReplyEdit(this.id)">修改</button>
+										<button th:id="'replyEditConfirm_' + ${aReply.id}"
+											style="display: none;" onclick="sendReplyEdit(this.id)">確認修改</button>
+										<button th:onclick="deleteReply([[${aReply.id}]])">刪除</button>
+									</div>
+								</th:block>
+							</div>
+							<div style="display: flex; justify-content: flex-end; gap: 20px;">
+								<th:block
+									th:switch="${session.loggedInMember} ? ${(session.loggedInMember.id == aReply.authorId && aReply.status!=2)||(session.loggedInMember.level == 'admin' && aReply.status!=1)}">
+									<button th:case=${true} th:id="'replyLock_' + ${aReply.id}"
+										th:onclick="toggleReplyLock(this.id)"
+										style="width: 25px; height: 25px; background: url('/community/image/lock-open-solid.png') center no-repeat; background-size: cover;"></button>
+								</th:block>
+								<th:block th:switch="${session.loggedInMember!=null}">
+									<button th:case=${true} th:id="'replyThumb_' + ${aReply.id}"
+										th:onclick="toggleReplyLikes(this.id)"
+										style="width: 25px; background: url('/community/image/thumbs-up-regular.png') center no-repeat; background-size: cover;"></button>
+									<img th:case=${false} style="width: 25px; height: 25px;"
+										src="/community/image/thumbs-up-regular.png">
+								</th:block>
+								<span th:id="'replyLike_' + ${aReply.id}"
+									th:text="${aReply.likes}"></span> <span
+									th:id="'replyTime_' + ${aReply.id}"
+									th:text="${aReply.getReplyDateString()}"></span>
+							</div>
+						</div>
+					</div>
+				</th:block>
+				<input type="hidden" id="articleStatus" th:value="${article.status}" />
+				<input type="hidden" id="authorId" th:value="${article.authorId}" />
+				<br>
+				<br>
+				<th:block
+					th:switch="${session.loggedInMember != null && session.loggedInMember.level!='banned'}">
+					<form th:case=${true} th:action="@{/reply/add}"
+						enctype="multipart/form-data" method="post"
+						style="display: flex; flex-direction: column; vertical-align: middle; align-items: center; margin-right: 30px">
+						<div>
+							<input type="hidden" name="articleId" th:value="${article.id}" />
+							<textarea name="replyContent" placeholder="輸入回覆內容..."
+								style="resize: none; margin-right: 10px; width: 500px"></textarea>
+							<br>
+							<button id="sendReply"
+								style="width: 100px; height: 50px; margin: auto; font-size: 20px">送出</button>
+						</div>
+					</form>
+				</th:block>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+let a0 = document.getElementById("articleTitle");
+let a1 = document.getElementById("articleTitleEdit0");
+let b0 = document.getElementById("articleContent");
+let b1 = document.getElementById("articleContentEdit");
+let c0 = document.getElementById("articleEditConfirm");
+showRepliesUsername();
+showRepliesPhoto();
+showArticleLikes();
+function showEdit(){
+if (a0.style.display === "none") {
+  a0.style.display = "block";
+  a1.style.display = "none";
+  b0.style.display = "block";
+  b1.style.display = "none";
+  c0.style.display = "none";
+  toggleEdit.innerText="修改"
+} else {
+  a0.style.display = "none";
+  a1.style.display = "block";
+  b0.style.display = "none";
+  b1.style.display = "block";
+  c0.style.display = "block";
+  toggleEdit.innerText="取消"
+}
+}
+function showReplyEdit(x){
+if (document.getElementById("replyContent_"+x.split('_').pop()).style.display === "none") {
+  document.getElementById("replyContent_"+x.split('_').pop()).style.display = "block";
+  document.getElementById("replyContentEdit_"+x.split('_').pop()).style.display = "none";
+  document.getElementById("replyEditConfirm_"+x.split('_').pop()).style.display = "none";
+  document.getElementById("toggleReplyEdit_"+x.split('_').pop()).innerText="修改"
+} else {
+  document.getElementById("replyContent_"+x.split('_').pop()).style.display = "none";
+  document.getElementById("replyContentEdit_"+x.split('_').pop()).style.display = "block";
+  document.getElementById("replyEditConfirm_"+x.split('_').pop()).style.display = "block";
+  document.getElementById("toggleReplyEdit_"+x.split('_').pop()).innerText="取消"
+}
+}
+function syncInputs(value, targetId) {
+  document.getElementById(targetId).value = value;
+}
+function sendArticleEdit() {
+document.getElementById("articleTitle").textContent=document.getElementById("articleTitleEdit").value;
+document.getElementById("articleContent").innerText=document.getElementById("articleContentEdit").value;
+let form = document.getElementById("formEdit");
+let formdata = new FormData(form);
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+if(document.getElementById("articleStatus").value == 1){
+document.getElementById("articleContent").innerText="已由原作者屏蔽";
+}
+if(document.getElementById("articleStatus").value == 2){
+document.getElementById("articleContent").innerText="內容已封鎖";
+}
+document.getElementById("articlePostTime").innerText = xhr.responseText;
+showEdit();
+}
+xhr.open("POST", "/community/article/update", true);
+xhr.send(formdata);
+}
+function sendReplyEdit(x) {
+document.getElementById("replyContent_"+x.split('_').pop()).innerText=document.getElementById("replyContentEdit_"+x.split('_').pop()).value;
+let form = document.getElementById("formEdit_"+x.split('_').pop());
+let formdata = new FormData(form);
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+if(document.getElementById("replyStatus_"+x.split('_').pop()).value == 1){
+document.getElementById("replyContent_"+x.split('_').pop()).innerText="已由原作者屏蔽";
+}
+if(document.getElementById("replyStatus_"+x.split('_').pop()).value == 2){
+document.getElementById("replyContent_"+x.split('_').pop()).innerText="內容已封鎖";
+}
+document.getElementById("replyTime_"+x.split('_').pop()).innerText = xhr.responseText;
+showReplyEdit(x);
+}
+xhr.open("POST", "/community/reply/update", true);
+xhr.send(formdata);
+}
+function deleteArticle(x){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+window.location.href = '/community/article/page';
+}
+xhr.open("POST", "/community/article/delete", true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send("id="+x);
+}
+function deleteReply(x){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+window.location.href = '/community/article/showArticle?id='+articleId.value;
+}
+xhr.open("POST", "/community/reply/delete", true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send("id="+x);
+}
+function showRepliesUsername(){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+let list = JSON.parse(xhr.responseText);
+for (let i = 0; i < list.length; i++) {
+document.getElementById("authorName_"+list[i].id).innerText=list[i].username+" :";
+}
+}
+xhr.open("GET", "/community/article/showRepliesMembers?id="+articleId.value, true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send();
+}
+function showRepliesPhoto(){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+let list = JSON.parse(xhr.responseText);
+for (let i = 0; i < list.length; i++) {
+document.getElementById("authorPhoto_"+list[i].id).src='data:image/*;base64,'+list[i].src;
+}
+}
+xhr.open("GET", "/community/article/showRepliesPhoto?id="+articleId.value, true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send();
+}
+function toggleThumb(x) {
+    let currentImage = document.getElementById(x).style.backgroundImage;
+    if (currentImage.includes("thumbs-up-regular.png")) {
+        document.getElementById(x).style.backgroundImage = "url('/community/image/thumbs-up-solid.png')";
+    } else {
+        document.getElementById(x).style.backgroundImage = "url('/community/image/thumbs-up-regular.png')";
+    }
+}
+function toggleHeart(x) {
+    let currentImage = document.getElementById(x).style.backgroundImage;
+    if (currentImage.includes("heart0.png")) {
+        document.getElementById(x).style.backgroundImage = "url('/community/image/heart.png')";
+    } else {
+        document.getElementById(x).style.backgroundImage = "url('/community/image/heart0.png')";
+    }
+}
+function toggleLock(x) {
+    let currentImage = document.getElementById(x).style.backgroundImage;
+    if (currentImage.includes("lock-open-solid.png")) {
+        document.getElementById(x).style.backgroundImage = "url('/community/image/lock-solid.png')";
+    } else {
+        document.getElementById(x).style.backgroundImage = "url('/community/image/lock-open-solid.png')";
+    }
+}
+function toggleBookmarkLikes(x){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+toggleHeart(x);
+}
+xhr.open("POST", "/community/bookmark/toggleLikes", true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send("articleId="+articleId.value);
+}
+function checkArticleLikes(){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+if(xhr.responseText!=0){toggleThumb('articleThumb');}
+}
+xhr.open("GET", "/community/article/checkLikes?articleId="+articleId.value, true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send();
+}
+function checkBookMark(){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+if(xhr.responseText!=0){toggleHeart('articleBookmark');}
+}
+xhr.open("GET", "/community/bookmark/checkLikes?articleId="+articleId.value, true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send();
+}
+function checkReplyLikes(x){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+if(xhr.responseText!=0){toggleThumb('replyThumb_'+x);}
+}
+xhr.open("GET", "/community/reply/checkLikes?replyId="+x, true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send();
+}
+function checkRepliesLikesList(){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+let list = JSON.parse(xhr.responseText);
+for (let i = 0; i < list.length; i++) {
+checkReplyLikes(list[i].id);
+showReplyLikes(list[i].id);
+ if(document.getElementById("replyLock_"+list[i].id) != null && document.getElementById("replyStatus_"+list[i].id).value!=0){toggleLock('replyLock_'+list[i].id);}
+ if (document.getElementById("replyGear_"+list[i].mid)!=null){
+  document.getElementById("replyGear_"+list[i].mid).addEventListener("click", function(event) {
+    event.stopPropagation(); 
+    showMemberRelation("replyGear_"+list[i].mid);
+    if (document.getElementById("options_replyGear_"+list[i].mid).style.display === "none") {
+      document.getElementById("options_replyGear_"+list[i].mid).style.display = "block"; 
+    } else {
+      document.getElementById("options_replyGear_"+list[i].mid).style.display = "none"; 
+    }
+  });
+  document.addEventListener("click", function(event) {
+    if (event.target !== document.getElementById("replyGear_"+list[i].mid) && !document.getElementById("options_replyGear_"+list[i].mid).contains(event.target)) {
+      document.getElementById("options_replyGear_"+list[i].mid).style.display = "none"; 
+    }
+  });}
+}
+}
+xhr.open("GET", "/community/article/showRepliesMembers?id="+articleId.value, true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send();
+}
+function toggleArticleLikes(){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+toggleThumb('articleThumb');
+showArticleLikes();
+}
+xhr.open("POST", "/community/article/toggleLikes", true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send("articleId="+articleId.value);
+}
+function toggleArticleLock(){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+toggleLock('articleLock');
+let result=JSON.parse(xhr.responseText.replace(/\n/g, "\\n").replace(/\r/g, "\\r"));
+document.getElementById("articlePostTime").innerText=result.time;
+document.getElementById("articleContent").innerText=result.msg;
+}
+xhr.open("POST", "/community/article/toggleLock", true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send("articleId="+articleId.value);
+}
+function toggleReplyLock(x){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+toggleLock(x);
+let result=JSON.parse(xhr.responseText.replace(/\n/g, "\\n").replace(/\r/g, "\\r"));
+document.getElementById("replyTime_"+x.split('_').pop()).innerText=result.time;
+document.getElementById("replyContent_"+x.split('_').pop()).innerText=result.msg;
+}
+xhr.open("POST", "/community/reply/toggleLock", true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send("replyId="+x.split('_').pop());
+}
+function showArticleLikes(){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+articleLike.innerText=xhr.responseText;
+}
+xhr.open("GET", "/community/article/showLikes?articleId="+articleId.value, true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send();
+}
+function toggleReplyLikes(x){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+toggleThumb(x);
+showReplyLikes(x.split('_').pop());
+}
+xhr.open("POST", "/community/reply/toggleLikes", true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send("replyId="+x.split('_').pop());
+}
+function showReplyLikes(x){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+ document.getElementById("replyLike_"+x).innerText=xhr.responseText;
+}
+xhr.open("GET", "/community/reply/showLikes?replyId="+x, true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send();
+}
+function showMemberRelation(x){
+let xhr = new XMLHttpRequest();
+xhr.onload = function() {
+ if (xhr.responseText == 1) {
+				document.getElementById("options_"+x).innerHTML = `
+							<button onclick="beFriend(` +parseInt(x.split('_').pop()) + `);document.getElementById('options_`+x+`').style.display='none';"><img style='height:25px;' src='/community/image/person-circle-plus-solid.png'></button>
+		                    `;
+			}
+			else if (xhr.responseText == 2) {
+				document.getElementById("options_"+x).innerHTML = `
+							<button onclick="unFriend(` +parseInt(x.split('_').pop()) + `);document.getElementById('options_`+x+`').style.display='none';"><img style='height:25px;' src='/community/image/circle-xmark-solid.png'></button>
+		                    `;
+			}
+			else if (xhr.responseText == 3) {
+				document.getElementById("options_"+x).innerHTML = `
+							<button onclick="beFriend(` +parseInt(x.split('_').pop()) + `);document.getElementById('options_`+x+`').style.display='none';"><img style='height:25px;' src='/community/image/circle-check-solid.png'></button>
+							<button onclick="unFriend(` +parseInt(x.split('_').pop()) + `);document.getElementById('options_`+x+`').style.display='none';"><img style='height:25px;' src='/community/image/circle-xmark-solid.png'></button>
+		                    `;
+			}
+			else if (xhr.responseText == 0) {
+				document.getElementById("options_"+x).innerHTML = `
+							<button onclick="unFriend(` +parseInt(x.split('_').pop()) + `);document.getElementById('options_`+x+`').style.display='none';"><img style='height:25px;' src='/community/image/person-circle-minus-solid.png'></button>
+		                    `;
+			}
+}
+xhr.open("POST", "/community/member/ajax/memberRelation", true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.send("id="+parseInt(x.split('_').pop()));
+}
+document.addEventListener("DOMContentLoaded", function() {
+if(document.getElementById("myId").value!=""){
+  let gearButton = document.getElementById("articleGear_"+authorId.value);
+  let options = document.getElementById("options_articleGear_"+authorId.value);
+  if(gearButton!=null){
+  gearButton.addEventListener("click", function(event) {
+    event.stopPropagation(); 
+    showMemberRelation("articleGear_"+authorId.value);
+    if (options.style.display === "none") {
+      options.style.display = "block"; 
+    } else {
+      options.style.display = "none"; 
+    }
+  })}
+  document.addEventListener("click", function(event) {
+    if (event.target !== gearButton && !options.contains(event.target)) {
+      options.style.display = "none"; 
+    }
+  });
+checkRepliesLikesList();
+checkBookMark();
+checkArticleLikes();
+if(document.getElementById("articleLock")!=null&&articleStatus.value!=0){toggleLock('articleLock');}
+}})
+</script>
+</html>

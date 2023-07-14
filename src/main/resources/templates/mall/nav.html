@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>myNav</title>
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<style>
+.login:hover,.create:hover{
+transform:scale(1.05);
+}
+.login:active,.create:active{
+transform:scale(1);
+}
+a {
+	text-decoration: none;
+	color: white
+}
+
+a:hover {
+	color: grey
+}
+
+@keyframes down {from {
+	
+}
+
+to {
+	transform: translateY(330px);
+}
+
+}
+.navbar .toggle-button {
+	padding: 4px 8px;
+	border: none;
+	cursor: pointer;
+	width: 50px;
+}
+
+.nav-link {
+	color: white;
+}
+
+.canvas-container {
+	position: fixed;
+	top: 100px;
+	right: 0;
+	height: 80%;
+	width: 0;
+	padding: 0px;
+	background-color: #f2f2f2;
+	transition: width 0.3s ease;
+	overflow-y: auto;
+}
+
+.canvas-container.active {
+	width: 400px;
+}
+
+.canvas .search-input {
+	padding: 8px;
+	width: 100%;
+	font-size: 16px;
+	border: 1px solid #ccc;
+	margin-bottom: 8px;
+}
+
+.canvas .search-button {
+	padding: 8px 16px;
+	font-size: 16px;
+	background-color: #4286f4;
+	color: white;
+	border: none;
+	cursor: pointer;
+	margin-bottom: 8px;
+	width:100px;
+	border-radius:0.375rem;
+	background:url('../image/blueBTN.png');
+	background-size:100px;
+	background-repeat:no-repeat;
+	background-position:center;
+}
+
+.canvas .invite-button {
+	padding: 8px 16px;
+	font-size: 16px;
+	background-color: #4286f4;
+	color: white;
+	border: none;
+	cursor: pointer;
+}
+
+.canvas .tab-button {
+	padding: 10px;
+	margin: 2px;
+	background-color: #4286f4;
+	color: white;
+	border: none;
+	cursor: pointer;
+	width:100px;
+	border-radius:0.375rem;
+	background:url('../image/blueBTN.png');
+	background-size:100px;
+	background-repeat:no-repeat;
+	background-position:center;
+}
+
+.canvas .tab-button.active {
+	background-color: #333;
+}
+
+.tab-content {
+	height: calc(100% - 50px);
+	padding: 16px;
+	overflow-y: auto;
+	display: none;
+}
+
+.tab-content.active {
+	display: block;
+}
+
+.chat-popup {
+	position: fixed;
+	bottom: 30px;
+	right: 400px;
+	width: 400px;
+	height: 500px;
+	background-color: #f2f2f26f;
+	display: none;
+}
+
+.chat-popup.open {
+	display: block;
+}
+
+.chat-messages {
+	height: calc(100% - 40px);
+	padding: 10px;
+	overflow-y: auto;
+	border: 1px solid #7f5f5f;
+	border-radius: 5px;
+}
+
+.content {
+	white-space: pre-wrap;
+	word-break: break-all;
+	max-width: 200px;
+}
+
+.chat-message {
+	margin-bottom: 10px;
+}
+
+.chat-message.self {
+	text-align: right;
+	background-color: #ADD8E6;
+}
+
+.chat-message.other {
+	text-align: left;
+	background-color: #90EE90;
+}
+
+.chat-message.self .content {
+	background-color: #ADD8E6;
+}
+
+.chat-message.other .content {
+	background-color: #90EE90;
+}
+
+.chat-message .content {
+	display: inline-block;
+	padding: 5px 10px;
+	background-color: #1d4a6e;
+	color: #006400;
+	font-weight: bold;
+}
+
+.chat-input {
+	background-color: #508a8d;
+	border: 1px solid #7f5f5f;
+	display: flex;
+	align-items: center;
+	padding: 10px;
+}
+
+.chat-input input[type="text"] {
+	flex-grow: 1;
+	padding: 5px;
+	border: none;
+}
+
+.chat-input button {
+	margin-left: 10px;
+	padding: 5px 10px;
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	cursor: pointer;
+}
+</style>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#"><span style="font-size: 40px"><img
+					th:src="@{/image/nexus1001.png}" width="200px" /></span></a>
+			<button class="navbar-toggler" type="button"
+				data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+				aria-controls="navbarSupportedContent" aria-expanded="false"
+				aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0" style="margin: auto;">
+					<li class="nav-item" style="padding-inline: 3vw;"><a
+						class="nav-link active" aria-current="page"
+						th:href="@{/mall/shopPage}" id="1st"
+						style="font-size: 22px; font-weight: bold; color: #ebebeb">商城</a>
+					</li>
+					<li class="nav-item" style="padding-inline: 3vw;"><a
+						class="nav-link active" th:href="@{/mall/limitPage}" id="2nd"
+						style="font-size: 22px; font-weight: bold; color: #ebebeb">限時商品</a></li>
+					<!-- 
+					<li class="nav-item" style="padding-inline: 3vw;"><a
+						class="nav-link active" th:href="@{/mall/bidPage}" id="3rd">活動專區</a></li>
+			 -->
+
+					<th:block th:switch="${session.loggedInMember != null}">
+						<!-- Q -->
+						<li class="nav-item" style="padding-inline: 3vw;"
+							th:case="${true}"><a class="nav-link active"
+							th:href="@{'/mall/myShopPage?id=' + ${session.loggedInMember.id}}"
+							id="4th"
+							style="font-size: 22px; font-weight: bold; color: #ebebeb">我的賣場</a></li>
+
+						<li class="nav-item" style="padding-inline: 3vw;"
+							th:case="${false}"><a class="nav-link active" id="4th"
+							data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="#"
+							style="font-size: 22px; font-weight: bold; color: #ebebeb">我的賣場</a></li>
+					</th:block>
+					<!-- Q -->
+
+					<th:block th:switch="${session.loggedInMember != null}">
+						<!-- P -->
+						<li class="nav-item" th:case="${true}"
+							style="padding-inline: 3vw;"><a class="nav-link active"
+							th:href="@{/mall/mePage}" id="5th"
+							style="font-size: 22px; font-weight: bold; color: #ebebeb">我的</a></li>
+						<li class="nav-item" th:case="${false}"
+							style="padding-inline: 3vw;"><a class="nav-link active"
+							href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+							id="5th"
+							style="font-size: 22px; font-weight: bold; color: #ebebeb">我的</a></li>
+					</th:block>
+					<!-- P -->
+
+					<li class="nav-item" style="padding-inline: 3vw;"><a
+						class="nav-link active" th:href="@{/ad/displayImage}" id="6th"
+						style="font-size: 22px; font-weight: bold;">回首頁</a></li>
+				</ul>
+				<th:block th:switch="${session.loggedInMember != null}">
+					<!-- 123 -->
+					<div th:case="${false}">
+						<a class="login" th:href="@{/member/loginPage}" target="_self"><button
+								style="height: 50px; width: 60px; font-size: 20px; border-radius: 10px; background-color: #EAE0D5; background-image: url('../image/blackBTN.png'); background-repeat: no-repeat; background-position: center; border: none; font-weight: bold; color: white; margin-right: 10px">登入</button></a>
+						<a class="create" th:href="@{/member/signUpPage}" target="_self"><button
+								style="height: 50px; width: 60px; font-size: 20px; border-radius: 10px; background-color: #EAE0D5; background-image: url('../image/blackBTN.png'); background-repeat: no-repeat; background-position: center; border: none; font-weight: bold; color: white;">註冊</button></a>
+					</div>
+
+					<div th:case="${true}" style="display:flex;flex-direction:row;">
+					   <div>
+						<div class="nav-link"  id="myName" style="height:1px;opacity:0">[[${session.loggedInMember.username}]]</div>
+						<a class="nav-link" th:href="@{/member/profilePage}" id="member">
+								<img id="photo"
+									style="width: 50px; border-radius: 0.375rem;margin-right:20px"
+									th:src="@{'data:image/*;base64,'+${session.loggedInMember.generateBase64Image()}}" />
+						</a> 
+						</div>
+						<a class="login" th:href="@{/member/logout}" target="_self"><button
+								style="height: 50px; width: 60px; font-size: 20px; border-radius: 10px; background-color: #EAE0D5; background-image: url('../image/blackBTN.png'); background-repeat: no-repeat; background-position: center; border: none; font-weight: bold; color: white; margin-right: 10px">登出</button></a>
+						<a class="create" href="#" target="_self"><button  id="toggleButton" class="toggle-button" onclick="toggleList()"
+								style="height: 50px; width: 120px; font-size: 20px; border-radius: 10px; background-color: #EAE0D5; background-image: url('../image/blackBTN.png'); background-repeat: no-repeat; background-position: center; border: none; font-weight: bold; color: white;">好友列表</button></a>
+					</div>
+				</th:block>
+				<!-- 123 -->
+
+
+
+
+
+
+			</div>
+		</div>
+	</nav>
+
+	<div class="" id="box1"
+		style="background-color: #5B5B5B; height: 350px; display: none; color: white; position: absolute; z-index: -1; width: 100vw; top: -250px; animation-name: down; animation-duration: 0.5s; animation-fill-mode: forwards; animation-play-state: paused; opacity: 0.9">
+		<span id="span1" style="display: flex; flex-direction: row"> <span
+			style="margin-right: 30px"><br>服飾:<br>
+			<a th:href="@{/mall/shopPageNav?category=服飾&detail=女裝}">女裝</a><br>
+			<a th:href="@{/mall/shopPageNav?category=服飾&detail=機能服/運動服/配件}">機能服/運動服/配件</a><br>
+			<a th:href="@{/mall/shopPageNav?category=服飾&detail=內衣/睡衣/塑身衣}">內衣/睡衣/塑身衣</a><br>
+			<a th:href="@{/mall/shopPageNav?category=服飾&detail=襪子}">襪子</a><br>
+			<a th:href="@{/mall/shopPageNav?category=服飾&detail=童裝配件/孕期服飾}">童裝配件/孕期服飾</a><br>
+			<a th:href="@{/mall/shopPageNav?category=服飾&detail=男裝}">男裝</a><br>
+			<a th:href="@{/mall/shopPageNav?category=服飾&detail=其他}">其他</a></span> <span
+			style="margin-right: 30px"><br>鞋包配件:<br>
+			<a th:href="@{/mall/shopPageNav?category=鞋包配件&detail=鞋子}">鞋子</a><br>
+			<a th:href="@{/mall/shopPageNav?category=鞋包配件&detail=流行包}">流行包</a><br>
+			<a th:href="@{/mall/shopPageNav?category=鞋包配件&detail=國際精品/飾品/配件}">國際精品/飾品/配件</a><br>
+			<a th:href="@{/mall/shopPageNav?category=鞋包配件&detail=眼鏡}">眼鏡</a><br>
+			<a th:href="@{/mall/shopPageNav?category=鞋包配件&detail=髮飾/穿搭配件}">髮飾/穿搭配件</a><br>
+			<a th:href="@{/mall/shopPageNav?category=鞋包配件&detail=其他}">其他</a></span> <span
+			style="margin-right: 30px"><br>休閒生活:<br>
+			<a th:href="@{/mall/shopPageNav?category=休閒生活&detail=旅行用品專區}">旅行用品專區</a><br>
+			<a th:href="@{/mall/shopPageNav?category=休閒生活&detail=登山健行}">登山健行</a><br>
+			<a th:href="@{/mall/shopPageNav?category=休閒生活&detail=戶外休閒}">戶外休閒</a><br>
+			<a th:href="@{/mall/shopPageNav?category=休閒生活&detail=瑜珈用品}">瑜珈用品</a><br>
+			<a th:href="@{/mall/shopPageNav?category=休閒生活&detail=運動健身}">運動健身</a><br>
+			<a th:href="@{/mall/shopPageNav?category=休閒生活&detail=汽車用品}">汽車用品</a><br>
+			<a th:href="@{/mall/shopPageNav?category=休閒生活&detail=機車/自行車}">機車/自行車</a><br>
+			<a th:href="@{/mall/shopPageNav?category=休閒生活&detail=其他}">其他</a></span> <span
+			style="margin-right: 30px"><br>3C:<br>
+			<a th:href="@{/mall/shopPageNav?category=3C&detail=喇叭/揚聲器/耳機}">喇叭/揚聲器/耳機</a><br>
+			<a th:href="@{/mall/shopPageNav?category=3C&detail=儲存/隨身碟/記憶卡}">儲存/隨身碟/記憶卡</a><br>
+			<a th:href="@{/mall/shopPageNav?category=3C&detail=手機/手機周邊配件}">手機/手機周邊配件</a><br>
+			<a th:href="@{/mall/shopPageNav?category=3C&detail=相機/攝影機}">相機/攝影機</a><br>
+			<a th:href="@{/mall/shopPageNav?category=3C&detail=繪圖/手寫板}">繪圖/手寫板</a><br>
+			<a th:href="@{/mall/shopPageNav?category=3C&detail=滑鼠鍵盤}">滑鼠鍵盤</a><br>
+			<a th:href="@{/mall/shopPageNav?category=3C&detail=筆電/桌機/平板電腦}">筆電/桌機/平板電腦</a><br>
+			<a th:href="@{/mall/shopPageNav?category=3C&detail=其他}">其他</a></span> <span
+			style="margin-right: 30px"><br>寵物生活:<br>
+			<a th:href="@{/mall/shopPageNav?category=寵物生活&detail=狗/貓主食}">狗/貓主食</a><br>
+			<a th:href="@{/mall/shopPageNav?category=寵物生活&detail=狗/貓零食}">狗/貓零食</a><br>
+			<a th:href="@{/mall/shopPageNav?category=寵物生活&detail=寵物居家用品}">寵物居家用品</a><br>
+			<a th:href="@{/mall/shopPageNav?category=寵物生活&detail=寵物外出用品}">寵物外出用品</a><br>
+			<a th:href="@{/mall/shopPageNav?category=寵物生活&detail=寵物營養保健品}">寵物營養保健品</a><br>
+			<a th:href="@{/mall/shopPageNav?category=寵物生活&detail=其他}">其他</a></span>
+		</span>
+	</div>
+
+	<div class="" id="box2"
+		style="background-color: #5B5B5B; height: 200px; display: none; color: white; position: absolute; z-index: -1; width: 100vw; top: -250px; animation-name: down; animation-duration: 0.5s; animation-fill-mode: forwards; animation-play-state: paused; opacity: 0.9;font-size:20px">
+		<span id="span2" style="display: flex; flex-direction: row"> <span
+			style="margin-right: 30px"><br>&nbsp;&nbsp;<a
+				th:href="@{/mall/flashPage}">特賣</a><br>&nbsp;&nbsp;<a
+				th:href="@{/mall/bidPage}">競標</a><br>&nbsp;&nbsp;<a
+				th:href="@{/mall/groupPage}">團購</a></span>
+		</span>
+	</div>
+	<!-- 
+	<div class="" id="box3"
+		style="background-color:#5B5B5B; height: 200px; display: none; color: white;position:absolute;z-index:-1;width:100vw;top:-250px
+		;animation-name:down;animation-duration:0.5s;animation-fill-mode: forwards;animation-play-state:paused;opacity: 0.9">
+		<span id="span3" style="display:flex; flex-direction:row">
+		<span style="margin-right:30px"><br>&nbsp;&nbsp;<a href="">第3項</a><br>&nbsp;&nbsp;<a href="">第3項</a><br>&nbsp;&nbsp;<a href="">第3項</a><br>&nbsp;&nbsp;<a href="">第3項</a><br>&nbsp;&nbsp;<a href="">第3項</a></span>
+		</span></div>
+ -->
+
+	
+	<!--提示框Start  -->
+	<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static"
+		data-bs-keyboard="false" tabindex="-1"
+		aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="staticBackdropLabel">提示</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body" style="font-size: 40px">請先登入</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">先不登入</button>
+					<a th:href="@{/member/loginPage}"><button type="button"
+							class="btn btn-primary">前往登入</button></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--提示框End  -->
+
+
+	<div class="canvas-container">
+		<div class="canvas">
+
+			<button id="tabButton1" class="tab-button" onclick="showInvited()">邀請</button>
+			<button id="tabButton2" class="tab-button" onclick="showInvitation()">待處理</button>
+			<button id="tabButton3" class="tab-button" onclick="showFriend()">好友</button>
+			<br><span id="onlineNumber">0</span>
+			<div class="tab-content active" id="tabContent1">
+				<h1>邀請</h1>
+				<p>
+					<input type="text" id="searchInput" class="search-input"
+						placeholder="輸入成員名稱">
+					<button id="searchButton" class="search-button"
+						onclick="searchMember()">搜索</button>
+				<div id="searchResults"></div>
+				<div id="invitedList"></div>
+			</div>
+			<div class="tab-content" id="tabContent2">
+				<h1>待處理</h1>
+				<div id="invitationList"></div>
+			</div>
+			<div class="tab-content" id="tabContent3">
+				<h1>好友</h1>
+				<div id="friendList"></div>
+
+			</div>
+
+		</div>
+	</div>
+	<input type="hidden" id="searchMember" name="searchMember"></input>
+	<input type="hidden" id="targetPhoto"></input>
+	<input type="hidden" id="targetName"></input>
+	<input type="hidden" id="targetId"></input>
+	<input type="hidden" id="reading" value="0"></input>
+	<input id="id" type="hidden"
+		th:value="${session.loggedInMember} ? ${session.loggedInMember.id}"></input>
+	<input id="myId" type="hidden"
+		th:value="${session.loggedInMember} ? ${session.loggedInMember.id}"></input>
+
+
+
+	<div class="chat-popup" id="chatPopup">
+		<div class="chat-messages" id="chatMessages"></div>
+
+
+		<div class="chat-input">
+
+
+
+
+			<form id="form1" th:action="@{/message/addMessage}"
+				enctype="multipart/form-data" method="post">
+
+				<label for="part" style="cursor: pointer;"> <img
+					style="width: 30px; margin: 10px" th:src="@{/image/camera.png}" />
+				</label> <input type="file" name="part" id="part" style="display: none;"
+					onchange="sendImg()" /> <input type="text" name="content"
+					id="messageInput" placeholder="輸入訊息..."
+					style="margin-right: 10px; width: 250px;" /> <input type="hidden"
+					name="target" id="target" />
+			</form>
+			<button id="sendButton" style="margin-left: auto;">送出</button>
+
+
+		</div>
+	</div>
+	
+	<script th:src="@{/js/friend.js}"></script>
+
+</body>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script>
+let span1  = document.getElementById('span1');
+    let div1  = document.getElementById('1st');
+    let div2  = document.getElementById('2nd');
+    let div4  = document.getElementById('4th');
+    let div5  = document.getElementById('5th');
+    let div6  = document.getElementById('6th');
+    let box1 = document.getElementById('box1');
+    let box2 = document.getElementById('box2');
+
+    div1.addEventListener("mouseover",function(){
+    
+    pos (span1,div1, event);
+    
+        box1.style.display = "block";
+        box1.style.animationName = "down"
+        box1.style.animationPlayState = "running" 
+        box2.style.display = "none";
+    })
+    box1.addEventListener("mouseleave",function(){
+        box1.style.display = "none";
+        box1.style.transform= "translateY(-330px)";
+    })
+
+    div2.addEventListener("mouseover",function(){
+    pos (span2,div2, event);
+        box1.style.display = "none";
+        box2.style.display = "block"
+        box2.style.animationName = "down"
+        box2.style.animationPlayState = "running";
+    })
+    box2.addEventListener("mouseleave",function(){
+        box2.style.display = "none";
+        box2.style.transform= "translateY(-330px)";
+    })
+
+	div4.addEventListener("mouseover",function(){ 
+        box1.style.display = "none";
+        box2.style.display = "none"
+        
+    })
+	div5.addEventListener("mouseover",function(){ 
+        box1.style.display = "none";
+        box2.style.display = "none"
+        
+    })
+    div6.addEventListener("mouseover",function(){ 
+        box1.style.display = "none";
+        box2.style.display = "none"
+        
+    })
+
+
+var pos = function (o, div, event) {  //滑鼠定位賦值函數
+    var posX = 0;  //臨時變數值
+    var e = event || window.event;  //標準化事件物件
+    let oo = getPosition(div);
+    o.style.position = "absolute";  //定義當前物件為絕對定位
+    o.style.left = oo.x + "px";  //用滑鼠指標的x軸坐標設定物件x軸坐標
+}
+
+function getPosition (element) {
+  var x = 0;
+
+  // 搭配上面的示意圖可比較輕鬆理解為何要這麼計算
+  while ( element ) {
+    x += element.offsetLeft - element.scrollLeft + element.clientLeft;
+
+    element = element.offsetParent;
+  }
+
+  return { x: x};
+}
+
+
+
+</script>
+
+
+</html>

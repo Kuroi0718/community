@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>問與答</title>
+</head>
+<body style="overflow:hidden">
+
+<!---------------------------------- 問與答Start ------------------------------------------->
+		<div style="width: 800px; margin: auto">
+		<th:block th:switch="${unansweredList != null}">
+			<div th:case="${true}">
+			<th:block th:each="q : ${unansweredList}">
+			<div style="display:flex;flex-direction:row" th:id="${q.productId}" class="animated">
+				<div class="card" style="width: 540px;height:8rem;margin-bottom:20px;border-top-right-radius:0;border-bottom-right-radius:0;overflow:hidden;border:1px solid grey;">
+					<div style="display:flex;flex-direction:row">
+						<div style="width: 8rem; height: 8rem; overflow: hidden; border:none">
+							<img th:src="@{'/mall/showPhoto?productId=' + ${q.productId}}"
+								style="width: 8rem; height: 8rem;">
+						</div>
+						<div style="display:flex;flex-direction:column">
+							<div class="card-body">
+								<h5 class="card-title"></h5>
+								<p class="card-text">問題：[[${q.content}]]</p>
+								<p class="card-text">
+									<small class="text-muted">發問時間：[[${q.askDate}]]</small>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<button th:id="${'ansBtn_'+q.questionId}" type="button" class="button3" th:onclick="answer([[${q.questionId}]])" style="height:8rem;">回答</button>
+				</div>
+				
+<!-------------------------------編輯框---------------------------------------------->
+<div style="display:none" th:id="${'a_'+q.questionId}">
+<div style="width:540px;height:8rem;background-color:#C0C0C0;z-index:5;margin-bottom:20px;padding-left:50px;border-radius:0.375rem">
+<form th:id="${'answerForm_'+q.questionId}" th:action="@{/mall/productAnswer}" enctype="multipart/form-data" method="post" style="display:flex;flex-direction:row;padding-top:3rem;padding-right:2rem;">
+	<input type="hidden" name="questionId" th:value="${q.questionId}"></input>
+	<textarea  rows="3" name="answer" placeholder="請輸入回答......"
+			style="width: 35rem; height: 5vh; resize: none;border-radius:0.375rem;line-height:4vh"></textarea>
+		<button type="button" style="width: 8rem;height: 5vh;display:flex;line-height:5vh;border-radius:0.375rem;text-align:center;justify-content:center" th:onclick="sendAnswerForm([[${q.questionId}]])">提交</button>
+</form>
+</div>
+</div>
+<!-------------------------------編輯框---------------------------------------------->
+				
+				</th:block>
+			</div>
+		</th:block>
+	</div>
+<!------------------------------------- 問與答End -------------------------------------------> 
+<th:block th:if="${unansweredList.size() == 0}">
+<div style="font-size:50px;width:1100px;text-align:center">尚無未回答的問題<br>
+<img src="../image/noRecords.png" style="width:300px">
+</div>
+</th:block>	
+<script>
+function answer(Qid){
+let answerBlock = document.getElementById("a_"+Qid);
+if(answerBlock.style.display=='none'){
+answerBlock.style.display = 'block';
+}else{
+answerBlock.style.display = 'none';
+}
+}
+
+function sendAnswerForm(Qid){
+let answerBlock = document.getElementById("a_"+Qid);
+let answerForm = document.getElementById("answerForm_"+Qid);
+let ansBtn = document.getElementById("ansBtn_"+Qid);
+let formdata = new FormData(answerForm);
+
+
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+ansBtn.disabled = true;
+ansBtn.style.backgroundColor = 'green';
+ansBtn.style.color = 'white';
+ansBtn.innerHTML = '已答覆';
+answerBlock.style.display = 'none';
+}
+xhttp.open("POST","http://localhost:8080/community/mall/productAnswer",true);
+xhttp.send(formdata);
+}
+</script>
+</body>
+</html>

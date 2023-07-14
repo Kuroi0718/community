@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>我的</title>
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<style>
+
+.myTabs{
+height: 80px;font-size:30px;border-radius:10px;background-color:#EAE0D5;
+background-image:url('../image/blackBTN.png');background-repeat:no-repeat;background-position:center;
+border:none;font-weight:bold;color:white;
+}
+.myTabs:hover{transform:scale(1.05)}
+.myTabs:active{transform:scale(1)}
+
+</style>
+</head>
+<body style="overflow: hidden;background-color:#EAE0D5">
+	<div th:replace="~{mall/nav}"></div>
+
+	<div id="myShop"
+		style="filter: none; position: absolute; z-index: -2; width: 100vw;">
+		<div style="height: 88vh; width: 100vw; overflow-y: scroll;scroll-behavior:smooth;">
+<!---------------------------------->	
+<div style="display:flex;flex-direction:row;" id="top">
+<figure>
+<div style="display:flex;flex-direction:column;width:300px;margin:20px">
+ <div style="width:300px;height:100px;background:url('../image/score.png')  no-repeat center ;background-size:contain;text-align:center;line-height:110px;font-size:25px;font-weight:bold;color:#2f3192">[[${myRating}]]</div>
+<div style="width: 13rem; height: 13rem; overflow: hidden; margin: auto; border: 1px solid silver; border-radius: 13rem;background-color:white">
+ <img th:src="@{'data:image/jpeg;base64,'+${session.loggedInMember.generateBase64Image()}}"
+ style="width: 13rem; height: 13rem;"></div>
+<button id="myCartButton" class="myTabs" style="background-image:url('../image/blueBTN.png');">購物車</button>
+<button id="myOrderButton" class="myTabs">訂單查詢</button>
+<button id="myRatingButton" class="myTabs">我的評價</button>
+<button id="myLikesButton" class="myTabs">按讚商品</button>
+<button id="myRecordButton" class="myTabs">最近瀏覽</button>
+</div>
+</figure>
+ 
+  
+
+<div id="myCartBlock" style="display:block;margin:auto">
+<div th:replace="~{mall/myCart}" ></div>
+</div>
+<div id="myOrderBlock" style="display:none;">
+<div th:replace="~{mall/myOrder}" ></div>
+</div>
+<div id="myRatingBlock" style="display:none;margin:auto">
+<div th:replace="~{mall/myRating}" ></div>
+</div>
+<div id="myLikesBlock" style="display:none;margin:auto">
+<div th:replace="~{mall/myLikes}" ></div>
+</div>
+<div id="myRecordBlock" style="display:none;margin:auto">
+<div th:replace="~{mall/myRecord}" ></div>
+</div>
+</div>
+<!--------------------------------->
+<!-----right--buttons--------------------------->			
+	<a href="#top"><button style="width:50px;height:50px;border-radius:0.375rem;background-color:#BDB4BF;position:fixed;right:35px;bottom:30px;background-image:url('../image/up.png');background-repeat:no-repeat;background-position:center;border:grey 1px solid"></button></a>
+<!-----right--buttons--------------------------->
+</div>
+</div>
+<script>
+
+let myCartButton = document.getElementById('myCartButton');
+let myOrderButton = document.getElementById('myOrderButton');
+let myRatingButton = document.getElementById('myRatingButton');
+let myLikesButton = document.getElementById('myLikesButton');
+let myRecordButton = document.getElementById('myRecordButton');
+
+let myCartBlock = document.getElementById('myCartBlock');
+let myOrderBlock = document.getElementById('myOrderBlock');
+let myRatingBlock = document.getElementById('myRatingBlock');
+let myLikesBlock = document.getElementById('myLikesBlock');
+let myRecordBlock = document.getElementById('myRecordBlock');
+myCartButton.addEventListener("click",function(){
+myCartButton.style.backgroundImage="url('../image/blueBTN.png')";
+myOrderButton.style.backgroundImage="url('../image/blackBTN.png')";
+myRatingButton.style.backgroundImage="url('../image/blackBTN.png')";
+myLikesButton.style.backgroundImage="url('../image/blackBTN.png')";
+myRecordButton.style.backgroundImage="url('../image/blackBTN.png')";
+myCartBlock.style.display='block';
+myOrderBlock.style.display='none';
+myRatingBlock.style.display='none';
+myLikesBlock.style.display='none';
+myRecordBlock.style.display='none';
+})
+myOrderButton.addEventListener("click",function(){
+myCartButton.style.backgroundImage="url('../image/blackBTN.png')";
+myOrderButton.style.backgroundImage="url('../image/blueBTN.png')";
+myRatingButton.style.backgroundImage="url('../image/blackBTN.png')";
+myLikesButton.style.backgroundImage="url('../image/blackBTN.png')";
+myRecordButton.style.backgroundImage="url('../image/blackBTN.png')";
+myCartBlock.style.display='none';
+myOrderBlock.style.display='block';
+myRatingBlock.style.display='none';
+myLikesBlock.style.display='none';
+myRecordBlock.style.display='none';
+})
+myRatingButton.addEventListener("click",function(){
+myCartButton.style.backgroundImage="url('../image/blackBTN.png')";
+myOrderButton.style.backgroundImage="url('../image/blackBTN.png')";
+myRatingButton.style.backgroundImage="url('../image/blueBTN.png')";
+myLikesButton.style.backgroundImage="url('../image/blackBTN.png')";
+myRecordButton.style.backgroundImage="url('../image/blackBTN.png')";
+myCartBlock.style.display='none';
+myOrderBlock.style.display='none';
+myRatingBlock.style.display='block';
+myLikesBlock.style.display='none';
+myRecordBlock.style.display='none';
+})
+myLikesButton.addEventListener("click",function(){
+myCartButton.style.backgroundImage="url('../image/blackBTN.png')";
+myOrderButton.style.backgroundImage="url('../image/blackBTN.png')";
+myRatingButton.style.backgroundImage="url('../image/blackBTN.png')";
+myLikesButton.style.backgroundImage="url('../image/blueBTN.png')";
+myRecordButton.style.backgroundImage="url('../image/blackBTN.png')";
+myCartBlock.style.display='none';
+myOrderBlock.style.display='none';
+myRatingBlock.style.display='none';
+myLikesBlock.style.display='block';
+myRecordBlock.style.display='none';
+})
+myRecordButton.addEventListener("click",function(){
+myCartButton.style.backgroundImage="url('../image/blackBTN.png')";
+myOrderButton.style.backgroundImage="url('../image/blackBTN.png')";
+myRatingButton.style.backgroundImage="url('../image/blackBTN.png')";
+myLikesButton.style.backgroundImage="url('../image/blackBTN.png')";
+myRecordButton.style.backgroundImage="url('../image/blueBTN.png')";
+myCartBlock.style.display='none';
+myOrderBlock.style.display='none';
+myRatingBlock.style.display='none';
+myLikesBlock.style.display='none';
+myRecordBlock.style.display='block';
+})
+</script>
+<script>
+let all = document.getElementById('myShop');
+ all.addEventListener("mouseover",function(){
+        all.style.filter = "none";
+ })
+ div1.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+ div2.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>最近瀏覽</title>
+</head>
+<body style="overflow:hidden">
+
+<!-------------------------------最近瀏覽Start ---------------------------------------------->
+		<div style="width: 800px; margin: auto">
+		<th:block th:if="${recordList.size() != 0}">
+		<button id="deleteMyRecordButton" onclick="deleteMyRecord()"
+		style="width:150px;height:49.5px;line-height:49.5px;color:white;font-weight:bold;font-size:20px;
+					background-image:url('../image/blackBTN.png');background-size:cover;background-color:transparent;border:none;margin-bottom:20px">清空瀏覽紀錄</button>
+		</th:block>
+		
+		<div id="myRecord">
+		<th:block th:switch="${recordList != null}">
+			<div th:case="${true}">
+			<th:block th:each="p : ${recordList}">
+			<div style="display:flex;flex-direction:row" th:id="${p.productId}">
+				<div class="card" style="width: 540px;height:8rem;margin-bottom:20px;border-top-right-radius:0;border-bottom-right-radius:0;overflow:hidden;border:1px solid grey;">
+					<div style="display:flex;flex-direction:row">
+						<div style="width: 8rem; height: 8rem; overflow: hidden; border:none">
+							<img th:src="@{'/mall/showPhoto?productId=' + ${p.productId}}"
+								style="width: 8rem; height: 8rem;">
+						</div>
+						<div style="display:flex;flex-direction:column">
+							<div class="card-body">
+								<h5 class="card-title">商品名稱：[[${p.productName}]]</h5>
+								<p class="card-text">價格：NT$[[${p.price}]]元</p>
+								<p class="card-text">商品描述：[[${p.info}]]</p>
+								
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<a th:href="@{'/mall/productPage?productId=' + ${p.productId}}"><button type="button" class="button3"  style="height:8rem;">查看</button></a>
+				</div>
+				</th:block>
+			</div>
+		</th:block>
+		</div>
+	</div>
+<!-------------------------------最近瀏覽End ---------------------------------------------->
+<th:block th:if="${recordList.size() == 0}">
+<div style="font-size:50px;width:1100px;text-align:center">尚無瀏覽紀錄<br>
+<img src="../image/noRecords.png" style="width:300px">
+</div>
+</th:block>
+<div id="noRecordsBlock" style="font-size:50px;width:1100px;text-align:center;display:none">尚無瀏覽紀錄<br>
+<img src="../image/noRecords.png" style="width:300px">
+</div>
+<script>
+function deleteMyRecord(){
+let myRecord = document.getElementById('myRecord');
+let deleteMyRecordButton = document.getElementById('deleteMyRecordButton');
+let noRecordsBlock = document.getElementById('noRecordsBlock');
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+myRecord.innerHTML = "";
+deleteMyRecordButton.style.display='none';
+noRecordsBlock.style.display='block';
+}
+xhttp.open("POST","http://localhost:8080/community/mall/deleteMyRecord",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send();
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+.MyMemberTable, .MyMemberTable td, .MyMemberTable th {
+	border: 3px solid grey;
+}
+    .MyMemberTable {
+        width: 100%;
+        margin: 0 auto;
+    }
+</style>
+</head>
+<body>
+	<div th:replace="~{layout/navbar}"></div>
+	<form th:action="@{/article/page}" enctype="multipart/form-data"
+		method="get">
+		<div style="display: flex; flex-direction: column; padding: 5px 10px;">
+			<div
+				style="display: flex; flex-direction: row; padding: 10px; margin: auto;">
+				<input type="text" id="var6" th:value="${search}" name="search"
+					style="width: 300px;"> <select id="var5" name="where"
+					style="width: 100px;" th:value="${where}">
+					<option value="title">標題</option>
+					<option value="content">內容</option>
+					<option value="authorName">作者</option>
+					<option value="id">id</option>
+				</select>
+
+				<button style="height: 50px; margin: auto;">搜尋</button>
+			</div>
+
+		</div>
+	</form>
+
+	<nav aria-label="Page navigation example">
+		<ul class="pagination">
+			<th:block th:switch="${page.number > 0 }">
+				<li class="page-item" th:case=${true}><a class="page-link"
+					th:onclick="goToPage([[${page.number}]],var8.value)">上一頁</a></li>
+				<li class="page-item" th:case=${false}><span class="page-link">上一頁</span></li>
+			</th:block>
+			<li class="page-item"><a class="page-link" onclick="gM()">&lt;&lt;</a></li>
+			<th:block
+				th:each=" groupNumber : ${#numbers.sequence(1,page.totalPages/5+1)} ">
+				<div th:id="${groupNumber}" class="pagination">
+					<th:block
+						th:each=" pageNumber : ${#numbers.sequence(5*groupNumber-4,5*groupNumber)} ">
+						<th:block th:switch="${ pageNumber <= page.totalPages }">
+							<span th:case=${true}> <th:block
+									th:switch="${ page.number != pageNumber -1 }">
+									<li class="page-item" th:case=${true}><a class="page-link"
+										th:onclick="goToPage([[${pageNumber}]],[[${groupNumber}]])">[[${pageNumber}]]</a></li>
+									<li class="page-item" th:case=${false}><span
+										class="page-link">[[${pageNumber}]]</span></li>
+								</th:block>
+							</span>
+						</th:block>
+					</th:block>
+				</div>
+			</th:block>
+			<li class="page-item"><a class="page-link" onclick="gP()">&gt;&gt;</a></li>
+			<th:block th:switch="${page.number+1 < page.totalPages }">
+				<li class="page-item" th:case=${true}><a class="page-link"
+					th:onclick="goToPage([[${page.number+2}]],var8.value)">下一頁</a></li>
+				<li class="page-item" th:case=${false}><span class="page-link">下一頁</span></li>
+			</th:block>
+			<li class="page-item"><input style="width: 70px" type="number"
+				th:value="${ page.number +1 }" id="pageInput" onchange="range()"></input>
+				<button id="pageButton"
+					onclick="goToPage(pageInput.value,(pageInput.value-1-((pageInput.value-1)%5))/5+1)">前往</button></li>
+		</ul>
+	</nav>
+
+
+	<table class="MyMemberTable">
+		<thead>
+			<tr>
+				<td><button th:onclick="sortBy('id')">ID</button></td>
+				<td><button th:onclick="sortBy('title')">文章</button></td>
+				<td><button th:onclick="sortBy('likes')">讚數</button></td>
+				<td><button th:onclick="sortBy('authorName')">作者</button></td>
+				<td><button th:onclick="sortBy('postDate')">最後修改日期</button></td>
+			</tr>
+		</thead>
+
+		<tbody>
+			<th:block th:each=" aArticle : ${page.content} ">
+
+				<tr>
+					<td th:text="${aArticle} ? ${aArticle.id}"></td>
+					<td><a th:href="@{'/article/showArticle?id='+${aArticle.id}}">[[${aArticle.title}]]</a></td>
+					<td th:text="${aArticle} ? ${aArticle.likes}"></td>
+					<td th:text="${aArticle} ? ${aArticle.authorName}"></td>
+					<td th:text="${aArticle} ? ${aArticle.getPostDateString()}"></td>
+				</tr>
+			</th:block>
+		</tbody>
+	</table>
+	<input type="hidden" id="var1" th:value="${page.totalPages/5+1}"></input>
+	<input type="hidden" id="var2" th:value="${page.totalPages}"></input>
+	<input type="hidden" id="var3" name="sort" th:value="${sort}"></input>
+	<input type="hidden" id="var4" name="order" th:value="${order}"></input>
+	<input type="hidden" id="var7" name="where" th:value="${where}"></input>
+	<input type="hidden" id="var8" name="groupNumber" th:value="${group}"></input>
+
+
+
+
+
+<th:block th:switch="${session.loggedInMember != null && session.loggedInMember.level!='banned'}">
+<br>
+<br>
+	<form th:case=${true} th:action="@{/article/add}" enctype="multipart/form-data"
+		method="post"
+		style="display: flex; flex-direction: column; vertical-align: middle; align-items: center; margin-right: 30px">
+		<div>
+			<div>
+				<label for="articleTitle">標題：</label> <input id="articleTitle" type="text" name="articleTitle" required /> 
+			</div>
+			<br> <textarea name="articleContent" placeholder="輸入文章內容..." style="resize: none;margin-right: 10px; width: 750px" /></textarea><br>
+			<br>
+
+			<button id="sendArticle"
+				style="width: 100px; height: 50px; margin: auto; font-size: 20px">送出</button>
+		</div>
+	</form>
+</th:block>
+
+
+</body>
+
+<script type="text/javascript">
+		var pages= document.getElementById("var1").value;
+		var totalPages= document.getElementById("var2").value;
+		if(parseInt(totalPages)%5==0){pages=parseInt(pages)-1;}
+		showGroup();
+		document.getElementById("var5").querySelector("option[value='" + var7.value + "']").selected = true;
+		
+		
+		function showGroup(){
+		for(let i=1;i<=pages;i++){
+		document.getElementById(i).style.display='none';
+		}
+		let j=var8.value;
+		document.getElementById(j).style.display='';
+		}
+		
+		
+		function gP(){
+		if(var8.value<pages)
+		document.getElementById("var8").value=parseInt(document.getElementById("var8").value)+1;
+		showGroup();
+		}
+		function gM(){
+		if(var8.value>1)
+		document.getElementById("var8").value=parseInt(document.getElementById("var8").value)-1;
+		showGroup();
+		}
+		
+		function goToPage(i,j){
+		window.location.href = "/community/article/page?p="+i+"&group="+j+"&sort="+var3.value+"&order="+var4.value+"&search="+var6.value+"&where="+var5.value;
+		}
+		
+
+		
+		function range(){
+		if(pageInput.value - 1 <0){
+		pageInput.value=1;}
+		
+		if(pageInput.value - totalPages >0){
+		pageInput.value=totalPages;}
+		}
+		
+		function sortBy(x){
+		if(var3.value!=x){
+		   var4.value='asc';
+		   }
+		else if(var3.value==x && var4.value!='desc'){
+		   var4.value='desc';
+		   }
+		else if(var3.value==x && var4.value=='desc'){
+		   var4.value='asc';
+		   }
+		var3.value=x;
+		goToPage('1','1');
+		}
+	</script>
+
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>管理</title>
+<style>
+.techButton{
+width:229px;height:70px;font-size:30px;background-image:url('image/techButton.png');
+background-repeat:no-repeat;background-position:center;
+border:none;font-weight:bold;color:#CAFFFF;
+}
+</style>
+</head>
+<body style="background-color:#EAE0D5;overflow:hidden">
+<div th:replace="~{layout/navbar}"></div>
+<div id="shop"
+		style="filter: none; position: absolute; z-index: -2; width: 100vw">
+		<div style="height: 88vh; width: 100vw; overflow-y: scroll;scroll-behavior:smooth;">
+<!--------------------------------內容---------------------------------------------------------->
+<!-------------------------------所選內容---MENU--------------------------------------------------------->
+<div style="display:flex;flex-direction:row;">
+<div style="width:229px;height:100%;background-color:black;position:fixed">
+<img style="width:229px;margin-bottom:20px;" 
+	src="https://upload.wikimedia.org/wikipedia/commons/7/7f/Rotating_earth_animated_transparent.gif">
+<button id="Button1" class="techButton" style="color:yellow">會員管理</button>
+<button id="Button2" class="techButton">訂單管理</button>
+<button id="Button3" class="techButton">商品管理</button>
+<button id="Button4" class="techButton">廣告管理</button>
+<button id="Button5" class="techButton">論壇管理</button>
+</div>
+
+<div id="Block1" th:style="'display:' + (${activeBlock} == 'Block1' ? 'block' : 'none') + '; margin:auto;'">
+    <div th:replace="~{member/showMembers}"></div>
+</div>
+<div id="Block2" th:style="'display:' + (${activeBlock} == 'Block2' ? 'block' : 'none') + '; margin-left: 279px; margin-top: 50px;'">
+<div th:replace="~{mall/orderTable}"></div>
+</div>
+<div id="Block3" th:style="'display:' + (${activeBlock} == 'Block3' ? 'block' : 'none') + ';  margin-left: 279px; margin-top: 50px;'">
+   <div th:replace="~{mall/productTable}"></div>
+</div>
+<div id="Block4" th:style="'display:' + (${activeBlock} == 'Block4' ? 'block' : 'none') + '; margin:auto;'">
+    <div th:replace="~{ad/listAd}"></div>
+</div>
+<div id="Block5" th:style="'display:' + (${activeBlock} == 'Block5' ? 'block' : 'none') + '; margin:auto; margin-top: 50px;'">
+<div th:replace="~{member/forumBlocked}"></div>
+</div>
+</div>
+<!--------------------------------所選內容-END-----MENU-END-------------------------------------------------->
+<!--------------------------------內容END--------------------------------------------------------->
+</div>
+</div>
+<script>
+let Button1 = document.getElementById('Button1');
+let Button2 = document.getElementById('Button2');
+let Button3 = document.getElementById('Button3');
+let Button4 = document.getElementById('Button4');
+let Button5 = document.getElementById('Button5');
+let Block1 = document.getElementById('Block1');
+let Block2 = document.getElementById('Block2');
+let Block3 = document.getElementById('Block3');
+let Block4 = document.getElementById('Block4');
+let Block5 = document.getElementById('Block5');
+Button1.addEventListener("click",function(){
+Button1.style.color = 'yellow';
+Button2.style.color = '#CAFFFF';
+Button3.style.color = '#CAFFFF';
+Button4.style.color = '#CAFFFF';
+Button5.style.color = '#CAFFFF';
+Block1.style.display = 'block';
+Block2.style.display = 'none';
+Block3.style.display = 'none';
+Block4.style.display = 'none';
+Block5.style.display = 'none';
+})
+Button2.addEventListener("click",function(){
+Button1.style.color = '#CAFFFF';
+Button2.style.color = 'yellow';
+Button3.style.color = '#CAFFFF';
+Button4.style.color = '#CAFFFF';
+Button5.style.color = '#CAFFFF';
+Block1.style.display = 'none';
+Block2.style.display = 'block';
+Block3.style.display = 'none';
+Block4.style.display = 'none';
+Block5.style.display = 'none';
+})
+Button3.addEventListener("click",function(){
+Button1.style.color = '#CAFFFF';
+Button2.style.color = '#CAFFFF';
+Button3.style.color = 'yellow';
+Button4.style.color = '#CAFFFF';
+Button5.style.color = '#CAFFFF';
+Block1.style.display = 'none';
+Block2.style.display = 'none';
+Block3.style.display = 'block';
+Block4.style.display = 'none';
+Block5.style.display = 'none';
+})
+Button4.addEventListener("click",function(){
+Button1.style.color = '#CAFFFF';
+Button2.style.color = '#CAFFFF';
+Button3.style.color = '#CAFFFF';
+Button4.style.color = 'yellow';
+Button5.style.color = '#CAFFFF';
+Block1.style.display = 'none';
+Block2.style.display = 'none';
+Block3.style.display = 'none';
+Block4.style.display = 'block';
+Block5.style.display = 'none';
+})
+Button5.addEventListener("click",function(){
+Button1.style.color = '#CAFFFF';
+Button2.style.color = '#CAFFFF';
+Button3.style.color = '#CAFFFF';
+Button4.style.color = '#CAFFFF';
+Button5.style.color = 'yellow';
+Block1.style.display = 'none';
+Block2.style.display = 'none';
+Block3.style.display = 'none';
+Block4.style.display = 'none';
+Block5.style.display = 'block';
+})
+</script>
+</body>
+</html>

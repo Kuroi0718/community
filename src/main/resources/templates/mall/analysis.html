@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>客群分析</title>
+</head>
+<body style="overflow:hidden">
+
+<!-------------------------------客群分析Start ---------------------------------------------->
+<div style="width:1000px;margin:auto">
+<h4 id="list-item-2">客群分析</h4>
+<form id="ageForm" th:action="@{/mall/ageAnalysis}" enctype="multipart/form-data" method="post">
+<label>商品名稱：</label>
+<select style="width:100px" name="productAnalysis" onchange="sendAgeForm()">
+<option selected>不限</option>
+<th:block th:switch="${myList != null}">
+<div th:case="${true}">
+<th:block th:each="p : ${myList}">
+<option>[[${p.productName}]]</option>
+</th:block>
+</div>
+</th:block>
+</select>
+<label>時間：</label>
+<select style="width:100px" name="timeAnalysis" onchange="sendAgeForm()">
+<option selected>不限</option>
+<option>近一週</option>
+<option>近一個月</option>
+<option>近一年</option>
+</select>	
+</form>
+			
+<div style="width:800px;font-size:20px"><canvas id="chart" width="500"  ></canvas></div>
+
+
+
+
+<br><br>	
+<div style="width:800px"><canvas id="chart2" width="500" ></canvas></div>
+				
+				
+				
+				
+				
+<div id="ageResult">
+<div id="age1"></div>
+<div id="age2"></div>
+<div id="age3"></div>
+<div id="age4"></div>
+<div id="age5"></div>
+<div id="age6"></div>
+<div id="age7"></div>
+<div id="age8"></div>
+</div>		
+				
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+var ctx = document.getElementById('chart').getContext('2d');
+var  chart = new Chart(ctx, {
+    type: 'bar',
+    options: {
+        aspectRatio: 1.5,
+        scales: {
+          x: {
+            max: 100
+          },
+          y: {
+         
+            max: 100
+          }
+        }},
+    data: {
+        labels: ["10歲以下", "11-20歲", "21-30歲", "31-40歲", "41-50歲", "51-60歲", "61-70歲", "70歲以上"],
+        datasets: [{
+            label: '# of Votes',
+            data: [0,0,0,0,0,0,0,0],
+            backgroundColor: [
+                'red'
+            ],
+            borderColor: [
+                'red'
+            ],
+            borderWidth: 1
+        }]
+    }
+});
+</script>
+  </div>
+<!-- ----------------------------客群分析End ------------------------------------------------>
+<script>
+function sendAgeForm(){
+let form = document.getElementById("ageForm");
+let formdata = new FormData(form);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+chart.data.datasets[0].data=JSON.parse(xhttp.responseText);
+chart.update();
+}
+xhttp.open("POST","http://localhost:8080/community/mall/ageAnalysis",true);
+xhttp.send(formdata);
+}
+</script>
+</body>
+</html>

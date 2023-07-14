@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>已下架</title>
+<style>
+.button1{
+height:8rem;width:3rem;border:1px solid grey;border-right:none;border-left:none;background-color:silver;font-size:20px
+}
+.button2{
+height:8rem;width:3rem;border:1px solid grey;border-right:none;background-color:silver;font-size:20px
+}
+.button3{
+height:8rem;width:3rem;border:1px solid grey;border-top-right-radius:0.375rem;border-bottom-right-radius:0.375rem;background-color:silver;font-size:20px
+}
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+.animated.infinite {
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+.animated.hinge {
+  -webkit-animation-duration: 2s;
+  animation-duration: 2s;
+}
+/*the animation definition*/
+@-webkit-keyframes bounceOutRight {
+  20% {
+    opacity: 1;
+    -webkit-transform: translate3d(-20px, 0, 0);
+    transform: translate3d(-20px, 0, 0)
+  }
+  100% {
+    opacity: 0;
+    -webkit-transform: translate3d(2000px, 0, 0);
+    transform: translate3d(2000px, 0, 0)
+  }
+}
+@keyframes bounceOutRight {
+  20% {
+    opacity: 1;
+    -webkit-transform: translate3d(-20px, 0, 0);
+    -ms-transform: translate3d(-20px, 0, 0);
+    transform: translate3d(-20px, 0, 0)
+  }
+  100% {
+    opacity: 0;
+    -webkit-transform: translate3d(2000px, 0, 0);
+    -ms-transform: translate3d(2000px, 0, 0);
+    transform: translate3d(2000px, 0, 0)
+  }
+}
+.bounceOutRight {
+  -webkit-animation-name: bounceOutRight;
+  animation-name: bounceOutRight
+}
+
+</style>
+</head>
+<body style="overflow:hidden">
+
+<!-------------------------------已下架Start ---------------------------------------------->
+	<div style="width: 800px; margin: auto">
+		<th:block th:switch="${myDelistedList != null}">
+			<div th:case="${true}">
+			<th:block th:each="p : ${myDelistedList}">
+			<div style="display:flex;flex-direction:row" th:id="${p.productId}" class="animated">
+				<div class="card" style="width: 540px;height:8rem;margin-bottom:20px;;border-top-right-radius:0;border-bottom-right-radius:0;overflow:hidden;border:1px solid grey;">
+					<div style="display:flex;flex-direction:row">
+						<div style="width: 8rem; height: 8rem; overflow: hidden; border:none">
+							<img th:src="@{'/mall/showPhoto?productId=' + ${p.productId}}"
+								style="width: 8rem; height: 8rem;" th:id="${'delistedProductImg_'+p.productId}">
+						</div>
+						<div style="display:flex;flex-direction:column">
+							<div class="card-body">
+								<div class="card-title">商品名稱: <span th:id="${'name_'+p.productId}">[[${p.productName}]]</span></div>
+								<p class="card-text">價格: <span th:id="${'price_'+p.productId}">[[${p.price}]]</span></p>
+								<p class="card-text">數量: <span th:id="${'quantity_'+p.productId}">[[${p.quantity}]]</span></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<th:block th:if="${p.ban != '已禁賣'}">
+				<button type="button" class="button1" th:onclick="preEdit([[${p.productId}]])" style="height:8rem;">編輯</button>
+				<button type="button" class="button2" th:onclick="publish([[${p.productId}]])" style="height:8rem;">上架</button>
+				</th:block>
+				<th:block th:if="${p.ban == '已禁賣'}">
+				<div style="height:8rem;width:6rem;border:1px solid grey;color:white;border-right:none;border-left:none;background-color:red;font-size:20px;padding-left:36px;padding-right:36px;padding-top:12px;font-weight:bold">已禁賣</div>
+				</th:block>
+				<button type="button" class="button3" th:onclick="deleteMyProduct([[${p.productId}]])" style="height:8rem;">刪除</button>
+				</div>
+				<!-------------------------------編輯框---------------------------------------------->
+<div style="display:none" th:id="${'e_'+p.productId}">
+<div style="width:530px;background-color:#C0C0C0;z-index:5;margin-bottom:20px;padding-left:50px;border-radius:0.375rem;font-weight:bold">
+				<form th:id="${'form2_'+p.productId}" th:action="@{/mall/editMyProduct}" enctype="multipart/form-data" method="post">
+					<div >
+						<br>
+						<figure style="display: flex; flex-direction: row">
+						<div style="width:8rem;height:8rem;border:solid black 1px;overflow:hidden;border-radius:0.375rem;margin-right:20px">
+						<img th:src="@{'/mall/showPhoto?productId=' + ${p.productId}}" th:id="${'preview_'+p.productId}" style="width: 8rem; height: 8rem;">
+						</div>
+							<input type="file" name="productPhoto" th:id="${'editProductPhoto_'+p.productId}" style="margin-top:4rem" th:onclick="editPhoto([[${p.productId}]])"/>
+						</figure>
+						<figure style="display: flex; flex-direction: colume">
+							<label th:for="${'editName_'+p.productId}" style="padding-right:15px">名稱:</label>
+							<input type="text" th:id="${'editName_'+p.productId}" name="productName" style="width: 7vw; height: 3vh" required th:value="${p.productName}"></input>
+							<input type="hidden" th:id="${'Id_'+p.productId}" name="productId" th:value="${p.productId}" />
+						</figure>
+					</div>
+					<div style="display: flex; flex-direction: row;">
+						<figure style="display: flex; flex-direction: colume;padding-right:20px">
+							<span style="padding-right:15px">分類:</span>
+							<th:block th:switch="${p.category}">
+							<div th:case="服飾">
+							<select th:id="${'category_'+p.productId}" name="category"
+								style="width: 7vw; height: 3vh" th:onchange="showDetail([[${p.productId}]])">
+								<option value="服飾" selected>服飾</option>
+								<option value="鞋包配件">鞋包配件</option>
+								<option value="休閒生活">休閒生活</option>
+								<option value="3C">3C</option>
+								<option value="寵物生活">寵物生活</option>
+								<option value="其他">其他</option>
+							</select>
+							</div>
+							<div th:case="鞋包配件">
+							<select th:id="${'category_'+p.productId}" name="category"
+								style="width: 7vw; height: 3vh" th:onchange="showDetail([[${p.productId}]])">
+								<option value="服飾" >服飾</option>
+								<option value="鞋包配件" selected>鞋包配件</option>
+								<option value="休閒生活">休閒生活</option>
+								<option value="3C">3C</option>
+								<option value="寵物生活">寵物生活</option>
+								<option value="其他">其他</option>
+							</select>
+							</div>
+							<div th:case="休閒生活">
+							<select th:id="${'category_'+p.productId}" name="category"
+								style="width: 7vw; height: 3vh" th:onchange="showDetail([[${p.productId}]])">
+								<option value="服飾" >服飾</option>
+								<option value="鞋包配件">鞋包配件</option>
+								<option value="休閒生活" selected>休閒生活</option>
+								<option value="3C">3C</option>
+								<option value="寵物生活">寵物生活</option>
+								<option value="其他">其他</option>
+							</select>
+							</div>
+							<div th:case="3C">
+							<select th:id="${'category_'+p.productId}" name="category"
+								style="width: 7vw; height: 3vh" th:onchange="showDetail([[${p.productId}]])">
+								<option value="服飾" >服飾</option>
+								<option value="鞋包配件">鞋包配件</option>
+								<option value="休閒生活">休閒生活</option>
+								<option value="3C" selected>3C</option>
+								<option value="寵物生活">寵物生活</option>
+								<option value="其他">其他</option>
+							</select>
+							</div>
+							<div th:case="寵物生活">
+							<select th:id="${'category_'+p.productId}" name="category"
+								style="width: 7vw; height: 3vh" th:onchange="showDetail([[${p.productId}]])">
+								<option value="服飾" >服飾</option>
+								<option value="鞋包配件">鞋包配件</option>
+								<option value="休閒生活">休閒生活</option>
+								<option value="3C">3C</option>
+								<option value="寵物生活" selected>寵物生活</option>
+								<option value="其他">其他</option>
+							</select>
+							</div>
+							<div th:case="有聲書">
+							<select th:id="${'category_'+p.productId}" name="category"
+								style="width: 7vw; height: 3vh" th:onchange="showDetail([[${p.productId}]])">
+								<option value="服飾" >服飾</option>
+								<option value="鞋包配件">鞋包配件</option>
+								<option value="休閒生活">休閒生活</option>
+								<option value="3C">3C</option>
+								<option value="寵物生活">寵物生活</option>
+								<option value="其他">其他</option>
+							</select>
+							</div>
+							<div th:case="其他">
+							<select th:id="${'category_'+p.productId}" name="category"
+								style="width: 7vw; height: 3vh" th:onchange="showDetail([[${p.productId}]])">
+								<option value="服飾" >服飾</option>
+								<option value="鞋包配件">鞋包配件</option>
+								<option value="休閒生活">休閒生活</option>
+								<option value="3C">3C</option>
+								<option value="寵物生活">寵物生活</option>
+								<option value="其他" selected>其他</option>
+							</select>
+							</div>
+							</th:block>
+						</figure>
+						<figure style="display: flex; flex-direction: colume">
+							<span style="padding-right:15px">細目:</span>
+							<div ><select th:id="${'detail_'+p.productId}" style="width: 7vw; height: 3vh">
+							<option selected>[[${p.detail}]]</option>
+								</select></div>
+						</figure>
+					</div>
+					<div>
+						<figure style="display: flex; flex-direction: colume">
+							<span style="padding-right:15px" onchange="type(this.value)">販售方式:</span>
+							<th:block th:switch="${p.timeLimit}">
+							<div th:case="noLimit">
+							<input type="radio" name="timeLimit" th:id="${'typeA_'+p.productId}" value="noLimit" checked th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeA_'+p.productId}" style="padding-right:15px">直購</label>
+							<input type="radio" name="timeLimit" th:id="${'typeB_'+p.productId}" value="259200" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeB_'+p.productId}" style="padding-right:15px">特賣</label>
+							<input type="radio" name="timeLimit" th:id="${'typeC_'+p.productId}" value="604800" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeC_'+p.productId}" style="padding-right:15px">競標</label>
+							<input type="radio" name="timeLimit" th:id="${'typeD_'+p.productId}" value="1209600" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeD_'+p.productId}">團購</label>
+							</div>
+							<div th:case="259200">
+							<input type="radio" name="timeLimit" th:id="${'typeA_'+p.productId}" value="noLimit" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeA_'+p.productId}" style="padding-right:15px">直購</label>
+							<input type="radio" name="timeLimit" th:id="${'typeB_'+p.productId}" value="259200" checked th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeB_'+p.productId}" style="padding-right:15px">特賣</label>
+							<input type="radio" name="timeLimit" th:id="${'typeC_'+p.productId}" value="604800" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeC_'+p.productId}" style="padding-right:15px">競標</label>
+							<input type="radio" name="timeLimit" th:id="${'typeD_'+p.productId}" value="1209600" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeD_'+p.productId}">團購</label>
+							</div>
+							<div th:case="604800">
+							<input type="radio" name="timeLimit" th:id="${'typeA_'+p.productId}" value="noLimit" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeA_'+p.productId}" style="padding-right:15px">直購</label>
+							<input type="radio" name="timeLimit" th:id="${'typeB_'+p.productId}" value="259200" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeB_'+p.productId}" style="padding-right:15px">特賣</label>
+							<input type="radio" name="timeLimit" th:id="${'typeC_'+p.productId}" value="604800" checked th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeC_'+p.productId}" style="padding-right:15px">競標</label>
+							<input type="radio" name="timeLimit" th:id="${'typeD_'+p.productId}" value="1209600" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeD_'+p.productId}">團購</label>
+							</div>
+							<div th:case="1209600">
+							<input type="radio" name="timeLimit" th:id="${'typeA_'+p.productId}" value="noLimit" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeA_'+p.productId}" style="padding-right:15px">直購</label>
+							<input type="radio" name="timeLimit" th:id="${'typeB_'+p.productId}" value="259200" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeB_'+p.productId}" style="padding-right:15px">特賣</label>
+							<input type="radio" name="timeLimit" th:id="${'typeC_'+p.productId}" value="604800" th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeC_'+p.productId}" style="padding-right:15px">競標</label>
+							<input type="radio" name="timeLimit" th:id="${'typeD_'+p.productId}" value="1209600" checked th:onchange="checkEditType([[${p.productId}]])"/>
+							<label th:for="${'typeD_'+p.productId}">團購</label>
+							</div>
+							</th:block>
+						</figure>
+					</div>
+					<div>
+						<figure style="display: flex; flex-direction: colume">
+							<label th:for="${'editPrice_'+p.productId}" style="padding-right:15px">價錢: </label>
+							<input type="number" th:id="${'editPrice_'+p.productId}" name="price" 
+							step=1 min=0 max=999999 style="width: 7vw; height: 3vh" th:value="${p.price}"></input>
+						</figure>
+					</div>
+					<div>
+						<figure style="display: flex; flex-direction: colume" th:id="${'stockBlock_'+p.productId}">
+							<label th:for="${'editQuantity_'+p.productId}" style="padding-right:15px">數量:</label>
+							<input type="number" th:id="${'editQuantity_'+p.productId}"  name="quantity" 
+							step=1 min=0 max=999999 style="width: 7vw; height: 3vh" th:value="${p.quantity}"></input>
+						</figure>
+					</div>
+					<div>
+						<figure style="display: flex; flex-direction: colume">
+							<span style="padding-right:15px">狀態:</span>
+							<th:block th:switch="${p.status == 0}">
+							<div th:case="${true}">
+							<input type="radio" name="status" id="newX" value="0" checked/>
+							<label for="newX" style="padding-right:15px">全新</label>
+							<input type="radio" name="status" id="usedX" value="1" />
+							<label for="usedX">二手</label>
+							</div>
+							<div th:case="${false}">
+							<input type="radio" name="status" id="newX" value="0" />
+							<label for="newX" style="padding-right:15px">全新</label>
+							<input type="radio" name="status" id="usedX" value="1" checked/>
+							<label for="usedX">二手</label>
+							</div>
+							</th:block>
+						</figure>
+					</div>
+					<div>
+						<figure th:id="${'typeDetail_'+p.productId}" style="display: flex; flex-direction: colume;padding-right:50px">
+							<span style="padding-right:15px">議價:</span>
+							<th:block th:switch="${p.bargain == 0}">
+							<div th:case="${true}">
+							<input type="radio" name="bargain" th:id="${'cannot_'+p.productId}" value="0" checked/>
+							<label th:for="${'cannot_'+p.productId}" style="padding-right:15px">不可議價</label>
+							<input type="radio" name="bargain" th:id="${'can_'+p.productId}" value="1" />
+							<label th:for="${'can_'+p.productId}">可議價</label>
+							</div>
+							<div th:case="${false}">
+							<input type="radio" name="bargain" th:id="${'cannot_'+p.productId}" value="0" />
+							<label th:for="${'cannot_'+p.productId}" style="padding-right:15px">不可議價</label>
+							<input type="radio" name="bargain" th:id="${'can_'+p.productId}" value="1" checked/>
+							<label th:for="${'can_'+p.productId}">可議價</label>
+							</div>
+							</th:block>
+						</figure>
+					</div>
+					
+					<div>
+						
+							<label for="infoX">商品描述:</label><br>
+							<textarea id="infoX" rows="3" name="info"
+								style="width: 25vw; height: 10vh; resize: none;border-radius:0.375rem;" >[[${p.info}]]</textarea>
+						
+					</div>
+				
+<button type="button" th:onclick="sendForm2([[${p.productId}]])" style="border-radius:0.375rem;">確定變更</button>
+				</form><br>
+				</div>
+</div>
+<!-------------------------------編輯框---------------------------------------------->
+				</th:block>
+			</div>
+		</th:block>
+	</div>
+	<!-------------------------------已下架End ---------------------------------------------->
+<th:block th:if="${myDelistedList.size() == 0}">
+<div style="font-size:50px;width:1100px;text-align:center">無下架中的商品<br>
+<img src="../image/noRecords.png" style="width:300px">
+</div>
+</th:block>
+<script>
+function checkEditType(pid){
+let typeA = document.getElementById("typeA_"+pid);
+let typeB = document.getElementById("typeB_"+pid);
+let typeC = document.getElementById("typeC_"+pid);
+let typeD = document.getElementById("typeD_"+pid);
+let stockBlock = document.getElementById("stockBlock_"+pid);
+let typeDetail = document.getElementById("typeDetail_"+pid);
+if(typeA.checked){
+typeDetail.innerHTML ="<span style=\"line-height:20px;padding-right:15px;font-weight:bold;\">議價:</span><input type=\"radio\" name=\"bargain\" id=\"cannot_"+pid+"\" value=\"0\" checked/><label for=\"cannot_"+pid+"\" style=\"line-height:20px;padding-right:15px;font-weight:bold;\">不可議價</label><input type=\"radio\" name=\"bargain\" id=\"can_"+pid+"\" value=\"1\" /><label for=\"can_"+pid+"\"  style=\"line-height:20px;font-weight:bold;\">可議價</label>";
+stockBlock.innerHTML = "<label for=\"editQuantity_"+pid+"\" style=\"line-height:20px;padding-right:15px;font-weight:bold;\">數量:</label><input type=\"number\" id=\"editQuantity_"+pid+"\"  name=\"quantity\" step=1 min=1 max=999999 style=\"width: 7vw; height: 3vh\" value=\"1\" oninput=\"if(this.value<=0)value=1\"></input>";
+}
+if(typeB.checked){
+typeDetail.innerHTML = "<span style=\"line-height:20px;padding-right:15px;font-weight:bold;\">議價:</span><input type=\"radio\" name=\"bargain\" id=\"cannot_"+pid+"\" value=\"0\" checked/><label for=\"cannot_"+pid+"\" style=\"line-height:20px;padding-right:15px;font-weight:bold;\">不可議價</label><input type=\"radio\" name=\"bargain\" id=\"can_"+pid+"\" value=\"1\" style=\"display:none\"/><label for=\"can_"+pid+"\"  style=\"line-height:20px;font-weight:bold;display:none\">可議價</label>";
+stockBlock.innerHTML = "<label for=\"editQuantity_"+pid+"\" style=\"line-height:20px;padding-right:15px;font-weight:bold;\">數量:</label><input type=\"number\" id=\"editQuantity_"+pid+"\"  name=\"quantity\" step=1 min=1 max=999999 style=\"width: 7vw; height: 3vh\" value=\"1\" oninput=\"if(this.value<=0)value=1\"></input>"
+}
+if(typeC.checked){
+typeDetail.innerHTML = "<span style=\"line-height:20px;padding-right:15px;font-weight:bold;\">議價:</span><input type=\"radio\" name=\"bargain\" id=\"cannot_"+pid+"\" value=\"0\" checked/><label for=\"cannot_"+pid+"\" style=\"line-height:20px;padding-right:15px;font-weight:bold;\">不可議價</label><input type=\"radio\" name=\"bargain\" id=\"can_"+pid+"\" value=\"1\" style=\"display:none\"/><label for=\"can_"+pid+"\"  style=\"line-height:20px;font-weight:bold;display:none\">可議價</label>";
+stockBlock.innerHTML = "<label for=\"editQuantity_"+pid+"\" style=\"line-height:20px;padding-right:15px;font-weight:bold;\">數量:</label><input type=\"number\" id=\"editQuantity_"+pid+"\"  name=\"quantity\" step=1 min=1 max=999999 style=\"width: 7vw; height: 3vh\" value=\"1\" readonly oninput=\"if(this.value<=0)value=1\"></input>";
+}
+if(typeD.checked){
+typeDetail.innerHTML = "<span style=\"line-height:20px;padding-right:15px;font-weight:bold;\">議價:</span><input type=\"radio\" name=\"bargain\" id=\"cannot_"+pid+"\" value=\"0\" checked/><label for=\"cannot_"+pid+"\" style=\"line-height:20px;padding-right:15px;font-weight:bold;\">不可議價</label><input type=\"radio\" name=\"bargain\" id=\"can_"+pid+"\" value=\"1\" style=\"display:none\"/><label for=\"can_"+pid+"\"  style=\"line-height:20px;font-weight:bold;display:none\">可議價</label>";
+stockBlock.innerHTML = "<label for=\"editQuantity_"+pid+"\" style=\"line-height:20px;padding-right:15px;font-weight:bold;\">數量:</label><input type=\"number\" id=\"editQuantity_"+pid+"\"  name=\"quantity\" step=1 min=1 max=999999 style=\"width: 7vw; height: 3vh\" value=\"1\" oninput=\"if(this.value<=0)value=1\"></input>"
+}
+
+}
+</script>
+
+<script>
+function editPhoto(productId){
+let file = document.getElementById("editProductPhoto_"+productId);
+let preview = document.getElementById("preview_"+productId);
+file.addEventListener("change", function(){
+let bold = window.URL.createObjectURL(file.files[0]); 
+preview.setAttribute("src", bold);
+})
+}
+</script>
+<script>
+function sendForm2(productId){
+let name = document.getElementById("name_"+productId);
+let price = document.getElementById("price_"+productId);
+let quantity = document.getElementById("quantity_"+productId);
+let editName = document.getElementById("editName_"+productId);
+let editPrice = document.getElementById("editPrice_"+productId);
+let editQuantity = document.getElementById("editQuantity_"+productId);
+let file = document.getElementById("editProductPhoto_"+productId);
+let delistedProductImg = document.getElementById("delistedProductImg_"+productId);
+name.innerHTML = editName.value;
+price.innerHTML = editPrice.value;
+quantity.innerHTML = editQuantity.value;
+
+let bold = window.URL.createObjectURL(file.files[0]);
+delistedProductImg.setAttribute("src", bold);
+
+let editForm = document.getElementById("e_"+productId);
+let form = document.getElementById("form2_"+productId);
+editForm.style.display='none';
+let formdata = new FormData(form);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+
+}
+xhttp.open("POST","http://localhost:8080/community/mall/editMyProduct",true);
+xhttp.send(formdata);
+}
+</script>
+<script>
+function preEdit(productId){
+let editForm = document.getElementById("e_"+productId);
+if(editForm.style.display=='block'){
+	editForm.style.display='none';
+}else{
+	editForm.style.display='block';
+}
+
+}
+</script>
+<script>
+function publish(productId){
+let product = document.getElementById(productId);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+product.style.animationName='bounceOutRight';
+setTimeout(function() {
+product.style.display='none';
+}, 1000);
+}
+xhttp.open("POST","http://localhost:8080/community/mall/publishMyProduct",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+productId);
+}
+</script>
+<script>
+function deleteMyProduct(productId){
+let product = document.getElementById(productId);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+product.style.animationName='bounceOutRight';
+setTimeout(function() {
+  product.style.display='none';
+}, 1000);
+}
+xhttp.open("POST","http://localhost:8080/community/mall/deleteMyProduct",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+productId);
+}
+</script>
+<script>
+function showDetail(productId){
+let category = document.getElementById('category_'+productId);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+document.getElementById('detail_'+productId).innerHTML = xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/categoryDetail",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("category="+category.value);
+}
+</script>
+
+
+<script>
+function type(chosen){
+let category = document.getElementById("category");
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+document.getElementById("typeDetail").innerHTML = xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/typeDetail",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("type="+chosen);
+}
+</script>
+
+
+</body>
+</html>

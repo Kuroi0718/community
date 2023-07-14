@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+.MyMemberTable, .MyMemberTable td, .MyMemberTable th {
+	border: 3px solid grey;
+}
+</style>
+</head>
+<body>
+
+	<form th:action="@{/dashboardPage}" enctype="multipart/form-data"
+		method="get">
+		<div style="display: flex; flex-direction: column; padding: 5px 10px;">
+			<div
+				style="display: flex; flex-direction: row; padding: 10px; margin: auto;">
+				<input type="text" id="var6" th:value="${search}" name="search"
+					style="width: 300px;"> <select id="var5" name="where"
+					style="width: 100px;" th:value="${where}">
+					<option value="username">username</option>
+					<option value="id">id</option>
+				</select>
+
+				<button style="height: 50px; margin: auto;">搜尋</button>
+			</div>
+
+		</div>
+	</form>
+
+	<nav aria-label="Page navigation example">
+		<ul class="pagination">
+			<th:block th:switch="${page.number > 0 }">
+				<li class="page-item" th:case=${true}><a class="page-link"
+					th:onclick="goToPage([[${page.number}]],var8.value)">上一頁</a></li>
+				<li class="page-item" th:case=${false}><span class="page-link">上一頁</span></li>
+			</th:block>
+			<li class="page-item"><a class="page-link" onclick="gM()">&lt;&lt;</a></li>
+			<th:block
+				th:each=" groupNumber : ${#numbers.sequence(1,page.totalPages/5+1)} ">
+				<div th:id="${groupNumber}" class="pagination">
+					<th:block
+						th:each=" pageNumber : ${#numbers.sequence(5*groupNumber-4,5*groupNumber)} ">
+						<th:block th:switch="${ pageNumber <= page.totalPages }">
+							<span th:case=${true}> <th:block
+									th:switch="${ page.number != pageNumber -1 }">
+									<li class="page-item" th:case=${true}><a class="page-link"
+										th:onclick="goToPage([[${pageNumber}]],[[${groupNumber}]])">[[${pageNumber}]]</a></li>
+									<li class="page-item" th:case=${false}><span
+										class="page-link">[[${pageNumber}]]</span></li>
+								</th:block>
+							</span>
+						</th:block>
+					</th:block>
+				</div>
+			</th:block>
+			<li class="page-item"><a class="page-link" onclick="gP()">&gt;&gt;</a></li>
+			<th:block th:switch="${page.number+1 < page.totalPages }">
+				<li class="page-item" th:case=${true}><a class="page-link"
+					th:onclick="goToPage([[${page.number+2}]],var8.value)">下一頁</a></li>
+				<li class="page-item" th:case=${false}><span class="page-link">下一頁</span></li>
+			</th:block>
+			<li class="page-item"><input style="width: 70px" type="number"
+				th:value="${ page.number +1 }" id="pageInput" onchange="range()"></input>
+				<button id="pageButton"
+					onclick="goToPage(pageInput.value,(pageInput.value-1-((pageInput.value-1)%5))/5+1)">前往</button></li>
+		</ul>
+	</nav>
+
+
+	<table class="MyMemberTable">
+		<thead>
+			<tr>
+				<td><button th:onclick="sortBy('id')">ID</button></td>
+				<td>大頭貼</td>
+				<td><button th:onclick="sortBy('username')">帳號</button></td>
+				<td><button th:onclick="sortBy('gender')">性別</button></td>
+				<td><button th:onclick="sortBy('birthday')">生日</button></td>
+				<td><button th:onclick="sortBy('email')">信箱</button></td>
+				<td><button th:onclick="sortBy('tel')">電話</button></td>
+				<td><button th:onclick="sortBy('creationdate')">創建日期</button></td>
+				<td><button th:onclick="sortBy('level')">權限</button></td>
+			</tr>
+		</thead>
+
+		<tbody>
+			<th:block th:each=" aMember : ${page.content} ">
+
+				<tr>
+					<td th:text="${aMember} ? ${aMember.id}"></td>
+					<td><th:block th:switch="${aMember.photo.length != 0 }">
+							<img th:case=${true} id="photo" style="width: 50px"
+								th:src="@{'data:image/*;base64,'+${aMember.generateBase64Image()}}" />
+							<img th:case=${false} style="width: 50px"
+								th:src="@{/image/noimg.png}" />
+						</th:block></td>
+					<td th:text="${aMember} ? ${aMember.username}"></td>
+					<td th:text="${aMember} ? ${aMember.gender}"></td>
+					<td th:text="${aMember} ? ${aMember.simpleBirthday()}"></td>
+					<td th:text="${aMember} ? ${aMember.email}"></td>
+					<td th:text="${aMember} ? ${aMember.tel}"></td>
+					<td th:text="${aMember} ? ${aMember.simpleCreationdate()}"></td>
+
+
+					<th:block th:switch="${aMember.level == 'admin' }">
+						<td th:case=${true}><select th:value="${aMember.level}">
+								<option>admin</option>
+						</select></td>
+						<td th:case=${false}><th:block th:switch="${aMember.level}">
+								<select th:case="member" th:id="${aMember.id}"
+									onchange="levels(this.id)">
+									<option value="member" selected="selected">member</option>
+									<option value="disabled">disabled</option>
+									<option value="banned">banned</option>
+								</select>
+
+								<select th:case="disabled" th:id="${aMember.id}"
+									onchange="levels(this.id)">
+									<option value="member">member</option>
+									<option value="disabled" selected="selected">disabled</option>
+									<option value="banned">banned</option>
+								</select>
+
+								<select th:case="banned" th:id="${aMember.id}"
+									onchange="levels(this.id)">
+									<option value="member">member</option>
+									<option value="disabled">disabled</option>
+									<option value="banned" selected="selected">banned</option>
+								</select>
+
+							</th:block></td>
+					</th:block>
+
+
+				</tr>
+			</th:block>
+		</tbody>
+	</table>
+	<input type="hidden" id="var1" th:value="${page.totalPages/5+1}"></input>
+	<input type="hidden" id="var2" th:value="${page.totalPages}"></input>
+	<input type="hidden" id="var3" name="sort" th:value="${sort}"></input>
+	<input type="hidden" id="var4" name="order" th:value="${order}"></input>
+	<input type="hidden" id="var7" name="where" th:value="${where}"></input>
+	<input type="hidden" id="var8" name="groupNumber" th:value="${group}"></input>
+
+
+</body>
+
+<script type="text/javascript">
+	
+	function showupdate(){
+	if(document.getElementById("show").style.display==="none"){document.getElementById("send").style.display="none";document.getElementById("show").style.display="block";document.getElementById("edit").innerHTML="編輯";}else{document.getElementById("send").style.display="none";document.getElementById("show").style.display="none";document.getElementById("edit").innerHTML="取消編輯";document.getElementById("send").style.display="block";}
+	if(document.getElementById("update").style.display==="none"){document.getElementById("update").style.display="block";document.getElementById("edit").innerHTML="取消編輯";}else{document.getElementById("update").style.display="none";document.getElementById("edit").innerHTML="編輯";}
+	}
+	
+		function sendForm() {
+			var form = document.getElementById("form1");
+			var formdata = new FormData(form);
+			var xhr = new XMLHttpRequest();
+			xhr.onload = function() {
+				document.getElementById("msg").innerHTML = xhr.responseText;
+				refreshSession();
+			}
+
+			xhr.open("POST", "/community/member/update", true);
+			xhr.send(formdata);
+		}
+		
+		
+	
+	
+		function check(){
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200)
+				document.getElementById("checkUsername").innerHTML = xhttp.responseText;
+		}
+		xhttp.open("POST","/community/member/ajax/checkUsername",true);
+		xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhttp.send("username="+updatename.value);
+		}
+		
+		
+		function levels(id){
+		var xhr2 = new XMLHttpRequest();
+		xhr2.open("POST","/community/member/ajax/changeLevel",true);
+		xhr2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhr2.send("id="+id+"&level="+document.getElementById(id).value);
+		}
+		
+		
+		var pages= document.getElementById("var1").value;
+		var totalPages= document.getElementById("var2").value;
+		if(parseInt(totalPages)%5==0){pages=parseInt(pages)-1;}
+		showGroup();
+		document.getElementById("var5").querySelector("option[value='" + var7.value + "']").selected = true;
+		
+		
+		function showGroup(){
+		for(let i=1;i<=pages;i++){
+		document.getElementById(i).style.display='none';
+		}
+		let j=var8.value;
+		document.getElementById(j).style.display='';
+		}
+		
+		
+		function gP(){
+		if(var8.value<pages)
+		document.getElementById("var8").value=parseInt(document.getElementById("var8").value)+1;
+		showGroup();
+		}
+		function gM(){
+		if(var8.value>1)
+		document.getElementById("var8").value=parseInt(document.getElementById("var8").value)-1;
+		showGroup();
+		}
+		
+		function goToPage(i,j){
+		window.location.href = "/community/dashboardPage?p="+i+"&group="+j+"&sort="+var3.value+"&order="+var4.value+"&search="+var6.value+"&where="+var5.value;
+		}
+		
+
+		
+		function range(){
+		if(pageInput.value - 1 <0){
+		pageInput.value=1;}
+		
+		if(pageInput.value - totalPages >0){
+		pageInput.value=totalPages;}
+		}
+		
+		function sortBy(x){
+		if(var3.value!=x){
+		   var4.value='asc';
+		   }
+		else if(var3.value==x && var4.value!='desc'){
+		   var4.value='desc';
+		   }
+		else if(var3.value==x && var4.value=='desc'){
+		   var4.value='asc';
+		   }
+		var3.value=x;
+		goToPage('1','1');
+		}
+	</script>
+
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>限時商品</title>
+<style>
+#search{
+background-color:black;
+color:white;
+font-size:25px;
+}
+.square {
+	width: 40px;
+	height: 40px;
+}
+
+.square {
+	border-radius: 0.375rem;
+}
+</style>
+</head>
+<body style="overflow: hidden;background-color:#EAE0D5"  >
+
+	<div th:replace="~{mall/nav}"></div>
+
+	<div id="shop"
+		style="filter: none; position: absolute; z-index: -2; width: 100vw">
+		<div style="height: 88vh; width: 100vw; overflow-y: scroll;scroll-behavior:smooth;">
+
+
+<div style="display: flex; flex-direction: column" >
+<!---------------------------------- --------------------------------------->
+				<div class="box1" id="top" style="height: 88vh; width: 100%;display:flex;flex-direction:column;align-items:center">
+				<div class="flash" style="height: 250px; width: 60%;margin-top:10px;">
+				<a th:href="@{/mall/flashPage}"><img src="../image/flashSale.png" height="200px" style="margin-left:150px"></a>
+				</div>
+				
+				<div class="bid" style="height: 250px; width: 60%;margin-top:10px;">
+				<a th:href="@{/mall/bidPage}"><img src="../image/auction.png" height="200px" style="margin-left:150px"></a>
+				</div>
+				<div class="group" style="height: 250px; width: 60%;margin-top:10px;margin-bottom:3vh;">
+				<a th:href="@{/mall/groupPage}"><img src="../image/cusines.png" height="200px" style="margin-left:150px"></a>
+				</div>
+				
+				
+				</div>
+<!----------------------------------------------------------------------->
+</div>
+</div>
+			
+	<a th:href="@{/}"><button style="width:50px;height:50px;border-radius:0.375rem;background-color:#BDB4BF;position:fixed;right:35px;bottom:90px;background-image:url('../image/home.png');background-repeat:no-repeat;background-position:center;border:grey 1px solid"></button></a>
+	<a th:href="@{/mall/mePage}"><button id="cartId" style="width:50px;height:50px;border-radius:0.375rem;background-color:#BDB4BF;position:fixed;right:35px;bottom:150px;background-image:url('../image/cart.png');background-repeat:no-repeat;background-position:center;border:grey 1px solid"></button></a>
+	<a href="#top"><button style="width:50px;height:50px;border-radius:0.375rem;background-color:#BDB4BF;position:fixed;right:35px;bottom:210px;background-image:url('../image/up.png');background-repeat:no-repeat;background-position:center;border:grey 1px solid"></button></a>
+	
+	<th:block th:switch="${session.loggedInMember != null}">
+	<div id="cartNum" th:case="${true}" style="display:none;width:25px;height:25px;border-radius:25px;background-color:red;position:fixed;right:25px;bottom:185px;z-index:1;text-align:center;color:#EAE0D5;font-weight:bold">[[${num}]]</div>
+	</th:block>	
+		</div>
+	
+<script>
+let cartNum = document.getElementById("cartNum")
+if(cartNum.innerHTML!=0){
+cartNum.style.display='block';
+}
+
+function addToMyCart(pid){
+let form = document.getElementById(pid);
+let formdata = new FormData(form);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+cartNum.style.display='block';
+cartNum.innerHTML = xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/addToMyCart",true);
+xhttp.send(formdata);
+}
+</script>
+
+<script>
+let all = document.getElementById('shop');
+ all.addEventListener("mouseover",function(){
+        all.style.filter = "none";
+ })
+ div1.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+ div2.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+</script>
+</body>
+</html>

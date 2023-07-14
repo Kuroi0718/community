@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>競標商品</title>
+</head>
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<style>
+.square2,.square{
+border:1px grey solid;
+background-color:#D8D8EB;
+
+}
+.square:hover{
+transform:scale(1.05);
+}
+.square2:active,.square:active{
+transform:scale(0.95);
+}
+.square{
+width:40px;
+height:40px;
+}
+.square{
+border-radius:0.375rem;
+}
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+.animated.infinite {
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+.animated.hinge {
+  -webkit-animation-duration: 2s;
+  animation-duration: 2s;
+}
+/*the animation definition*/
+@-webkit-keyframes zoomIn {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3)
+  }
+  50% {
+    opacity: 1
+  }
+}
+@keyframes zoomIn {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    -ms-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3)
+  }
+  50% {
+    opacity: 1
+  }
+}
+.zoomIn {
+  -webkit-animation-name: zoomIn;
+  animation-name: zoomIn
+}
+@-webkit-keyframes zoomOut {
+  0% {
+    opacity: 1
+  }
+  50% {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3)
+  }
+  100% {
+    opacity: 0
+  }
+}
+@keyframes zoomOut {
+  0% {
+    opacity: 1
+  }
+  50% {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    -ms-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3)
+  }
+  100% {
+    opacity: 0
+  }
+}
+
+
+
+</style>
+<body style="overflow:hidden;background-color:#EAE0D5">
+<div th:replace="~{mall/nav}"></div>
+<div id="bid"
+		style="filter: none; position: absolute; z-index: -2; width: 100vw">
+		<div style="height: 88vh; width: 100vw; overflow-y: scroll;scroll-behavior:smooth;">
+
+
+			<div style="display: flex; flex-direction: column">
+<!---------------------------------- --------------------------------------->
+				<div class="box1" id="top" 
+					style="height: 20vh; width: 100%;"><!---測試框--->
+					
+					</div>
+<!----------------------------------------------------------------------->
+					
+
+
+				<div style="display: flex; flex-direction: row">
+<!-------------**************************分享*************************-------------------->
+				<div  id="shareProduct" style="position:absolute;z-index:3;background:linear-gradient(to bottom, white 0%, #66B3FF 100%);width:420px;height:400px;left:40%;display:none;overflow-y:scroll;padding-bottom:50px;padding-top:50px;border-radius:10px;border:2px silver solid">
+					<figure>
+					<input type="checkbox" style="width:50px;height: 80px;position:absolute;margin-left:50px" value="Id">
+					<div id="share" style="width: 200px; height: 80px; margin: auto;margin-top:20px;border: 1px solid silver;background-color:#F2EFE9;">
+					<div style="position:absolute;margin-top:30px;margin-left:30px">name</div>
+					<img src="../image/noimg.png"  style="width:70px;float:right;margin:5px">
+					</div>
+					</figure>
+					<div style="display: flex; flex-direction: row">
+					<button id="closeShareButton" style="width:90px; height: 50px; margin-left:100px;margin-top:20px;" onclick="closeShareProduct()">取消</button>
+					<button style="width:90px; height:50px; margin-left:20px;margin-top:20px;">分享</button>
+					</div>
+					<input id="shareContent" value=""></input>
+				</div>
+
+<!----------------------------------CARD --------------------------------------->
+					<th:block th:switch="${bidList != null}">
+						<div th:case="${true}"
+							style="display: inline-flex; flex-direction: row; flex-wrap: wrap;padding:65px">
+							<th:block th:each="p : ${bidList}">
+
+								<div class="card"
+									style="width: 20rem; height: 25rem; margin: 10px; border: 1px solid silver;background-color:#F2EFE9">
+									<div
+										style="width: 13rem; height: 13rem; overflow: hidden; margin: auto; border: 1px solid silver; border-radius: 0.375rem;">
+										<img th:id="${'img_'+p.productId}" th:src="@{'/mall/showPhoto?productId=' + ${p.productId}}"
+											style="width: 13rem; height: 13rem;">
+									</div><span style="position:absolute;">Id:[[${p.productId}]]</span>
+									<div class="" style="width: 20rem;"><!--內容 -->
+										<div style="margin-left:3.5rem">商品名稱:[[${p.productName}]]</div>
+										
+										<th:block th:switch="${session.loggedInMember.id == p.winnerId}">
+										<div th:case="${true}">
+										<img th:id="${'winnerImg_'+p.productId}" src="../image/winner.png" style="position:absolute;right:0;bottom:40px;transform:rotate(15deg);display:block">
+										</div>
+										<div th:case="${false}">
+										<img th:id="${'winnerImg_'+p.productId}" src="../image/winner.png" style="position:absolute;right:0;bottom:40px;transform:rotate(15deg);display:none">
+										</div>
+										</th:block>
+										
+										<div th:id="${'latestPrice_'+p.productId}" style="margin-left:3.5rem">
+											最新價格:NT$[[${p.latestPrice}]]元<br>
+										</div>
+										<input type="hidden" th:id="${'latestPriceValue_'+p.productId}" th:value="${p.latestPrice}"></input>
+										<div style="margin-left:3.5rem">
+											起標價:NT$[[${p.price}]]元<br>
+										</div>
+										<div style="margin-left:3.5rem">
+											商品描述:[[${p.info}]]<br>
+										</div>
+										<div style="margin-left:3.5rem">剩餘時間:<span th:class="${p.productId}"></span></div>
+								<!--直接出價--><div th:id="${'buy_'+p.productId}" class="zoomIn animated" style="position:absolute;width:20rem;height:226px;
+												padding:50px;background-color:#F2EFE9;text-align:center;bottom:0px;background-image:url('../image/frame.png');
+												display:inline-flex;flex-direction:column;font-size:18px;display:none">
+												<div th:id="${'sendForm_'+p.productId}">
+														<form th:id="${'nonAuto_'+p.productId}">
+														<div>
+														<label th:for="${'buyPrice_'+p.productId}">出價金額：</label>
+														<input type="number" th:id="${'buyPrice_'+p.productId}" name="buyPrice"  th:value="${p.latestPrice}" style="width:80px;margin-bottom:20px"></input>
+														<br><span th:id="${'priceAlert_'+p.productId}" style="font-weight:bold;color:red"></span>
+														<input type="hidden" th:value="${p.productId}" name="productId"></input>
+														</div>
+														<div>
+														<button type="button" th:onclick="hideBuy([[${p.productId}]])">取消</button>
+														<button type="button" th:id="${'canGoBuy_'+p.productId}" th:onclick="goBuy([[${p.productId}]])">確定</button>
+														</div>
+														</form>
+												</div>
+											</div>
+												<div th:id="${'ok_'+p.productId}" class="zoomOut animated" style="position:absolute;width:20rem;height:226px;
+												padding:50px;background-color:#F2EFE9;text-align:center;bottom:0px;background-image:url('../image/frame.png');
+												display:inline-flex;flex-direction:column;font-size:18px;display:none;animation-play-state:paused">
+														<p th:id="${'okText_'+p.productId}">出價成功！！</p>
+														<button type="button" th:onclick="hideBuyOk([[${p.productId}]])">確定</button>
+														</div>
+												
+								<!--自動出價--><div th:id="${'autoBuy_'+p.productId}" class="zoomIn animated" style="position:absolute;width:20rem;height:226px;
+												bottom:0px;padding:50px;text-align:center;background-image:url('../image/frame.png');font-size:18px;display:none">
+														<div th:id="${'sendAutoForm_'+p.productId}">
+														<form th:id="${'auto_'+p.productId}">
+														<label th:for="${'max'+p.productId}">上限金額：</label>
+														<input type="number" th:id="${'max'+p.productId}" name="max" style="width:80px;margin-bottom:10px" th:value="${p.latestPrice}"></input>元
+														<br><span th:id="${'maxAlert_'+p.productId}" style="font-weight:bold;color:red"></span>
+														<label th:for="${'plus'+p.productId}">出價增額：</label>
+														<input type="number" th:id="${'plus'+p.productId}"  name="plus" style="width:80px;margin-bottom:10px" oninput="if(this.value<=0)value=1"></input>元<br>
+														<input type="hidden" th:value="${p.productId}" name="productId"></input>
+														<button type="button" th:onclick="hideAutoBuy([[${p.productId}]])">取消</button>
+														<button type="button" th:onclick="goAutoBuy([[${p.productId}]])">確定</button>
+														<input type="hidden" th:value="${p.winnerMax}" th:id="${'lastWinnerMax_'+p.productId}"></input>
+														</form>
+														</div>
+											</div>
+											<div th:id="${'okAuto_'+p.productId}" class="zoomOut animated" style="position:absolute;width:20rem;height:226px;
+												padding:50px;text-align:center;bottom:0px;background-image:url('../image/frame.png');
+												display:inline-flex;flex-direction:column;font-size:18px;display:none;animation-play-state:paused">
+														<p th:id="${'okAutoText_'+p.productId}">出價成功！！</p>
+														<button type="button" th:onclick="hideAutoBuyOk([[${p.productId}]])">確定</button>
+														</div>
+												
+										<div
+											style="display: flex; flex-direction: column; max-width: 20rem; ">
+											<th:block th:switch="${session.loggedInMember != null}">
+												<div th:case="${true}" style="display: flex; flex-direction: row;">
+														<input type="hidden" id="myCartProductId"
+															name="myCartProductId" th:value="${p.productId}"></input>
+													<a
+														th:href="@{'/mall/productPage?productId=' + ${p.productId}}"><button
+															class="square"
+															th:onclick="addToMyRecord([[${p.productId}]])">
+															<img th:src="@{/image/eye.png}">
+														</button></a>
+													<button class="square"
+														th:onclick="addToMyLikes([[${p.productId}]])">
+														<img th:id="${'likes_'+p.productId}" th:src="@{'/mall/showLike?productId=' + ${p.productId}}">
+													</button>
+													<button class="square" th:onclick="findMyFriendList([[${p.productId}]])">
+														<img th:src="@{/image/arrow.png}">
+													</button>
+													
+													<th:block th:switch="${session.loggedInMember.id == p.winnerId}">
+													<div th:case="${false}">
+													<div th:id="${'loserButton_'+p.productId}" style="display:block">
+													<button type="button" th:id="${'Button01_'+p.productId}" style="height: 40px; border-radius: 0.375rem;font-weight:bold" th:onclick="showAutoBuy([[${p.productId}]])" class="square2">自動出價</button>
+													<button type="button" th:id="${'Button02_'+p.productId}" style="height: 40px; border-radius: 0.375rem;font-weight:bold" th:onclick="showBuy([[${p.productId}]])" class="square2">直接出價</button>
+													</div>
+													</div>
+													<div th:case="${true}">
+													<div th:id="${'winnerButton_'+p.productId}" style="display:block">
+													<button disabled="disabled" type="button" th:id="${'Button01_'+p.productId}" style="height: 40px; border-radius: 0.375rem;font-weight:bold" th:onclick="showAutoBuy([[${p.productId}]])" class="square2">自動出價</button>
+													<button disabled="disabled" type="button" th:id="${'Button02_'+p.productId}" style="height: 40px; border-radius: 0.375rem;font-weight:bold" th:onclick="showBuy([[${p.productId}]])" class="square2">直接出價</button>
+													</div>
+													</div>
+													
+													
+												</div>
+												<div th:case="${false}">
+													<button disabled class="square">
+														<img th:src="@{/image/eye.png}">
+													</button>
+													<button disabled class="square">
+														<img th:src="@{/image/heart0.png}">
+													</button>
+													<button disabled class="square">
+														<img th:src="@{/image/arrow.png}">
+													</button>
+													<button disabled type="button" style="height: 40px; border-radius: 0.375rem;font-weight:bold" class="square2">自動出價</button>
+													<button disabled type="button" style="height: 40px; border-radius: 0.375rem;font-weight:bold" class="square2">直接出價</button>
+												</div>
+										</div>
+									</div>
+								</div>
+
+							</th:block>
+						</div>
+					</th:block>
+					<!--<th:block th:switch="${loggedInMember.level=='admin'}">
+								<div th:case="${true}">
+								<a href="#"><button>Delist</button></a>
+								</div>
+							<img class="${p.pid}" id="likeB" onclick="like(this.className)"
+								src=""
+								style="border: none; width: 55px; height: 55px;" />
+								
+
+<!----------------------------------CARD --------------------------------------->
+
+					<div id="demo"></div>
+				</div>
+			</div>
+<!-----right--buttons--------------------------->			
+	<a th:href="@{/ad/displayImage}"><button style="width:50px;height:50px;border-radius:0.375rem;background-color:#BDB4BF;position:fixed;right:35px;bottom:30px;background-image:url('../image/home.png');background-repeat:no-repeat;background-position:center;border:grey 1px solid"></button></a>
+	<a th:href="@{/mall/mePage}"><button id="cartId" style="width:50px;height:50px;border-radius:0.375rem;background-color:#BDB4BF;position:fixed;right:35px;bottom:90px;background-image:url('../image/cart.png');background-repeat:no-repeat;background-position:center;border:grey 1px solid"></button></a>
+	<a href="#top"><button style="width:50px;height:50px;border-radius:0.375rem;background-color:#BDB4BF;position:fixed;right:35px;bottom:150px;background-image:url('../image/up.png');background-repeat:no-repeat;background-position:center;border:grey 1px solid"></button></a>
+	
+	<th:block th:switch="${session.loggedInMember != null}">
+	<div id="cartNum" th:case="${true}" style="display:none;width:25px;height:25px;border-radius:25px;background-color:red;position:fixed;right:25px;bottom:125px;z-index:1;text-align:center;color:#EAE0D5;font-weight:bold">[[${num}]]</div>
+	</th:block>	
+<!-----right--buttons--------------------------->
+		</div>
+	</div>
+	
+<script>
+
+
+</script>
+<script>
+function closeShareProduct(){
+let shareProduct = document.getElementById('shareProduct');
+shareProduct.style.display='none';
+}
+</script>
+<script>
+let shareProduct = document.getElementById('shareProduct');
+function findMyFriendList(pid){
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+shareProduct.innerHTML = xhttp.responseText;
+shareProduct.style.display='block';
+}
+xhttp.open("POST","http://localhost:8080/community/mall/findMyFriendList",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+pid);
+}
+</script>
+<script>
+function sendShareList() {
+let shareProductId = document.getElementById('shareProductId');
+let checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+checkboxes.forEach(function(checkbox){
+console.log(checkbox.value);
+shareList(checkbox.value,'<a href="/community/mall/productPage?productId='+shareProductId.value+'">看看這個!!</a>');
+})
+let shareProduct = document.getElementById('shareProduct');
+shareProduct.style.display='none';
+}
+
+function shareList(mid,content) {
+let formdata = new FormData();
+formdata.append('target',mid);
+formdata.append('content',content);
+	let xhrForm = new XMLHttpRequest();
+	xhrForm.onload = function() {
+		let websocketMessage = {
+			id: myId.value,
+			target: mid,
+			type: 1
+		};
+		websocket.send(JSON.stringify(websocketMessage));
+		appendMessage(0, messageInput.value.trim(), xhrForm.responseText, "self");
+		messageInput.value = "";
+		messageInput.focus();
+		part.value = "";
+	}
+	xhrForm.open("POST", "/community/message/shareMessage", true);
+	xhrForm.send(formdata);
+}
+</script>	
+<script>
+function timeLimitTest(){
+let form = document.getElementById('timeLimitTestForm');
+let formdata = new FormData(form);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+location.reload();
+}
+xhttp.open("POST","http://localhost:8080/community/mall/timeLimitTest",true);
+xhttp.send(formdata);
+}
+</script>	
+<script>
+let result="";
+let result2="";
+
+bidGetTime1();
+bidGetTime2();
+
+function bidGetTime1(){
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+result = JSON.parse(xhttp.responseText);
+if(result!=""&&result2!=""){
+for(let i=0;i<result.length;i++){
+time(result2[i],result[i].productId);
+}
+}
+}
+xhttp.open("POST","http://localhost:8080/community/mall/bidGetTime",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send();
+}
+
+function bidGetTime2(){
+let xhttp2 = new XMLHttpRequest();
+xhttp2.onload = function(){
+result2 = JSON.parse(xhttp2.responseText);
+if(result!=""&&result2!=""){
+for(let i=0;i<result.length;i++){
+time(result2[i],result[i].productId);
+}
+}
+}
+xhttp2.open("POST","http://localhost:8080/community/mall/bidGetTime2",true);
+xhttp2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp2.send();
+}
+
+
+function time(str, pid){
+// Set the date we're counting down to
+let countDownDate = new Date(str).getTime();
+
+// Update the count down every 1 second
+let x = setInterval(function() {
+
+  // Get today's date and time
+  let now = new Date().getTime();
+
+  // Find the distance between now and the count down date
+  let distance = countDownDate - now;
+
+  // Time calculations for days, hours, minutes and seconds
+  let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+  // Display the result in the element with id="countdownTimer"
+  document.getElementsByClassName(pid)[0].innerHTML = days + "日 " + hours + "時 "
+  + minutes + "分 " + seconds + "秒 ";
+
+  // If the count down is finished, write some text
+  if (distance < 0) {
+    clearInterval(x);
+    document.getElementsByClassName(pid)[0].innerHTML = "競標已結束";
+    document.getElementById('img_'+pid).style.filter='opacity(0.2)';
+    document.getElementById('Button01_'+pid).disabled=true;
+    document.getElementById('Button02_'+pid).disabled=true;
+  }
+}, 1000);
+
+}
+</script>
+	
+<script>
+
+
+function goBuy(pid){
+let Button01 = document.getElementById('Button01_'+pid);
+let Button02 = document.getElementById('Button02_'+pid);
+let winnerImg = document.getElementById('winnerImg_'+pid);
+let buyBlock = document.getElementById('buy_'+pid);
+let form = document.getElementById('nonAuto_'+pid);
+let buyPrice = document.getElementById('buyPrice_'+pid);
+let ok = document.getElementById('ok_'+pid);
+let okText = document.getElementById('okText_'+pid);
+let latestPrice = document.getElementById('latestPrice_'+pid);
+let latestPriceValue = document.getElementById('latestPriceValue_'+pid);
+let priceAlert = document.getElementById('priceAlert_'+pid);
+
+if(parseInt(buyPrice.value)<=parseInt(latestPriceValue.value)){
+priceAlert.innerHTML='出價須高於最新價格';
+}
+
+else{
+priceAlert.innerHTML='';
+let formdata = new FormData(form);
+let xhttp = new XMLHttpRequest();
+
+xhttp.onload = function(){
+buyBlock.style.display='none';
+let latest = Number(xhttp.responseText);
+if(latest>buyPrice.value){
+okText.innerHTML = '很抱歉，有人出更高價。<br>最新價格為'+latest+'元。';
+ok.style.display='block';
+winnerImg.style.display='none';
+Button01.disabled = false;
+Button02.disabled = false;
+}else{
+okText.innerHTML = '出價成功！';
+ok.style.display='block';
+winnerImg.style.display='block';
+Button01.disabled = true;
+Button02.disabled = true;
+}
+latestPrice.innerHTML = '最新價格：'+xhttp.responseText;
+}
+xhttp.open("POST","http://localhost:8080/community/mall/biddingProduct",true);
+xhttp.send(formdata);
+}
+
+}
+
+function goAutoBuy(pid){
+let Button01 = document.getElementById('Button01_'+pid);
+let Button02 = document.getElementById('Button02_'+pid);
+let winnerImg = document.getElementById('winnerImg_'+pid);
+let autoBuyBlock = document.getElementById('autoBuy_'+pid);
+let form = document.getElementById('auto_'+pid);
+let okAuto = document.getElementById('okAuto_'+pid);
+let notOkAuto = document.getElementById('notOkAuto_'+pid);
+let okAutoText = document.getElementById('okAutoText_'+pid);
+let latestPrice = document.getElementById('latestPrice_'+pid);
+let latestPriceValue = document.getElementById('latestPriceValue_'+pid);
+let plus = document.getElementById('plus'+pid);
+let max = document.getElementById('max'+pid);
+let lastWinnerMax = document.getElementById('lastWinnerMax_'+pid);
+let maxAlert = document.getElementById('maxAlert_'+pid);
+
+if(parseInt(max.value)<=parseInt(latestPriceValue.value)){
+maxAlert.innerHTML='上限須高於最新價格';
+}
+
+else{
+maxAlert.innerHTML='';
+
+let formdata = new FormData(form);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+autoBuyBlock.style.display='none';
+let latest = Number(xhttp.responseText);
+if(latest>Number(latestPriceValue.value)+Number(plus.value)){
+
+if(Number(lastWinnerMax.value)!=0&&latest==Number(lastWinnerMax.value)+Number(plus.value)){
+okAutoText.innerHTML = '出價成功！';
+okAuto.style.display='block';
+winnerImg.style.display='block';
+Button01.disabled = true;
+Button02.disabled = true;
+}
+else{
+okAutoText.innerHTML = '很抱歉，有人出更高價。<br>最新價格為'+latest+'元。';
+okAuto.style.display='block';
+winnerImg.style.display='none';
+Button01.disabled = false;
+Button02.disabled = false;
+}
+
+
+}else{
+okAutoText.innerHTML = '出價成功！';
+okAuto.style.display='block';
+winnerImg.style.display='block';
+Button01.disabled = true;
+Button02.disabled = true;
+}
+latestPriceValue.value = latest;
+latestPrice.innerHTML = '最新價格：'+xhttp.responseText;
+
+}
+xhttp.open("POST","http://localhost:8080/community/mall/biddingProductAuto",true);
+xhttp.send(formdata);
+
+}
+}
+</script>
+<script>
+function showBuy(pid){
+let buyBlock = document.getElementById('buy_'+pid);
+buyBlock.style.animationName = 'zoomIn';
+buyBlock.style.display = 'block';
+}
+function hideBuy(pid){
+let buyBlock = document.getElementById('buy_'+pid);
+let priceAlert = document.getElementById('priceAlert_'+pid);
+buyBlock.style.animationName = 'zoomOut';
+setTimeout(function() {
+priceAlert.innerHTML='';
+buyBlock.style.display = 'none';
+}, 2000);
+}
+function hideBuyOk(pid){
+let ok = document.getElementById('ok_'+pid);
+ok.style.animationName = 'zoomOut';
+ok.style.animationPlayState = 'running';
+setTimeout(function() {
+ok.style.display = 'none';
+ok.style.animationPlayState = 'paused';
+}, 2000);
+}
+
+</script>
+<script>
+function showAutoBuy(pid){
+let autoBuyBlock = document.getElementById('autoBuy_'+pid);
+autoBuyBlock.style.animationName = 'zoomIn';
+autoBuyBlock.style.display = 'block';
+}
+function hideAutoBuy(pid){
+let autoBuyBlock = document.getElementById('autoBuy_'+pid);
+let maxAlert = document.getElementById('maxAlert_'+pid);
+autoBuyBlock.style.animationName = 'zoomOut';
+setTimeout(function() {
+maxAlert.innerHTML='';
+autoBuyBlock.style.display = 'none';
+}, 2000);
+}
+function hideAutoBuyOk(pid){
+let ok = document.getElementById('okAuto_'+pid);
+ok.style.animationName = 'zoomOut';
+ok.style.animationPlayState = 'running';
+setTimeout(function() {
+ok.style.display = 'none';
+ok.style.animationPlayState = 'paused';
+}, 2000);
+}
+</script>
+<script>
+let cartNum = document.getElementById("cartNum")
+if(cartNum.innerHTML!=0){
+cartNum.style.display='block';
+}
+
+
+</script>
+<script>
+function addToMyRecord(pid){
+console.log(pid);
+let xhttp = new XMLHttpRequest();
+xhttp.open("POST","http://localhost:8080/community/mall/addToMyRecord",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+pid);
+}
+</script>
+<script>
+function addToMyLikes(pid){
+let img = document.getElementById('likes_'+pid);
+let xhttp = new XMLHttpRequest();
+xhttp.onload = function(){
+let str = xhttp.responseText;
+if(str==='0'){
+	img.src='/community/image/heart.png';
+}else{
+	img.src='/community/image/heart0.png';
+}
+}
+xhttp.open("POST","http://localhost:8080/community/mall/addToMyLikes",true);
+xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+xhttp.send("productId="+pid);
+}
+</script>
+<script>
+let all = document.getElementById('bid');
+ all.addEventListener("mouseover",function(){
+        all.style.filter = "none";
+ })
+ div1.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+ div2.addEventListener("mouseover",function(){
+        all.style.filter = "blur(5px)";
+ })
+</script>
+
+</body>
+</html>
